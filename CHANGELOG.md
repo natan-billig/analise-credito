@@ -5,6 +5,16 @@ Todas las modificaciones notables de este proyecto se documentan en este archivo
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [0.3.0] - Gestor Dinámico de Compromisos y Soporte Paraguay - 2026-09-30
+
+### Añadido / Modificado
+- Solucionado bloqueo de carga en Firefox y agregado favicon SVG inline.
+- Adaptado campo de identificación fiscal a C.I. / RUC (Paraguay).
+- Implementado gestor dinámico de compromisos financieros por entidad y mes.
+- Añadido cálculo de sumatoria automática y ratio de concentración de deuda mensual.
+- Incorporada nueva sección de visualización "Cronograma y Concentración de Cuotas por Mes" con barras de distribución.
+- Actualizado dictamen técnico formal con desglose de acreedores y mes de máxima concentración.
+
 ## [0.2.0] - Modelo de Flujo de Caja Agrícola con Compromisos Financieros en USD - 2026-09-30
 
 ### Añadido / Modificado

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema de Análisis de Crédito Rural - Flujo de Caja (USD)</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -113,7 +114,7 @@
 
     @media (min-width: 1024px) {
       .container {
-        grid-template-columns: 1.1fr 0.9fr;
+        grid-template-columns: 1.15fr 0.85fr;
       }
     }
 
@@ -203,6 +204,125 @@
       outline: none;
       border-color: var(--primary);
       box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.15);
+    }
+
+    /* Tabla de Compromisos Dinámicos */
+    .commitments-wrapper {
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #ffffff;
+    }
+
+    .commitments-header-bar {
+      background-color: #f8fafc;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .commitments-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .commitments-table th {
+      background-color: #f1f5f9;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.03em;
+      padding: 0.65rem 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .commitments-table td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+
+    .commitments-table input,
+    .commitments-table select {
+      padding: 0.45rem 0.6rem;
+      font-size: 0.85rem;
+      width: 100%;
+    }
+
+    .btn-remove-row {
+      background-color: #fee2e2;
+      color: var(--danger);
+      border: 1px solid #fca5a5;
+      border-radius: 6px;
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.15s ease;
+    }
+
+    .btn-remove-row:hover {
+      background-color: #fecaca;
+      color: #991b1b;
+    }
+
+    .commitments-footer-bar {
+      padding: 0.75rem 1rem;
+      background-color: #fafbfc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .total-commitments-display {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .total-commitments-badge {
+      background-color: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fde68a;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-left: 0.35rem;
+    }
+
+    .btn-add-row {
+      background-color: #f0fdf4;
+      color: var(--primary);
+      border: 1px dashed var(--primary);
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s ease;
+    }
+
+    .btn-add-row:hover {
+      background-color: #dcfce7;
+      border-style: solid;
     }
 
     .form-actions {
@@ -396,6 +516,58 @@
       color: #b91c1c;
     }
 
+    /* Tabla de Cronograma y Concentración Mensual */
+    .cronograma-table-wrapper {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .cronograma-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    .cronograma-table th {
+      background-color: #f8fafc;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.03em;
+      padding: 0.6rem 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cronograma-table td {
+      padding: 0.55rem 0.75rem;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+
+    .cronograma-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background-color: #e2e8f0;
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-top: 0.25rem;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #15803d, #d97706);
+      border-radius: 9999px;
+      transition: width 0.3s ease;
+    }
+
     .dictamen-box {
       background-color: #0f172a;
       color: #f8fafc;
@@ -457,7 +629,7 @@
         </div>
       </div>
       <div>
-        <span class="currency-pill">💵 Moneda Oficial: USD ($) • v0.2.0</span>
+        <span class="currency-pill">💵 Moneda Oficial: USD ($) • v0.3.0</span>
       </div>
     </div>
   </header>
@@ -467,19 +639,19 @@
     <section class="card">
       <div class="card-header">
         <h2 class="card-title">📝 Datos Técnicos y Financieros del Productor</h2>
-        <span style="font-size: 0.8rem; color: var(--text-muted);">Valores expresados en USD ($)</span>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Valores en USD ($) • Paraguay (C.I. / RUC)</span>
       </div>
       <div class="card-body">
-        <form id="creditForm" novalidate>
+        <form id="creditForm" onsubmit="return false;" novalidate>
           <div class="section-title">1. Parámetros Agronómicos y Productivos</div>
           <div class="form-grid">
             <div class="form-group">
               <label for="producerName">Nombre del Productor / Razón Social</label>
-              <input type="text" id="producerName" placeholder="Ej: Agropecuaria Los Andes S.A." required value="Agropecuaria El Palmar S.A.">
+              <input type="text" id="producerName" placeholder="Ej: Agropecuaria Santa Rosa S.A." required value="Agropecuaria El Palmar S.A.">
             </div>
             <div class="form-group">
-              <label for="documentNumber">Identificación Fiscal (RUT / CUIT / DNI)</label>
-              <input type="text" id="documentNumber" placeholder="Ej: 30-71234567-8" required value="30-71234567-8">
+              <label for="documentNumber">Identificación (C.I. / RUC)</label>
+              <input type="text" id="documentNumber" placeholder="Ej: 4.892.150 o 80012345-6" required value="80034921-5">
             </div>
             <div class="form-group">
               <label for="cropType">Cultivo Principal</label>
@@ -489,6 +661,7 @@
                 <option value="Trigo">Trigo</option>
                 <option value="Girasol">Girasol</option>
                 <option value="Arroz">Arroz</option>
+                <option value="Sésamo">Sésamo</option>
                 <option value="Café">Café</option>
               </select>
             </div>
@@ -506,7 +679,7 @@
             </div>
           </div>
 
-          <div class="section-title">2. Costos Operacionales y Compromisos Financieros (USD)</div>
+          <div class="section-title">2. Costos Operacionales y Crédito Solicitado (USD)</div>
           <div class="form-grid">
             <div class="form-group">
               <label for="costPerHectare">Costo de Producción por Hectárea (USD/ha)</label>
@@ -520,12 +693,6 @@
               <input type="number" id="requestedCapital" min="1" step="any" placeholder="0.00 (Intereses ya incluidos)" required value="110000">
             </div>
             <div class="form-group">
-              <label for="deudas_financieras">
-                Cuotas / Compromisos en el Sistema Financiero (USD)
-              </label>
-              <input type="number" id="deudas_financieras" min="0" step="any" placeholder="0.00" required value="25000">
-            </div>
-            <div class="form-group">
               <label for="paymentFrequency">Periodicidad de Pagos</label>
               <select id="paymentFrequency" required>
                 <option value="Zafra Única" selected>Zafra Única</option>
@@ -535,8 +702,43 @@
             </div>
           </div>
 
+          <div class="section-title">3. Gestor Dinámico de Compromisos Financieros (USD)</div>
+          <div class="commitments-wrapper">
+            <div class="commitments-header-bar">
+              <span style="font-weight: 600; font-size: 0.85rem; color: var(--secondary);">
+                💳 Cuotas y Deudas en el Sistema Financiero
+              </span>
+              <button type="button" class="btn-add-row" id="btnAddCommitment">
+                ➕ Agregar Compromiso
+              </button>
+            </div>
+            <table class="commitments-table" id="tableCommitments">
+              <thead>
+                <tr>
+                  <th style="width: 45%;">Entidad Financiera</th>
+                  <th style="width: 25%;">Mes de Vencimiento</th>
+                  <th style="width: 20%;">Monto Cuota (USD)</th>
+                  <th style="width: 10%; text-align: center;">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="commitmentsBody">
+                <!-- Filas agregadas dinámicamente -->
+              </tbody>
+            </table>
+            <div class="commitments-footer-bar">
+              <div class="total-commitments-display">
+                Suma Total de Compromisos:
+                <span id="totalCommitmentsBadge" class="total-commitments-badge">$ 25,000</span>
+              </div>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">
+                Suma automática de compromisos bancarios y comerciales
+              </span>
+            </div>
+          </div>
+
           <div class="form-actions">
-            <button type="submit" class="btn btn-primary" id="btnAnalyze">
+            <!-- Botón con ID exacto btn-calcular y type="button" explícito (Fix de submit/Firefox) -->
+            <button type="button" class="btn btn-primary" id="btn-calcular">
               ⚡ Ejecutar Análisis
             </button>
             <button type="button" class="btn btn-outline" id="btnSample">
@@ -570,7 +772,7 @@
             </div>
           </div>
 
-          <!-- Métricas del Modelo de Miguel -->
+          <!-- Métricas del Modelo Consolidado -->
           <div class="metrics-grid">
             <div class="metric-box">
               <div class="metric-label">Ingresos Proyectados (USD)</div>
@@ -590,7 +792,7 @@
             <div class="metric-box">
               <div class="metric-label">Carga Financiera Total (USD)</div>
               <div id="metricCargaFinanciera" class="metric-value">$ 135,000</div>
-              <div class="metric-badge badge-alert">Deudas previas + Crédito</div>
+              <div class="metric-badge badge-alert">Compromisos + Crédito</div>
             </div>
             <div class="metric-box highlight" id="boxFlujoCaja">
               <div class="metric-label">Flujo de Caja Libre / Remanente Neto (USD)</div>
@@ -598,10 +800,28 @@
               <div id="metricFlujoBadge" class="metric-badge badge-good">Superávit Disponible</div>
             </div>
             <div class="metric-box highlight" id="boxCobertura">
-              <div class="metric-label">Cobertura de Deuda (x)</div>
+              <div class="metric-label">Cobertura de Deuda / ICSD Global (x)</div>
               <div id="metricCobertura" class="metric-value">2.03x</div>
               <div id="metricCoberturaBadge" class="metric-badge badge-good">Solvente (≥ 1.25x)</div>
             </div>
+          </div>
+
+          <!-- Nueva Sección: Cronograma y Concentración de Cuotas por Mes -->
+          <div class="section-title">📅 Cronograma y Concentración de Cuotas por Mes</div>
+          <div class="cronograma-table-wrapper">
+            <table class="cronograma-table" id="tableCronograma">
+              <thead>
+                <tr>
+                  <th style="width: 25%;">Mes</th>
+                  <th style="width: 30%;">Total Cuotas (USD)</th>
+                  <th style="width: 25%;">% de Compromisos</th>
+                  <th style="width: 20%;">Entidades</th>
+                </tr>
+              </thead>
+              <tbody id="cronogramaBody">
+                <!-- Filas agregadas dinámicamente -->
+              </tbody>
+            </table>
           </div>
 
           <!-- Dictamen Técnico Copiable -->
