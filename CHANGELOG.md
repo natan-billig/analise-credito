@@ -1,27 +1,40 @@
-# Changelog
+# Registro de Cambios (Changelog)
 
-Todas as alterações notáveis deste projeto serão documentadas neste arquivo.
+Todas las modificaciones notables de este proyecto se documentan en este archivo.
 
-O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
-e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
+El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
+y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
-## [0.1.0] - Versão Base (Produtor Agrícola) - 2026-09-30
+## [0.1.1] - Localización Integral al Español - 2026-09-30
 
-### Adicionado
-- **Estruturação do Projeto**:
-  - Arquitetura estática leve pronta para deploy no Vercel (`vercel.json`).
-  - Interface responsiva com painéis para entrada de dados cadastrais e financeiros do produtor (`index.html`).
-  - Ignorados arquivos locais e segredos no repositório (`.gitignore`).
-- **Motor de Decisão de Crédito Rural (`js/engine.js`)**:
-  - Cálculo de margem operacional por cultura/atividade (grãos, cafeicultura, pecuária, cana, hortifruti).
-  - Cálculo do serviço da dívida anual e comprometimento de receita líquida (DTI agrícola).
-  - Análise de alavancagem total (dívidas preexistentes + crédito pretendido vs. faturamento anual).
-  - Ponderação e índice de cobertura real de garantias (LTV: alienação fiduciária, CPR safra, maquinário, aval).
-  - Sistema de pontuação (Score 0-100) e classificação de rating de risco (A, B, C, D, E).
-  - Pareceres automatizados: Aprovado, Aprovado com Condicionantes e Reprovado.
-  - Estimativa de limite de crédito máximo suportado.
-- **Controlador e Interação (`js/app.js`)**:
-  - Validação e sincronização de dados do formulário com o motor de análise.
-  - Formatação monetária padrão BRL e percentual.
-  - Indicadores visuais de risco, badges de saúde financeira e justificativas detalhadas.
-  - Simulações dinâmicas de múltiplos perfis (Pronaf, Pronamp, Grande Produtor).
+### Modificado
+- **Localización y Nomenclatura Técnica (100% Español)**:
+  - Etiqueta HTML actualizada a `lang="es"` en `index.html`.
+  - Reemplazo y ajuste de todas las variables, etiquetas y mensajes de interfaz a terminología agronómica y financiera en español:
+    - *Área Cultivada (ha)*
+    - *Costo de Producción por Hectárea ($/ha)*
+    - *Rendimiento Estimado (t/ha)*
+    - *Precio de Mercado ($/t)*
+    - *Capital Solicitado ($)*
+    - *Periodicidad de Pagos*: *Zafra Única*, *Semestral*, *Mensual*
+    - Acciones: *Ejecutar Análisis*, *Cargar Ejemplo*
+    - Título del panel de resultados: *Dictamen de Crédito*
+    - Métricas clave: *Ingreso Bruto Proyectado*, *Costo Operacional Total*, *Margen Operativo Bruto*, *Cobertura de Deuda (ICSD)*
+- **Motor de Riesgo y Dictamen (`js/engine.js`)**:
+  - Unificación de los estados del dictamen a: **Aprobado**, **Riesgo Moderado** e **Inviable**.
+  - Incorporación del cálculo del Índice de Cobertura del Servicio de la Deuda (ICSD) y amortización de zafra agrícola.
+  - Implementación del generador de texto formal técnico para comités de crédito agropecuario.
+- **Controlador e Interacción (`js/app.js`)**:
+  - Incorporación de botón para copiar el dictamen al portapapeles con confirmación visual (*¡Copiado al portapapeles!*).
+  - Validaciones de campos obligatorios y retroalimentación de errores en español.
+  - Formato numérico y monetario localizado.
+- **Documentación**:
+  - Traducción y actualización completa de `README.md` y `CHANGELOG.md`.
+
+## [0.1.0] - Versión Base (Productor Agrícola) - 2026-09-30
+
+### Añadido
+- Estructuración inicial del proyecto para análisis de crédito rural.
+- Interfaz web interactiva (`index.html`) y configuración para Vercel (`vercel.json`).
+- Motor de reglas de riesgo inicial (`js/engine.js`) y controlador (`js/app.js`).
+- Archivo de exclusión de repositorio (`.gitignore`).

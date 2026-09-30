@@ -1,87 +1,103 @@
 /**
- * Sistema de Análise de Crédito Rural - Controlador da Interface (App)
- * Versão: 0.1.0 - Versão Base (Produtor Agrícola)
+ * Sistema de Análisis de Crédito Rural - Controlador de la Interfaz
+ * Versión: 0.1.1 - Localización Integral al Español
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('creditForm');
   const btnSample = document.getElementById('btnSample');
+  const btnCopyDictamen = document.getElementById('btnCopyDictamen');
   const resultPlaceholder = document.getElementById('resultPlaceholder');
   const resultCard = document.getElementById('resultCard');
   const analysisTimestamp = document.getElementById('analysisTimestamp');
+  const toast = document.getElementById('toast');
 
-  // Elementos do Banner de Decisão
+  // Elementos del Banner de Dictamen
   const decisionBanner = document.getElementById('decisionBanner');
   const decisionIcon = document.getElementById('decisionIcon');
   const decisionTitle = document.getElementById('decisionTitle');
   const decisionSubtitle = document.getElementById('decisionSubtitle');
 
-  // Métricas
-  const metricScore = document.getElementById('metricScore');
-  const metricScoreBadge = document.getElementById('metricScoreBadge');
-  const metricMaxLimit = document.getElementById('metricMaxLimit');
-  const metricDTI = document.getElementById('metricDTI');
-  const metricDTIBadge = document.getElementById('metricDTIBadge');
-  const metricLTV = document.getElementById('metricLTV');
-  const metricLTVBadge = document.getElementById('metricLTVBadge');
-  const reasonsList = document.getElementById('reasonsList');
+  // Elementos de Métricas Solicitadas
+  const metricGrossIncome = document.getElementById('metricGrossIncome');
+  const metricTotalCost = document.getElementById('metricTotalCost');
+  const metricOperatingMargin = document.getElementById('metricOperatingMargin');
+  const metricMarginBadge = document.getElementById('metricMarginBadge');
+  const metricICSD = document.getElementById('metricICSD');
+  const metricICSDBadge = document.getElementById('metricICSDBadge');
+  const metricCollateralCoverage = document.getElementById('metricCollateralCoverage');
+  const metricCollateralBadge = document.getElementById('metricCollateralBadge');
+  const metricRecommendedLimit = document.getElementById('metricRecommendedLimit');
 
-  // Formatação em Moeda Brasileira (R$)
-  const formatBRL = (value) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-      maximumFractionDigits: 0
-    }).format(value);
+  const reasonsList = document.getElementById('reasonsList');
+  const dictamenText = document.getElementById('dictamenText');
+
+  // Formateador monetario estándar ($ 123.456)
+  const formatMoney = (val) => {
+    const num = Math.round(Number(val) || 0);
+    return '$ ' + num.toLocaleString('es-ES');
   };
 
-  // Simulação pré-configurada alternativa
+  // Función para mostrar Toast de notificación
+  const showToast = (message = '¡Copiado al portapapeles!') => {
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2500);
+  };
+
+  // Perfiles de prueba rotativos en español técnico
   let sampleIndex = 0;
   const sampleProfiles = [
     {
-      producerName: 'Fazenda Rio Verde',
-      documentNumber: '12.345.678/0001-90',
-      producerType: 'PRONAMP',
-      activity: 'GRAOS',
-      areaHectares: 350,
-      creditHistory: 'EXCELENTE',
-      annualRevenue: 1800000,
-      currentDebts: 250000,
-      guaranteeType: 'IMOVEL_RURAL',
-      guaranteeValue: 1500000,
-      requestedAmount: 450000,
-      creditPurpose: 'CUSTEIO',
-      termMonths: 18
+      producerName: 'Agropecuaria El Palmar S.A.',
+      documentNumber: '30-71234567-8',
+      cropType: 'SOJA',
+      areaHectares: 400,
+      estimatedYield: 3.6,
+      marketPrice: 350,
+      costPerHectare: 720,
+      requestedCapital: 150000,
+      paymentFrequency: 'ZAFRA_UNICA',
+      loanTermMonths: 12,
+      interestRate: 9.0,
+      existingDebts: 20000,
+      guaranteeType: 'HIPOTECA',
+      guaranteeValue: 300000
     },
     {
-      producerName: 'Sítio Recanto dos Ipês',
-      documentNumber: '321.654.987-12',
-      producerType: 'PRONAF',
-      activity: 'PECUARIA_LEITE',
-      areaHectares: 45,
-      creditHistory: 'BOM',
-      annualRevenue: 280000,
-      currentDebts: 65000,
-      guaranteeType: 'MAQUINARIO',
-      guaranteeValue: 120000,
-      requestedAmount: 95000,
-      creditPurpose: 'INVESTIMENTO',
-      termMonths: 36
+      producerName: 'Establecimiento Don Joaquín',
+      documentNumber: '20-28945612-4',
+      cropType: 'MAIZ',
+      areaHectares: 250,
+      estimatedYield: 8.5,
+      marketPrice: 180,
+      costPerHectare: 1100,
+      requestedCapital: 120000,
+      paymentFrequency: 'SEMESTRAL',
+      loanTermMonths: 18,
+      interestRate: 10.5,
+      existingDebts: 45000,
+      guaranteeType: 'PRENDA_COSECHA',
+      guaranteeValue: 140000
     },
     {
-      producerName: 'Agropecuária Sol Nascente',
-      documentNumber: '98.765.432/0001-11',
-      producerType: 'DEMAIS',
-      activity: 'GRAOS',
-      areaHectares: 800,
-      creditHistory: 'RESTRICAO_GRAVE',
-      annualRevenue: 3500000,
-      currentDebts: 2900000,
-      guaranteeType: 'CPR_SAFRA',
-      guaranteeValue: 800000,
-      requestedAmount: 1200000,
-      creditPurpose: 'CUSTEIO',
-      termMonths: 12
+      producerName: 'Agrícola Valle Hermoso SRL',
+      documentNumber: '33-65987412-9',
+      cropType: 'TRIGO',
+      areaHectares: 180,
+      estimatedYield: 2.1,
+      marketPrice: 210,
+      costPerHectare: 680,
+      requestedCapital: 90000,
+      paymentFrequency: 'ZAFRA_UNICA',
+      loanTermMonths: 10,
+      interestRate: 12.0,
+      existingDebts: 60000,
+      guaranteeType: 'AVAL',
+      guaranteeValue: 40000
     }
   ];
 
@@ -92,111 +108,181 @@ document.addEventListener('DOMContentLoaded', () => {
 
       document.getElementById('producerName').value = sample.producerName;
       document.getElementById('documentNumber').value = sample.documentNumber;
-      document.getElementById('producerType').value = sample.producerType;
-      document.getElementById('activity').value = sample.activity;
+      document.getElementById('cropType').value = sample.cropType;
       document.getElementById('areaHectares').value = sample.areaHectares;
-      document.getElementById('creditHistory').value = sample.creditHistory;
-      document.getElementById('annualRevenue').value = sample.annualRevenue;
-      document.getElementById('currentDebts').value = sample.currentDebts;
+      document.getElementById('estimatedYield').value = sample.estimatedYield;
+      document.getElementById('marketPrice').value = sample.marketPrice;
+      document.getElementById('costPerHectare').value = sample.costPerHectare;
+      document.getElementById('requestedCapital').value = sample.requestedCapital;
+      document.getElementById('paymentFrequency').value = sample.paymentFrequency;
+      document.getElementById('loanTermMonths').value = sample.loanTermMonths;
+      document.getElementById('interestRate').value = sample.interestRate;
+      document.getElementById('existingDebts').value = sample.existingDebts;
       document.getElementById('guaranteeType').value = sample.guaranteeType;
       document.getElementById('guaranteeValue').value = sample.guaranteeValue;
-      document.getElementById('requestedAmount').value = sample.requestedAmount;
-      document.getElementById('creditPurpose').value = sample.creditPurpose;
-      document.getElementById('termMonths').value = sample.termMonths;
 
-      // Executa a análise automaticamente ao carregar exemplo
       form.dispatchEvent(new Event('submit'));
     });
   }
 
-  // Manipulação do Formulário
+  // Copia del Dictamen Formal al portapapeles
+  if (btnCopyDictamen) {
+    btnCopyDictamen.addEventListener('click', async () => {
+      const text = dictamenText.textContent || '';
+      if (!text) {
+        showToast('No hay dictamen generado para copiar');
+        return;
+      }
+
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          // Fallback para navegadores antiguos
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+        }
+
+        btnCopyDictamen.classList.add('copied');
+        btnCopyDictamen.innerHTML = '✔ ¡Copiado!';
+        showToast('¡Copiado al portapapeles!');
+
+        setTimeout(() => {
+          btnCopyDictamen.classList.remove('copied');
+          btnCopyDictamen.innerHTML = '📋 Copiar Dictamen';
+        }, 2500);
+      } catch (err) {
+        showToast('Error al copiar al portapapeles');
+      }
+    });
+  }
+
+  // Validación y envío del formulario
   form.addEventListener('submit', (e) => {
     e.preventDefault();
+
+    // Validación de campos vacíos o nulos
+    const requiredInputs = form.querySelectorAll('input[required], select[required]');
+    let hasEmpty = false;
+
+    requiredInputs.forEach((input) => {
+      if (!input.value.trim()) {
+        input.style.borderColor = '#dc2626';
+        hasEmpty = true;
+      } else {
+        input.style.borderColor = '';
+      }
+    });
+
+    if (hasEmpty) {
+      showToast('Por favor, complete todos los campos obligatorios antes de calcular.');
+      return;
+    }
 
     const inputData = {
       producerName: document.getElementById('producerName').value.trim(),
       documentNumber: document.getElementById('documentNumber').value.trim(),
-      producerType: document.getElementById('producerType').value,
-      activity: document.getElementById('activity').value,
+      cropType: document.getElementById('cropType').value,
       areaHectares: Number(document.getElementById('areaHectares').value),
-      creditHistory: document.getElementById('creditHistory').value,
-      annualRevenue: Number(document.getElementById('annualRevenue').value),
-      currentDebts: Number(document.getElementById('currentDebts').value),
+      estimatedYield: Number(document.getElementById('estimatedYield').value),
+      marketPrice: Number(document.getElementById('marketPrice').value),
+      costPerHectare: Number(document.getElementById('costPerHectare').value),
+      requestedCapital: Number(document.getElementById('requestedCapital').value),
+      paymentFrequency: document.getElementById('paymentFrequency').value,
+      loanTermMonths: Number(document.getElementById('loanTermMonths').value),
+      interestRate: Number(document.getElementById('interestRate').value),
+      existingDebts: Number(document.getElementById('existingDebts').value),
       guaranteeType: document.getElementById('guaranteeType').value,
-      guaranteeValue: Number(document.getElementById('guaranteeValue').value),
-      requestedAmount: Number(document.getElementById('requestedAmount').value),
-      creditPurpose: document.getElementById('creditPurpose').value,
-      termMonths: Number(document.getElementById('termMonths').value)
+      guaranteeValue: Number(document.getElementById('guaranteeValue').value)
     };
 
     if (typeof CreditEngine === 'undefined') {
-      alert('Erro: Motor de crédito não foi inicializado corretamente.');
+      showToast('Error: Motor de cálculo no disponible');
       return;
     }
 
-    const result = CreditEngine.evaluateCredit(inputData);
-    displayResults(result);
+    const evaluation = CreditEngine.evaluateCredit(inputData);
+    renderResults(evaluation);
   });
 
-  function displayResults(res) {
+  function renderResults(res) {
     resultPlaceholder.style.display = 'none';
     resultCard.style.display = 'block';
 
     const now = new Date();
-    analysisTimestamp.textContent = `Avaliado em: ${now.toLocaleTimeString('pt-BR')}`;
+    analysisTimestamp.textContent = `Calculado: ${now.toLocaleTimeString('es-ES')}`;
 
-    // Configurar Banner de Decisão
+    // Configuración del Banner de Dictamen
+    // Estados: "Aprobado", "Riesgo Moderado", "Inviable"
     decisionBanner.className = 'decision-banner';
-    if (res.decision === 'APPROVED') {
-      decisionBanner.classList.add('decision-approved');
+    if (res.status === 'Aprobado') {
+      decisionBanner.classList.add('decision-aprobado');
       decisionIcon.textContent = '✅';
-    } else if (res.decision === 'CONDITIONAL') {
-      decisionBanner.classList.add('decision-conditional');
+    } else if (res.status === 'Riesgo Moderado') {
+      decisionBanner.classList.add('decision-moderado');
       decisionIcon.textContent = '⚠️';
     } else {
-      decisionBanner.classList.add('decision-rejected');
+      decisionBanner.classList.add('decision-inviable');
       decisionIcon.textContent = '🛑';
     }
 
-    decisionTitle.textContent = res.decisionTitle;
-    decisionSubtitle.textContent = res.decisionSubtitle;
+    decisionTitle.textContent = `Dictamen: ${res.status}`;
+    decisionSubtitle.textContent = res.statusSubtitle;
 
-    // Métricas
-    metricScore.textContent = `${res.score} / 100`;
-    metricScoreBadge.textContent = `Rating ${res.rating}`;
-    metricScoreBadge.className = 'metric-badge ' + (res.score >= 70 ? 'badge-good' : res.score >= 50 ? 'badge-alert' : 'badge-danger');
+    // Métricas Requeridas
+    const m = res.metrics;
+    metricGrossIncome.textContent = formatMoney(m.grossIncome);
+    metricTotalCost.textContent = formatMoney(m.totalOperatingCost);
+    metricOperatingMargin.textContent = formatMoney(m.grossOperatingMargin);
 
-    metricMaxLimit.textContent = formatBRL(res.maxRecommendedCredit);
+    metricMarginBadge.textContent = `${m.marginPct.toFixed(1)}% Margen`;
+    metricMarginBadge.className = 'metric-badge ' + (m.marginPct >= 30 ? 'badge-good' : m.marginPct >= 15 ? 'badge-alert' : 'badge-danger');
 
-    // Comprometimento de Renda
-    const dti = res.metrics.debtToIncomeRatio;
-    metricDTI.textContent = `${dti.toFixed(1)}%`;
-    metricDTIBadge.textContent = dti <= 35 ? 'Margem Segura' : dti <= 50 ? 'Atenção ao Fluxo' : 'Margem Excedida';
-    metricDTIBadge.className = 'metric-badge ' + (dti <= 35 ? 'badge-good' : dti <= 50 ? 'badge-alert' : 'badge-danger');
+    // Cobertura de Deuda (ICSD)
+    const icsdVal = m.icsd >= 90 ? '> 10.0x' : `${m.icsd.toFixed(2)}x`;
+    metricICSD.textContent = icsdVal;
+    if (m.icsd >= 1.30) {
+      metricICSDBadge.textContent = 'Solvente (≥ 1.30x)';
+      metricICSDBadge.className = 'metric-badge badge-good';
+    } else if (m.icsd >= 1.05) {
+      metricICSDBadge.textContent = 'Ajustado (1.05x - 1.29x)';
+      metricICSDBadge.className = 'metric-badge badge-alert';
+    } else {
+      metricICSDBadge.textContent = 'Insuficiente (< 1.05x)';
+      metricICSDBadge.className = 'metric-badge badge-danger';
+    }
 
-    // LTV / Cobertura
-    const cov = res.metrics.guaranteeCoverage;
-    metricLTV.textContent = `${cov.toFixed(0)}%`;
-    metricLTVBadge.textContent = cov >= 100 ? 'Adequada' : cov >= 70 ? 'Parcial' : 'Insuficiente';
-    metricLTVBadge.className = 'metric-badge ' + (cov >= 100 ? 'badge-good' : cov >= 70 ? 'badge-alert' : 'badge-danger');
+    // Cobertura de Garantía
+    metricCollateralCoverage.textContent = `${m.collateralCoverage.toFixed(0)}%`;
+    metricCollateralBadge.textContent = m.collateralCoverage >= 120 ? 'Excelente (≥ 120%)' : m.collateralCoverage >= 100 ? 'Aceptable (≥ 100%)' : 'Insuficiente (< 100%)';
+    metricCollateralBadge.className = 'metric-badge ' + (m.collateralCoverage >= 100 ? 'badge-good' : m.collateralCoverage >= 75 ? 'badge-alert' : 'badge-danger');
 
-    // Detalhamento dos Fatores
+    // Límite Recomendado
+    metricRecommendedLimit.textContent = formatMoney(m.recommendedLimit);
+
+    // Lista de Factores
     reasonsList.innerHTML = '';
-    res.reasons.forEach(reason => {
+    res.reasons.forEach((r) => {
       const li = document.createElement('li');
-      li.className = `item-${reason.type}`;
-      const icon = reason.type === 'success' ? '✔' : reason.type === 'warning' ? '▲' : '✖';
-      li.innerHTML = `<span>${icon}</span> <span>${reason.text}</span>`;
+      li.className = `item-${r.type}`;
+      const icon = r.type === 'success' ? '✔' : r.type === 'warning' ? '▲' : '✖';
+      li.innerHTML = `<span>${icon}</span> <span>${r.text}</span>`;
       reasonsList.appendChild(li);
     });
 
-    // Scroll suave até o resultado se em tela menor
-    if (window.innerWidth < 992) {
+    // Dictamen Formal para Copiar
+    dictamenText.textContent = res.dictamenFormal;
+
+    if (window.innerWidth < 1024) {
       resultCard.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
-  // Execução inicial com valores padrão
+  // Ejecución inicial automática
   if (form) {
     form.dispatchEvent(new Event('submit'));
   }

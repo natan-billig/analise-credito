@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Análise de Crédito Rural</title>
+  <title>Sistema de Análisis de Crédito Rural</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -52,7 +52,7 @@
     }
 
     .header-content {
-      max-width: 1200px;
+      max-width: 1250px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -100,7 +100,7 @@
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1250px;
       margin: 2rem auto;
       padding: 0 1rem;
       display: grid;
@@ -108,7 +108,7 @@
       gap: 2rem;
     }
 
-    @media (min-width: 992px) {
+    @media (min-width: 1024px) {
       .container {
         grid-template-columns: 1.15fr 0.85fr;
       }
@@ -145,7 +145,7 @@
     }
 
     .section-title {
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -174,8 +174,8 @@
     }
 
     label {
-      font-size: 0.85rem;
-      font-weight: 500;
+      font-size: 0.82rem;
+      font-weight: 600;
       color: var(--text);
     }
 
@@ -239,7 +239,31 @@
       color: var(--text);
     }
 
-    /* Results section */
+    .btn-copy {
+      background-color: #f1f5f9;
+      border: 1px solid var(--border);
+      color: var(--secondary);
+      font-size: 0.85rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-copy:hover {
+      background-color: #e2e8f0;
+    }
+
+    .btn-copy.copied {
+      background-color: var(--primary-light);
+      color: var(--primary-hover);
+      border-color: var(--primary);
+    }
+
+    /* Sección de Resultados */
     .result-placeholder {
       padding: 3rem 1.5rem;
       text-align: center;
@@ -265,19 +289,19 @@
       gap: 1rem;
     }
 
-    .decision-approved {
+    .decision-aprobado {
       background-color: #dcfce7;
       color: #14532d;
       border: 1px solid #86efac;
     }
 
-    .decision-conditional {
+    .decision-moderado {
       background-color: #fef3c7;
       color: #78350f;
       border: 1px solid #fde68a;
     }
 
-    .decision-rejected {
+    .decision-inviable {
       background-color: #fee2e2;
       color: #7f1d1d;
       border: 1px solid #fca5a5;
@@ -289,7 +313,7 @@
     }
 
     .decision-title {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 700;
     }
 
@@ -310,11 +334,11 @@
       background-color: #f8fafc;
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 1rem;
+      padding: 0.85rem 1rem;
     }
 
     .metric-label {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 600;
       color: var(--text-muted);
       text-transform: uppercase;
@@ -322,15 +346,15 @@
     }
 
     .metric-value {
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       font-weight: 700;
       color: var(--secondary);
-      margin-top: 0.25rem;
+      margin-top: 0.2rem;
     }
 
     .metric-badge {
       display: inline-block;
-      margin-top: 0.35rem;
+      margin-top: 0.3rem;
       font-size: 0.7rem;
       padding: 0.15rem 0.5rem;
       border-radius: 4px;
@@ -358,6 +382,7 @@
       flex-direction: column;
       gap: 0.5rem;
       margin-top: 0.75rem;
+      margin-bottom: 1.5rem;
     }
 
     .reasons-list li {
@@ -386,187 +411,254 @@
       color: #991b1b;
       border-left: 3px solid var(--danger);
     }
+
+    .dictamen-box {
+      background-color: #0f172a;
+      color: #f8fafc;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      max-height: 250px;
+      overflow-y: auto;
+      border: 1px solid #334155;
+    }
+
+    .dictamen-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .dictamen-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #0f172a;
+      color: white;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
   <header>
     <div class="header-content">
       <div class="brand">
-        <div class="brand-icon">🌱</div>
+        <div class="brand-icon">🌾</div>
         <div>
-          <div class="brand-title">Sistema de Análise de Crédito Rural</div>
-          <div class="brand-subtitle">Motor de Avaliação e Decisão de Risco Agrícola</div>
+          <div class="brand-title">Sistema de Análisis de Crédito Rural</div>
+          <div class="brand-subtitle">Motor de Evaluación de Riesgo y Dictamen Agrícola</div>
         </div>
       </div>
       <div>
-        <span class="badge-version">v0.1.0 • Produtor Agrícola</span>
+        <span class="badge-version">v0.1.1 • Productor Agrícola</span>
       </div>
     </div>
   </header>
 
   <main class="container">
-    <!-- Formulário do Produtor e Crédito -->
+    <!-- Formulario de Evaluación -->
     <section class="card">
       <div class="card-header">
-        <h2 class="card-title">📝 Solicitação de Crédito</h2>
-        <span style="font-size: 0.8rem; color: var(--text-muted);">Dados Cadastrais & Financeiros</span>
+        <h2 class="card-title">📝 Parámetros de la Operación</h2>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Evaluación Técnica & Financiera</span>
       </div>
       <div class="card-body">
-        <form id="creditForm">
-          <div class="section-title">1. Perfil do Produtor</div>
+        <form id="creditForm" novalidate>
+          <div class="section-title">1. Datos del Productor y Cultivo</div>
           <div class="form-grid">
             <div class="form-group">
-              <label for="producerName">Nome do Produtor / Fazenda</label>
-              <input type="text" id="producerName" placeholder="Ex: Fazenda Boa Esperança" required value="Fazenda Terra Fértil">
+              <label for="producerName">Nombre del Productor / Razón Social</label>
+              <input type="text" id="producerName" placeholder="Ej: Agropecuaria Santa Fe" required value="Agropecuaria El Palmar">
             </div>
             <div class="form-group">
-              <label for="documentNumber">CPF / CNPJ</label>
-              <input type="text" id="documentNumber" placeholder="000.000.000-00" required value="123.456.789-00">
+              <label for="documentNumber">Identificación Fiscal (RUT / CUIT / DNI)</label>
+              <input type="text" id="documentNumber" placeholder="Ej: 20-34567890-9" required value="20-38492011-4">
             </div>
             <div class="form-group">
-              <label for="producerType">Categoria do Produtor</label>
-              <select id="producerType" required>
-                <option value="PRONAF">Pequeno Produtor (PRONAF)</option>
-                <option value="PRONAMP" selected>Médio Produtor (PRONAMP)</option>
-                <option value="DEMAIS">Grande Produtor / Corporativo</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="activity">Atividade Produtiva Principal</label>
-              <select id="activity" required>
-                <option value="GRAOS" selected>Grãos (Soja, Milho, Trigo)</option>
-                <option value="CAFE">Cafeicultura</option>
-                <option value="PECUARIA_CORTE">Pecuária de Corte</option>
-                <option value="PECUARIA_LEITE">Pecuária Leiteira</option>
-                <option value="HORTIFRUTI">Hortifrutigranjeiros</option>
-                <option value="CANA">Cana-de-Açúcar</option>
+              <label for="cropType">Cultivo Principal</label>
+              <select id="cropType" required>
+                <option value="SOJA" selected>Soja</option>
+                <option value="MAIZ">Maíz</option>
+                <option value="TRIGO">Trigo</option>
+                <option value="GIRASOL">Girasol</option>
+                <option value="ARROZ">Arroz</option>
+                <option value="CAFE">Café</option>
               </select>
             </div>
             <div class="form-group">
               <label for="areaHectares">Área Cultivada (ha)</label>
-              <input type="number" id="areaHectares" min="1" step="any" required value="250">
+              <input type="number" id="areaHectares" min="1" step="any" placeholder="Ej: 400" required value="400">
             </div>
             <div class="form-group">
-              <label for="creditHistory">Histórico Cadastral / Restrições</label>
-              <select id="creditHistory" required>
-                <option value="EXCELENTE" selected>Sem Restrições (Excelente)</option>
-                <option value="BOM">Histórico Regular / Sem Atrasos</option>
-                <option value="ATRASO_LEVE">Apontamento Leve / Regularizado</option>
-                <option value="RESTRICAO_GRAVE">Restrição Ativa (SCR/Serasa)</option>
-              </select>
+              <label for="estimatedYield">Rendimiento Estimado (t/ha)</label>
+              <input type="number" id="estimatedYield" min="0.1" step="0.01" placeholder="Ej: 3.8" required value="3.8">
+            </div>
+            <div class="form-group">
+              <label for="marketPrice">Precio de Mercado ($/t)</label>
+              <input type="number" id="marketPrice" min="1" step="any" placeholder="Ej: 370" required value="370">
             </div>
           </div>
 
-          <div class="section-title">2. Capacidade Financeira</div>
+          <div class="section-title">2. Costos y Estructura Financiera</div>
           <div class="form-grid">
             <div class="form-group">
-              <label for="annualRevenue">Faturamento Bruto Anual (R$)</label>
-              <input type="number" id="annualRevenue" min="1000" step="1000" required value="1200000">
+              <label for="costPerHectare">Costo de Producción por Hectárea ($/ha)</label>
+              <input type="number" id="costPerHectare" min="1" step="any" placeholder="Ej: 720" required value="720">
             </div>
             <div class="form-group">
-              <label for="currentDebts">Endividamento Rural Existente (R$)</label>
-              <input type="number" id="currentDebts" min="0" step="1000" required value="280000">
+              <label for="requestedCapital">Capital Solicitado ($)</label>
+              <input type="number" id="requestedCapital" min="1000" step="500" placeholder="Ej: 110000" required value="110000">
             </div>
             <div class="form-group">
-              <label for="guaranteeType">Tipo Principal de Garantia</label>
+              <label for="paymentFrequency">Periodicidad de Pagos</label>
+              <select id="paymentFrequency" required>
+                <option value="ZAFRA_UNICA" selected>Zafra Única</option>
+                <option value="SEMESTRAL">Semestral</option>
+                <option value="MENSUAL">Mensual</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="loanTermMonths">Plazo del Financiamiento (meses)</label>
+              <input type="number" id="loanTermMonths" min="3" max="120" required value="12">
+            </div>
+            <div class="form-group">
+              <label for="interestRate">Tasa de Interés Anual (%)</label>
+              <input type="number" id="interestRate" min="0" max="100" step="0.1" required value="9.0">
+            </div>
+            <div class="form-group">
+              <label for="existingDebts">Pasivos / Deudas Existentes ($)</label>
+              <input type="number" id="existingDebts" min="0" step="500" required value="25000">
+            </div>
+          </div>
+
+          <div class="section-title">3. Garantías Ofrecidas</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="guaranteeType">Tipo de Garantía Principal</label>
               <select id="guaranteeType" required>
-                <option value="IMOVEL_RURAL" selected>Alienação Fiduciária / Hipoteca de Imóvel Rural</option>
-                <option value="CPR_SAFRA">Penhor Agrícola / Safra Futura (CPR)</option>
-                <option value="MAQUINARIO">Penhor de Máquinas e Equipamentos</option>
-                <option value="AVAL">Aval / Fiança de Terceiros</option>
+                <option value="HIPOTECA" selected>Hipoteca de Inmueble Rural</option>
+                <option value="PRENDA_COSECHA">Prenda Agrícola / Warrant de Cosecha</option>
+                <option value="MAQUINARIA">Prenda de Maquinaria y Equipos</option>
+                <option value="AVAL">Aval / Fianza Solidaria</option>
               </select>
             </div>
             <div class="form-group">
-              <label for="guaranteeValue">Valor Estimado da Garantia (R$)</label>
-              <input type="number" id="guaranteeValue" min="0" step="1000" required value="900000">
-            </div>
-          </div>
-
-          <div class="section-title">3. Detalhes do Crédito Solicitado</div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="requestedAmount">Valor Solicitado (R$)</label>
-              <input type="number" id="requestedAmount" min="5000" step="1000" required value="350000">
-            </div>
-            <div class="form-group">
-              <label for="creditPurpose">Finalidade do Crédito</label>
-              <select id="creditPurpose" required>
-                <option value="CUSTEIO" selected>Custeio Agrícola (Safra)</option>
-                <option value="INVESTIMENTO">Investimento / Máquinas e Benfeitorias</option>
-                <option value="COMERCIALIZACAO">Comercialização / Estocagem</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="termMonths">Prazo de Pagamento (meses)</label>
-              <input type="number" id="termMonths" min="6" max="120" required value="18">
+              <label for="guaranteeValue">Valor Estimado de Garantías ($)</label>
+              <input type="number" id="guaranteeValue" min="0" step="1000" required value="250000">
             </div>
           </div>
 
           <div class="form-actions">
             <button type="submit" class="btn btn-primary" id="btnAnalyze">
-              ⚡ Executar Análise de Crédito
+              ⚡ Ejecutar Análisis
             </button>
             <button type="button" class="btn btn-outline" id="btnSample">
-              Preencher Simulação
+              Cargar Ejemplo
             </button>
           </div>
         </form>
       </div>
     </section>
 
-    <!-- Painel de Parecer e Métricas -->
+    <!-- Panel de Resultados y Dictamen -->
     <section class="card">
       <div class="card-header">
-        <h2 class="card-title">📊 Parecer do Motor de Crédito</h2>
-        <span id="analysisTimestamp" style="font-size: 0.8rem; color: var(--text-muted);">Aguardando envio</span>
+        <h2 class="card-title">📊 Dictamen de Crédito</h2>
+        <span id="analysisTimestamp" style="font-size: 0.8rem; color: var(--text-muted);">En espera de cálculo</span>
       </div>
       <div class="card-body">
         <div id="resultPlaceholder" class="result-placeholder">
-          <div class="result-placeholder-icon">📋</div>
-          <h3>Nenhuma análise realizada</h3>
-          <p>Preencha os dados do produtor ao lado e clique em "Executar Análise de Crédito" para avaliar a proposta.</p>
+          <div class="result-placeholder-icon">📑</div>
+          <h3>Ningún análisis realizado</h3>
+          <p>Complete los parámetros técnicos del productor y haga clic en "Ejecutar Análisis" para generar el dictamen técnico.</p>
         </div>
 
         <div id="resultCard" class="result-card">
-          <div id="decisionBanner" class="decision-banner decision-approved">
+          <!-- Banner de Estado -->
+          <div id="decisionBanner" class="decision-banner decision-aprobado">
             <div id="decisionIcon" class="decision-icon">✅</div>
             <div>
-              <div id="decisionTitle" class="decision-title">Crédito Aprovado</div>
-              <div id="decisionSubtitle" class="decision-subtitle">Proposta compatível com os parâmetros de risco rural.</div>
+              <div id="decisionTitle" class="decision-title">Aprobado</div>
+              <div id="decisionSubtitle" class="decision-subtitle">La operación cumple satisfactoriamente con los criterios de solvencia y cobertura.</div>
             </div>
           </div>
 
+          <!-- Métricas Clave Solicitadas -->
           <div class="metrics-grid">
             <div class="metric-box">
-              <div class="metric-label">Score de Risco Rural</div>
-              <div id="metricScore" class="metric-value">85 / 100</div>
-              <div id="metricScoreBadge" class="metric-badge badge-good">Classificação A</div>
+              <div class="metric-label">Ingreso Bruto Proyectado</div>
+              <div id="metricGrossIncome" class="metric-value">$ 441.000</div>
+              <div class="metric-badge badge-good">Ventas Totales</div>
             </div>
             <div class="metric-box">
-              <div class="metric-label">Limite Recomendado</div>
-              <div id="metricMaxLimit" class="metric-value">R$ 420.000</div>
-              <div class="metric-badge badge-good">Capacidade Suportada</div>
+              <div class="metric-label">Costo Operacional Total</div>
+              <div id="metricTotalCost" class="metric-value">$ 273.000</div>
+              <div class="metric-badge badge-alert">Costos Directos</div>
             </div>
             <div class="metric-box">
-              <div class="metric-label">Comprometimento de Renda</div>
-              <div id="metricDTI" class="metric-value">19.4%</div>
-              <div id="metricDTIBadge" class="metric-badge badge-good">Dentro do limite (&le; 30%)</div>
+              <div class="metric-label">Margen Operativo Bruto</div>
+              <div id="metricOperatingMargin" class="metric-value">$ 168.000</div>
+              <div id="metricMarginBadge" class="metric-badge badge-good">38.1% de Margen</div>
             </div>
             <div class="metric-box">
-              <div class="metric-label">Cobertura de Garantia (LTV)</div>
-              <div id="metricLTV" class="metric-value">257%</div>
-              <div id="metricLTVBadge" class="metric-badge badge-good">Excelente (&ge; 130%)</div>
+              <div class="metric-label">Cobertura de Deuda (ICSD)</div>
+              <div id="metricICSD" class="metric-value">1.48x</div>
+              <div id="metricICSDBadge" class="metric-badge badge-good">Solvente (&ge; 1.30x)</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Cobertura de Garantía</div>
+              <div id="metricCollateralCoverage" class="metric-value">175%</div>
+              <div id="metricCollateralBadge" class="metric-badge badge-good">Garantía Sólida</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Límite Recomendado</div>
+              <div id="metricRecommendedLimit" class="metric-value">$ 180.000</div>
+              <div class="metric-badge badge-good">Capacidad Máxima</div>
             </div>
           </div>
 
-          <div class="section-title">Detalhamento dos Fatores de Decisão</div>
+          <!-- Justificaciones y Factores de Decisión -->
+          <div class="section-title">Factores Clave de Evaluación</div>
           <ul id="reasonsList" class="reasons-list">
-            <!-- Itens inseridos dinamicamente -->
+            <!-- Factores insertados dinámicamente -->
           </ul>
+
+          <!-- Dictamen Técnico Copiable -->
+          <div class="dictamen-header">
+            <span class="dictamen-title">📄 Dictamen Formal de Crédito (Texto para Comité)</span>
+            <button type="button" class="btn-copy" id="btnCopyDictamen">
+              📋 Copiar Dictamen
+            </button>
+          </div>
+          <div id="dictamenText" class="dictamen-box"></div>
         </div>
       </div>
     </section>
   </main>
+
+  <div id="toast" class="toast">¡Copiado al portapapeles!</div>
 
   <script src="js/engine.js"></script>
   <script src="js/app.js"></script>

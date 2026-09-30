@@ -1,25 +1,33 @@
-# Sistema de Análise de Crédito Rural
+# Sistema de Análisis de Crédito Rural
 
-Sistema inteligente para avaliação de risco e concessão de crédito para produtores agrícolas (Pronaf, Pronamp e Grandes Produtores).
+Plataforma técnica especializada para la evaluación de riesgo crediticio, análisis agronómico y emisión automatizada de dictámenes de crédito para productores agropecuarios.
 
-## 🌾 Funcionalidades
+## 🌾 Características Principales
 
-- **Avaliação Cadastral e de Perfil**: Análise do perfil da propriedade, atividade agrícola e histórico cadastral.
-- **Motor de Risco Rural**:
-  - Comprometimento de renda operacional líquida.
-  - Indicador de endividamento total sobre a receita bruta anual.
-  - Análise ponderada de garantias reais e pessoais (Alienação fiduciária, CPR Safra, Maquinário e Aval).
-  - Cálculo de Score de Risco (0 a 100) e classificação de rating (A até E).
-  - Determinação de limite máximo de crédito recomendado.
-- **Parecer Automatizado**: Aprovado, Aprovado com Condicionantes ou Reprovado com detalhamento das justificativas.
+- **Parámetros Agronómicos y Productivos**:
+  - Evaluación de superficie productiva (`ha`), rendimiento estimado (`t/ha`) y precio de mercado (`$/t`).
+  - Estimación precisa del **Ingreso Bruto Proyectado** y **Costo Operacional Total**.
+  - Cálculo del **Margen Operativo Bruto** y margen porcentual sobre ingresos.
 
-## 🚀 Como Executar
+- **Motor de Riesgo Financiero y Capacidad de Repago**:
+  - Modalidades flexibles de amortización: **Zafra Única** (al vencimiento de la cosecha), **Semestral** y **Mensual**.
+  - **Índice de Cobertura del Servicio de la Deuda (ICSD)**: Contempla la nueva financiación y pasivos financieros preexistentes frente al flujo operativo agrícola.
+  - Evaluación y ponderación de aforos de garantías (Hipoteca Rural, Prenda de Cosecha / Warrant, Maquinaria, Fianza/Aval).
+  - Cálculo automático del **Límite de Crédito Recomendado**.
 
-Abra o arquivo `index.html` diretamente em seu navegador ou utilize qualquer servidor web local:
+- **Dictamen Técnico Formal para Comité**:
+  - Clasificación del riesgo en tres estados normativos: **Aprobado**, **Riesgo Moderado** e **Inviable**.
+  - Generación de informe técnico detallado listo para copiar al portapapeles y anexar a las carpetas de crédito o actas de comité.
+
+## 🚀 Despliegue y Ejecución
+
+El proyecto está diseñado como una aplicación web ligera sin dependencias de compilación.
+
+Para ejecutar localmente, abra `index.html` en cualquier navegador web o inicie un servidor local:
 
 ```bash
-# Exemplo com npx serve ou Live Server
+# Ejemplo con servidor local
 npx serve .
 ```
 
-Pronto para deploy contínuo na plataforma [Vercel](https://vercel.com).
+Configurado para despliegue automático en la plataforma [Vercel](https://vercel.com) (`vercel.json`).
