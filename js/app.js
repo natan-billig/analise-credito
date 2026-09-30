@@ -1,6 +1,6 @@
 /**
  * Sistema de Análisis de Crédito Rural - Controlador de la Interfaz
- * Versión: 0.1.1 - Localización Integral al Español
+ * Versión: 0.2.0 - Modelo de Flujo de Caja y Riesgo Agropecuario en USD
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -12,33 +12,34 @@ document.addEventListener('DOMContentLoaded', () => {
   const analysisTimestamp = document.getElementById('analysisTimestamp');
   const toast = document.getElementById('toast');
 
-  // Elementos del Banner de Dictamen
+  // Banner del Dictamen Oficial
   const decisionBanner = document.getElementById('decisionBanner');
   const decisionIcon = document.getElementById('decisionIcon');
   const decisionTitle = document.getElementById('decisionTitle');
   const decisionSubtitle = document.getElementById('decisionSubtitle');
 
-  // Elementos de Métricas Solicitadas
-  const metricGrossIncome = document.getElementById('metricGrossIncome');
-  const metricTotalCost = document.getElementById('metricTotalCost');
-  const metricOperatingMargin = document.getElementById('metricOperatingMargin');
-  const metricMarginBadge = document.getElementById('metricMarginBadge');
-  const metricICSD = document.getElementById('metricICSD');
-  const metricICSDBadge = document.getElementById('metricICSDBadge');
-  const metricCollateralCoverage = document.getElementById('metricCollateralCoverage');
-  const metricCollateralBadge = document.getElementById('metricCollateralBadge');
-  const metricRecommendedLimit = document.getElementById('metricRecommendedLimit');
+  // Métricas Oficiales
+  const metricIngresos = document.getElementById('metricIngresos');
+  const metricCostos = document.getElementById('metricCostos');
+  const metricMargen = document.getElementById('metricMargen');
+  const metricMargenBadge = document.getElementById('metricMargenBadge');
+  const metricCargaFinanciera = document.getElementById('metricCargaFinanciera');
+  const metricFlujoNeto = document.getElementById('metricFlujoNeto');
+  const metricFlujoBadge = document.getElementById('metricFlujoBadge');
+  const metricCobertura = document.getElementById('metricCobertura');
+  const metricCoberturaBadge = document.getElementById('metricCoberturaBadge');
 
-  const reasonsList = document.getElementById('reasonsList');
+  const boxFlujoCaja = document.getElementById('boxFlujoCaja');
+  const boxCobertura = document.getElementById('boxCobertura');
   const dictamenText = document.getElementById('dictamenText');
 
-  // Formateador monetario estándar ($ 123.456)
-  const formatMoney = (val) => {
+  // Formato Monetario en USD ($ 123,456)
+  const formatUSD = (val) => {
     const num = Math.round(Number(val) || 0);
-    return '$ ' + num.toLocaleString('es-ES');
+    return '$ ' + num.toLocaleString('en-US');
   };
 
-  // Función para mostrar Toast de notificación
+  // Toast de Notificación
   const showToast = (message = '¡Copiado al portapapeles!') => {
     if (!toast) return;
     toast.textContent = message;
@@ -48,56 +49,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 2500);
   };
 
-  // Perfiles de prueba rotativos en español técnico
+  // Perfiles de prueba rotativos en USD
   let sampleIndex = 0;
   const sampleProfiles = [
     {
       producerName: 'Agropecuaria El Palmar S.A.',
       documentNumber: '30-71234567-8',
-      cropType: 'SOJA',
+      cropType: 'Soja',
       areaHectares: 400,
-      estimatedYield: 3.6,
-      marketPrice: 350,
+      estimatedYield: 3.8,
+      marketPrice: 370,
       costPerHectare: 720,
-      requestedCapital: 150000,
-      paymentFrequency: 'ZAFRA_UNICA',
-      loanTermMonths: 12,
-      interestRate: 9.0,
-      existingDebts: 20000,
-      guaranteeType: 'HIPOTECA',
-      guaranteeValue: 300000
+      requestedCapital: 110000,
+      deudasFinancieras: 25000,
+      paymentFrequency: 'Zafra Única'
     },
     {
       producerName: 'Establecimiento Don Joaquín',
       documentNumber: '20-28945612-4',
-      cropType: 'MAIZ',
+      cropType: 'Maíz',
       areaHectares: 250,
-      estimatedYield: 8.5,
-      marketPrice: 180,
-      costPerHectare: 1100,
-      requestedCapital: 120000,
-      paymentFrequency: 'SEMESTRAL',
-      loanTermMonths: 18,
-      interestRate: 10.5,
-      existingDebts: 45000,
-      guaranteeType: 'PRENDA_COSECHA',
-      guaranteeValue: 140000
+      estimatedYield: 7.8,
+      marketPrice: 190,
+      costPerHectare: 1050,
+      requestedCapital: 75000,
+      deudasFinancieras: 18000,
+      paymentFrequency: 'Semestral'
     },
     {
       producerName: 'Agrícola Valle Hermoso SRL',
       documentNumber: '33-65987412-9',
-      cropType: 'TRIGO',
-      areaHectares: 180,
-      estimatedYield: 2.1,
-      marketPrice: 210,
-      costPerHectare: 680,
-      requestedCapital: 90000,
-      paymentFrequency: 'ZAFRA_UNICA',
-      loanTermMonths: 10,
-      interestRate: 12.0,
-      existingDebts: 60000,
-      guaranteeType: 'AVAL',
-      guaranteeValue: 40000
+      cropType: 'Trigo',
+      areaHectares: 200,
+      estimatedYield: 2.2,
+      marketPrice: 220,
+      costPerHectare: 650,
+      requestedCapital: 55000,
+      deudasFinancieras: 30000,
+      paymentFrequency: 'Zafra Única'
     }
   ];
 
@@ -114,18 +103,14 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('marketPrice').value = sample.marketPrice;
       document.getElementById('costPerHectare').value = sample.costPerHectare;
       document.getElementById('requestedCapital').value = sample.requestedCapital;
+      document.getElementById('deudas_financieras').value = sample.deudasFinancieras;
       document.getElementById('paymentFrequency').value = sample.paymentFrequency;
-      document.getElementById('loanTermMonths').value = sample.loanTermMonths;
-      document.getElementById('interestRate').value = sample.interestRate;
-      document.getElementById('existingDebts').value = sample.existingDebts;
-      document.getElementById('guaranteeType').value = sample.guaranteeType;
-      document.getElementById('guaranteeValue').value = sample.guaranteeValue;
 
       form.dispatchEvent(new Event('submit'));
     });
   }
 
-  // Copia del Dictamen Formal al portapapeles
+  // Copia del Dictamen al Portapapeles
   if (btnCopyDictamen) {
     btnCopyDictamen.addEventListener('click', async () => {
       const text = dictamenText.textContent || '';
@@ -138,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (navigator.clipboard && navigator.clipboard.writeText) {
           await navigator.clipboard.writeText(text);
         } else {
-          // Fallback para navegadores antiguos
           const textarea = document.createElement('textarea');
           textarea.value = text;
           document.body.appendChild(textarea);
@@ -161,11 +145,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Validación y envío del formulario
+  // Validación y Envío del Formulario
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    // Validación de campos vacíos o nulos
     const requiredInputs = form.querySelectorAll('input[required], select[required]');
     let hasEmpty = false;
 
@@ -179,34 +162,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (hasEmpty) {
-      showToast('Por favor, complete todos los campos obligatorios antes de calcular.');
+      showToast('Por favor complete todos los campos obligatorios antes de calcular.');
       return;
     }
 
     const inputData = {
-      producerName: document.getElementById('producerName').value.trim(),
-      documentNumber: document.getElementById('documentNumber').value.trim(),
-      cropType: document.getElementById('cropType').value,
-      areaHectares: Number(document.getElementById('areaHectares').value),
-      estimatedYield: Number(document.getElementById('estimatedYield').value),
-      marketPrice: Number(document.getElementById('marketPrice').value),
-      costPerHectare: Number(document.getElementById('costPerHectare').value),
-      requestedCapital: Number(document.getElementById('requestedCapital').value),
-      paymentFrequency: document.getElementById('paymentFrequency').value,
-      loanTermMonths: Number(document.getElementById('loanTermMonths').value),
-      interestRate: Number(document.getElementById('interestRate').value),
-      existingDebts: Number(document.getElementById('existingDebts').value),
-      guaranteeType: document.getElementById('guaranteeType').value,
-      guaranteeValue: Number(document.getElementById('guaranteeValue').value)
+      nombreProductor: document.getElementById('producerName').value.trim(),
+      identificacionFiscal: document.getElementById('documentNumber').value.trim(),
+      cultivo: document.getElementById('cropType').value,
+      hectareas: Number(document.getElementById('areaHectares').value),
+      rendimientoPorHa: Number(document.getElementById('estimatedYield').value),
+      precioPorTon: Number(document.getElementById('marketPrice').value),
+      costoPorHa: Number(document.getElementById('costPerHectare').value),
+      capitalSolicitado: Number(document.getElementById('requestedCapital').value),
+      deudasFinancieras: Number(document.getElementById('deudas_financieras').value),
+      periodicidad: document.getElementById('paymentFrequency').value
     };
 
-    if (typeof CreditEngine === 'undefined') {
-      showToast('Error: Motor de cálculo no disponible');
+    if (typeof CreditEngine === 'undefined' || typeof CreditEngine.analisarProductor !== 'function') {
+      showToast('Error: Motor de análisis no disponible');
       return;
     }
 
-    const evaluation = CreditEngine.evaluateCredit(inputData);
-    renderResults(evaluation);
+    const resultado = CreditEngine.analisarProductor(inputData);
+    renderResults(resultado);
   });
 
   function renderResults(res) {
@@ -216,13 +195,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const now = new Date();
     analysisTimestamp.textContent = `Calculado: ${now.toLocaleTimeString('es-ES')}`;
 
-    // Configuración del Banner de Dictamen
-    // Estados: "Aprobado", "Riesgo Moderado", "Inviable"
+    // Configuración del Banner de Dictamen Oficial (Aprobado, Riesgo Moderado, Inviable)
     decisionBanner.className = 'decision-banner';
-    if (res.status === 'Aprobado') {
+    if (res.dictamen === 'Aprobado') {
       decisionBanner.classList.add('decision-aprobado');
       decisionIcon.textContent = '✅';
-    } else if (res.status === 'Riesgo Moderado') {
+    } else if (res.dictamen === 'Riesgo Moderado') {
       decisionBanner.classList.add('decision-moderado');
       decisionIcon.textContent = '⚠️';
     } else {
@@ -230,51 +208,66 @@ document.addEventListener('DOMContentLoaded', () => {
       decisionIcon.textContent = '🛑';
     }
 
-    decisionTitle.textContent = `Dictamen: ${res.status}`;
-    decisionSubtitle.textContent = res.statusSubtitle;
+    decisionTitle.textContent = `Dictamen Oficial: ${res.dictamen}`;
+    decisionSubtitle.textContent = res.dictamenSubtitulo;
 
-    // Métricas Requeridas
-    const m = res.metrics;
-    metricGrossIncome.textContent = formatMoney(m.grossIncome);
-    metricTotalCost.textContent = formatMoney(m.totalOperatingCost);
-    metricOperatingMargin.textContent = formatMoney(m.grossOperatingMargin);
+    // Métricas del Modelo de Miguel en USD
+    const m = res.metricas;
+    metricIngresos.textContent = formatUSD(m.ingresoBruto);
+    metricCostos.textContent = formatUSD(m.costoTotal);
+    metricMargen.textContent = formatUSD(m.margenOperativo);
 
-    metricMarginBadge.textContent = `${m.marginPct.toFixed(1)}% Margen`;
-    metricMarginBadge.className = 'metric-badge ' + (m.marginPct >= 30 ? 'badge-good' : m.marginPct >= 15 ? 'badge-alert' : 'badge-danger');
+    metricMargenBadge.textContent = `${m.margenOperativoPct.toFixed(1)}% Margen`;
+    metricMargenBadge.className = 'metric-badge ' + (m.margenOperativoPct >= 30 ? 'badge-good' : m.margenOperativoPct >= 15 ? 'badge-alert' : 'badge-danger');
 
-    // Cobertura de Deuda (ICSD)
-    const icsdVal = m.icsd >= 90 ? '> 10.0x' : `${m.icsd.toFixed(2)}x`;
-    metricICSD.textContent = icsdVal;
-    if (m.icsd >= 1.30) {
-      metricICSDBadge.textContent = 'Solvente (≥ 1.30x)';
-      metricICSDBadge.className = 'metric-badge badge-good';
-    } else if (m.icsd >= 1.05) {
-      metricICSDBadge.textContent = 'Ajustado (1.05x - 1.29x)';
-      metricICSDBadge.className = 'metric-badge badge-alert';
+    metricCargaFinanciera.textContent = formatUSD(m.cargaFinancieraTotal);
+
+    // Flujo de Caja Libre / Remanente Neto (USD)
+    metricFlujoNeto.textContent = formatUSD(m.flujoCajaNeto);
+    if (m.flujoCajaNeto > 0) {
+      metricFlujoBadge.textContent = 'Remanente Positivo (Superávit)';
+      metricFlujoBadge.className = 'metric-badge badge-good';
+      if (boxFlujoCaja) {
+        boxFlujoCaja.className = 'metric-box highlight';
+      }
+    } else if (m.flujoCajaNeto === 0) {
+      metricFlujoBadge.textContent = 'Punto de Equilibrio (Sin Remanente)';
+      metricFlujoBadge.className = 'metric-badge badge-alert';
+      if (boxFlujoCaja) {
+        boxFlujoCaja.className = 'metric-box';
+      }
     } else {
-      metricICSDBadge.textContent = 'Insuficiente (< 1.05x)';
-      metricICSDBadge.className = 'metric-badge badge-danger';
+      metricFlujoBadge.textContent = 'Flujo Deficitario (Déficit)';
+      metricFlujoBadge.className = 'metric-badge badge-danger';
+      if (boxFlujoCaja) {
+        boxFlujoCaja.className = 'metric-box danger-highlight';
+      }
     }
 
-    // Cobertura de Garantía
-    metricCollateralCoverage.textContent = `${m.collateralCoverage.toFixed(0)}%`;
-    metricCollateralBadge.textContent = m.collateralCoverage >= 120 ? 'Excelente (≥ 120%)' : m.collateralCoverage >= 100 ? 'Aceptable (≥ 100%)' : 'Insuficiente (< 100%)';
-    metricCollateralBadge.className = 'metric-badge ' + (m.collateralCoverage >= 100 ? 'badge-good' : m.collateralCoverage >= 75 ? 'badge-alert' : 'badge-danger');
+    // Cobertura de Deuda (x)
+    const coberturaVal = m.cobertura >= 90 ? '> 10.0x' : `${m.cobertura.toFixed(2)}x`;
+    metricCobertura.textContent = coberturaVal;
+    if (m.cobertura >= 1.25 && m.flujoCajaNeto > 0) {
+      metricCoberturaBadge.textContent = 'Solvente (≥ 1.25x)';
+      metricCoberturaBadge.className = 'metric-badge badge-good';
+      if (boxCobertura) {
+        boxCobertura.className = 'metric-box highlight';
+      }
+    } else if (m.cobertura >= 1.00 && m.flujoCajaNeto >= 0) {
+      metricCoberturaBadge.textContent = 'Riesgo Moderado (1.00x - 1.24x)';
+      metricCoberturaBadge.className = 'metric-badge badge-alert';
+      if (boxCobertura) {
+        boxCobertura.className = 'metric-box';
+      }
+    } else {
+      metricCoberturaBadge.textContent = 'Inviable (< 1.00x)';
+      metricCoberturaBadge.className = 'metric-badge badge-danger';
+      if (boxCobertura) {
+        boxCobertura.className = 'metric-box danger-highlight';
+      }
+    }
 
-    // Límite Recomendado
-    metricRecommendedLimit.textContent = formatMoney(m.recommendedLimit);
-
-    // Lista de Factores
-    reasonsList.innerHTML = '';
-    res.reasons.forEach((r) => {
-      const li = document.createElement('li');
-      li.className = `item-${r.type}`;
-      const icon = r.type === 'success' ? '✔' : r.type === 'warning' ? '▲' : '✖';
-      li.innerHTML = `<span>${icon}</span> <span>${r.text}</span>`;
-      reasonsList.appendChild(li);
-    });
-
-    // Dictamen Formal para Copiar
+    // Texto del Dictamen Oficial
     dictamenText.textContent = res.dictamenFormal;
 
     if (window.innerWidth < 1024) {

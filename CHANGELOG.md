@@ -5,6 +5,34 @@ Todas las modificaciones notables de este proyecto se documentan en este archivo
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [0.2.0] - Modelo de Flujo de Caja Agrícola con Compromisos Financieros en USD - 2026-09-30
+
+### Añadido / Modificado
+- **feat: implementado modelo de flujo de caja agricola con compromisos financieros en USD**:
+  - Estandarización de la moneda oficial en toda la aplicación como **USD ($)**.
+  - Nuevo campo numérico obligatorio: `Cuotas / Compromisos en el Sistema Financiero (USD)` con ID `deudas_financieras`.
+  - Campo `Monto del Crédito Solicitado (USD)` actualizado indicando `(Intereses ya incluidos)`.
+  - Nueva función central en el motor `CreditEngine.analisarProductor` implementando las fórmulas exactas:
+    - `ingresoBruto = hectareas * rendimientoPorHa * precioPorTon`
+    - `costoTotal = hectareas * costoPorHa`
+    - `margenOperativo = ingresoBruto - costoTotal`
+    - `cargaFinancieraTotal = deudasFinancieras + capitalSolicitado`
+    - `flujoCajaNeto = margenOperativo - cargaFinancieraTotal`
+    - `cobertura = cargaFinancieraTotal > 0 ? (margenOperativo / cargaFinancieraTotal) : (margenOperativo > 0 ? 99 : 0)`
+  - Nuevas reglas de corte normativas:
+    - **Aprobado**: `flujoCajaNeto > 0 && cobertura >= 1.25`
+    - **Riesgo Moderado**: `flujoCajaNeto >= 0 && cobertura >= 1.00 && cobertura < 1.25`
+    - **Inviable**: `flujoCajaNeto < 0`
+  - Métricas oficiales exhibidas en el panel:
+    - *Ingresos Proyectados (USD)*
+    - *Costo Operacional de Producción (USD)*
+    - *Margen Operativo Agrícola (USD)*
+    - *Carga Financiera Total (USD) [Deudas previas + Crédito Solicitado]*
+    - *Flujo de Caja Libre / Remanente Neto (USD)*
+    - *Cobertura de Deuda (x)*
+    - *Dictamen Oficial (Aprobado, Riesgo Moderado, Inviable)*
+  - Texto técnico formal para copiar y pegar actualizado con el desglose de flujo de caja y compromisos en USD.
+
 ## [0.1.1] - Localización Integral al Español - 2026-09-30
 
 ### Modificado

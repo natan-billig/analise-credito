@@ -1,284 +1,123 @@
 /**
- * Sistema de Análisis de Crédito Rural - Motor de Evaluación de Riesgo y Dictamen
- * Versión: 0.1.1 - Localización Integral al Español
+ * Sistema de Análisis de Crédito Rural - Motor de Flujo de Caja y Riesgo Agropecuario
+ * Versión: 0.2.0 - Modelo de Flujo de Caja Agrícola con Compromisos Financieros en USD
  */
 
 (function (global) {
   'use strict';
 
-  // Ponderaciones de liquidez y realización por tipo de garantía
-  const GUARANTEE_WEIGHTS = {
-    HIPOTECA: 1.0,         // Hipoteca de Inmueble Rural
-    PRENDA_COSECHA: 0.80,  // Prenda Agrícola / Warrant de Cosecha
-    MAQUINARIA: 0.70,      // Prenda sobre Maquinaria y Equipos
-    AVAL: 0.50             // Fianza personal o solidaria
-  };
-
   /**
-   * Calcula el servicio de la deuda del crédito solicitado según monto, tasa, plazo y periodicidad.
+   * Realiza el análisis técnico y financiero del productor agrícola según el modelo de flujo de caja en USD.
+   * 
+   * Fórmulas exactas del modelo:
+   *  - ingresoBruto = hectareas * rendimientoPorHa * precioPorTon
+   *  - costoTotal = hectareas * costoPorHa
+   *  - margenOperativo = ingresoBruto - costoTotal
+   *  - cargaFinancieraTotal = deudasFinancieras + capitalSolicitado
+   *  - flujoCajaNeto = margenOperativo - cargaFinancieraTotal
+   *  - cobertura = cargaFinancieraTotal > 0 ? (margenOperativo / cargaFinancieraTotal) : (margenOperativo > 0 ? 99 : 0)
+   * 
+   * Reglas de corte:
+   *  - Aprobado: flujoCajaNeto > 0 && cobertura >= 1.25
+   *  - Riesgo Moderado: flujoCajaNeto >= 0 && cobertura >= 1.00 && cobertura < 1.25
+   *  - Inviable: flujoCajaNeto < 0 (o cobertura < 1.00)
+   * 
+   * @param {Object} input - Datos del productor y la solicitud
+   * @returns {Object} Resultados con métricas, dictamen oficial y texto formal del dictamen
    */
-  function calculateDebtService(capital, annualInterestRatePct, termMonths, frequency) {
-    const rate = (annualInterestRatePct || 0) / 100;
-    const termYears = termMonths / 12;
+  function analisarProductor(input) {
+    const hectareas = Math.max(0, Number(input.hectareas ?? input.areaHectares) || 0);
+    const rendimientoPorHa = Math.max(0, Number(input.rendimientoPorHa ?? input.estimatedYield) || 0);
+    const precioPorTon = Math.max(0, Number(input.precioPorTon ?? input.marketPrice) || 0);
+    const costoPorHa = Math.max(0, Number(input.costoPorHa ?? input.costPerHectare) || 0);
+    const deudasFinancieras = Math.max(0, Number(input.deudasFinancieras ?? input.deudas_financieras ?? input.existingDebts) || 0);
+    const capitalSolicitado = Math.max(0, Number(input.capitalSolicitado ?? input.requestedCapital) || 0);
 
-    if (capital <= 0 || termMonths <= 0) {
-      return { totalAnnualService: 0, installmentAmount: 0, numberOfInstallments: 1 };
-    }
+    const nombreProductor = (input.nombreProductor || input.producerName || 'Productor Agrícola').trim();
+    const identificacionFiscal = (input.identificacionFiscal || input.documentNumber || 'S/D').trim();
+    const cultivo = (input.cultivo || input.cropType || 'Soja').trim();
+    const periodicidad = (input.periodicidad || input.paymentFrequency || 'Zafra Única').trim();
 
-    if (frequency === 'ZAFRA_UNICA') {
-      // Un solo pago al final del ciclo agrícola (capital + interés acumulado simple del periodo)
-      const interest = capital * rate * termYears;
-      const totalDue = capital + interest;
-      const annualEquivalent = termYears > 0 ? totalDue / termYears : totalDue;
-      return {
-        totalAnnualService: annualEquivalent,
-        installmentAmount: totalDue,
-        numberOfInstallments: 1
-      };
-    }
+    // 1. Cálculos de Producción y Costos
+    const ingresoBruto = hectareas * rendimientoPorHa * precioPorTon;
+    const costoTotal = hectareas * costoPorHa;
+    const margenOperativo = ingresoBruto - costoTotal;
+    const margenOperativoPct = ingresoBruto > 0 ? (margenOperativo / ingresoBruto) * 100 : 0;
+    const produccionTotalTon = hectareas * rendimientoPorHa;
 
-    if (frequency === 'SEMESTRAL') {
-      const periods = Math.max(1, Math.round(termMonths / 6));
-      const semiRate = rate / 2;
-      let installment = 0;
-      if (semiRate > 0) {
-        installment = (capital * semiRate) / (1 - Math.pow(1 + semiRate, -periods));
-      } else {
-        installment = capital / periods;
-      }
-      const annualEquivalent = installment * Math.min(periods, 2);
-      return {
-        totalAnnualService: annualEquivalent,
-        installmentAmount: installment,
-        numberOfInstallments: periods
-      };
-    }
+    // 2. Cálculos de Carga Financiera y Flujo de Caja
+    const cargaFinancieraTotal = deudasFinancieras + capitalSolicitado;
+    const flujoCajaNeto = margenOperativo - cargaFinancieraTotal;
+    const cobertura = cargaFinancieraTotal > 0 ? (margenOperativo / cargaFinancieraTotal) : (margenOperativo > 0 ? 99 : 0);
 
-    // Mensual
-    const monthlyRate = rate / 12;
-    let installment = 0;
-    if (monthlyRate > 0) {
-      installment = (capital * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -termMonths));
+    // 3. Reglas de Corte Oficiales
+    let dictamen = 'Aprobado';
+    let dictamenSubtitulo = '';
+
+    if (flujoCajaNeto < 0) {
+      dictamen = 'Inviable';
+      dictamenSubtitulo = 'Flujo de caja libre deficitario. El margen operativo proyectado no cubre los compromisos financieros totales.';
+    } else if (flujoCajaNeto >= 0 && cobertura >= 1.00 && cobertura < 1.25) {
+      dictamen = 'Riesgo Moderado';
+      dictamenSubtitulo = 'Capacidad de pago ajustada. Cobertura entre 1.00x y 1.25x con baja holgura frente a mermas de rinde o precio.';
+    } else if (flujoCajaNeto > 0 && cobertura >= 1.25) {
+      dictamen = 'Aprobado';
+      dictamenSubtitulo = 'Operación viable y solvente. El margen operativo cubre holgadamente la carga financiera total con cobertura ≥ 1.25x.';
     } else {
-      installment = capital / termMonths;
-    }
-    const annualEquivalent = installment * Math.min(termMonths, 12);
-    return {
-      totalAnnualService: annualEquivalent,
-      installmentAmount: installment,
-      numberOfInstallments: termMonths
-    };
-  }
-
-  /**
-   * Ejecuta el análisis técnico y financiero de la solicitud de crédito agrícola.
-   * @param {Object} input - Datos del formulario
-   * @returns {Object} Dictamen, métricas y texto formal del informe
-   */
-  function evaluateCredit(input) {
-    const area = Math.max(0, Number(input.areaHectares) || 0);
-    const yieldEst = Math.max(0, Number(input.estimatedYield) || 0);
-    const price = Math.max(0, Number(input.marketPrice) || 0);
-    const costHa = Math.max(0, Number(input.costPerHectare) || 0);
-    const capital = Math.max(0, Number(input.requestedCapital) || 0);
-    const termMonths = Math.max(1, Number(input.loanTermMonths) || 12);
-    const interestRate = Math.max(0, Number(input.interestRate) || 0);
-    const existingDebts = Math.max(0, Number(input.existingDebts) || 0);
-    const guaranteeVal = Math.max(0, Number(input.guaranteeValue) || 0);
-    const guaranteeType = input.guaranteeType || 'HIPOTECA';
-    const frequency = input.paymentFrequency || 'ZAFRA_UNICA';
-    const producerName = input.producerName || 'Productor Agrícola';
-    const documentNumber = input.documentNumber || 'S/D';
-    const cropType = input.cropType || 'SOJA';
-
-    const reasons = [];
-
-    // 1. Proyecciones Económicas Básicas
-    const grossIncome = area * yieldEst * price;
-    const totalOperatingCost = area * costHa;
-    const grossOperatingMargin = grossIncome - totalOperatingCost;
-    const marginPct = grossIncome > 0 ? (grossOperatingMargin / grossIncome) * 100 : 0;
-    const productionVolumeTons = area * yieldEst;
-
-    // 2. Servicio de la Deuda
-    const newDebtCalc = calculateDebtService(capital, interestRate, termMonths, frequency);
-    // Estimación del servicio anual de deudas preexistentes (asumiendo plazo promedio a 2 años con tasa estándar)
-    const existingAnnualService = existingDebts > 0 ? existingDebts * 0.45 : 0;
-    const totalAnnualDebtService = newDebtCalc.totalAnnualService + existingAnnualService;
-
-    // 3. Índice de Cobertura del Servicio de la Deuda (ICSD)
-    let icsd = 0;
-    if (totalAnnualDebtService > 0) {
-      icsd = grossOperatingMargin / totalAnnualDebtService;
-    } else if (grossOperatingMargin > 0) {
-      icsd = 99.0;
+      dictamen = 'Inviable';
+      dictamenSubtitulo = 'Cobertura de deuda insuficiente para los parámetros crediticios mínimos.';
     }
 
-    // 4. Cobertura de Garantías
-    const guaranteeWeight = GUARANTEE_WEIGHTS[guaranteeType] || 0.7;
-    const adjustedGuaranteeVal = guaranteeVal * guaranteeWeight;
-    const collateralCoverage = capital > 0 ? (guaranteeVal / capital) * 100 : 0;
-    const adjustedCollateralCoverage = capital > 0 ? (adjustedGuaranteeVal / capital) * 100 : 0;
-
-    // 5. Límite de Crédito Recomendado
-    // Basado en hasta el 65% del margen operativo disponible para el servicio de nueva deuda
-    const maxAvailableService = Math.max(0, (grossOperatingMargin * 0.65) - existingAnnualService);
-    let recommendedLimit = 0;
-    if (maxAvailableService > 0) {
-      const termYears = termMonths / 12;
-      const rate = interestRate / 100;
-      if (frequency === 'ZAFRA_UNICA') {
-        recommendedLimit = (maxAvailableService * termYears) / (1 + (rate * termYears));
-      } else {
-        recommendedLimit = maxAvailableService / (rate + (1 / termYears));
-      }
-    }
-    // Cap por valor de garantía ponderada
-    if (guaranteeVal > 0) {
-      recommendedLimit = Math.min(recommendedLimit, adjustedGuaranteeVal * 1.15);
-    }
-    recommendedLimit = Math.max(0, Math.round(recommendedLimit / 1000) * 1000);
-
-    // 6. Evaluación de Criterios y Factores
-    // Factor Margen
-    if (grossOperatingMargin <= 0) {
-      reasons.push({
-        type: 'danger',
-        text: `Margen operativo negativo (-$ ${Math.abs(grossOperatingMargin).toLocaleString('es-ES')}). Los costos de producción superan los ingresos proyectados.`
-      });
-    } else if (marginPct >= 30) {
-      reasons.push({
-        type: 'success',
-        text: `Margen operativo robusto (${marginPct.toFixed(1)}%). La actividad agrícola proyecta excelente rentabilidad neta por hectárea.`
-      });
-    } else if (marginPct >= 15) {
-      reasons.push({
-        type: 'warning',
-        text: `Margen operativo moderado (${marginPct.toFixed(1)}%). Vulnerable ante eventuales variaciones de precio o clima.`
-      });
-    } else {
-      reasons.push({
-        type: 'danger',
-        text: `Margen operativo muy estrecho (${marginPct.toFixed(1)}%). Escasa absorción de contingencias operativas.`
-      });
-    }
-
-    // Factor ICSD
-    if (icsd >= 1.30) {
-      reasons.push({
-        type: 'success',
-        text: `ICSD de ${icsd.toFixed(2)}x: Cobertura sólida y holgada del servicio de la deuda (excede el umbral prudencial de 1.30x).`
-      });
-    } else if (icsd >= 1.05) {
-      reasons.push({
-        type: 'warning',
-        text: `ICSD ajustado de ${icsd.toFixed(2)}x: El flujo operativo cubre la deuda pero con poco margen de seguridad frente a caídas de rendimiento.`
-      });
-    } else {
-      reasons.push({
-        type: 'danger',
-        text: `ICSD crítico de ${icsd.toFixed(2)}x: El flujo de caja es insuficiente para cumplir con las amortizaciones e intereses previstos.`
-      });
-    }
-
-    // Factor Garantías
-    if (collateralCoverage >= 130) {
-      reasons.push({
-        type: 'success',
-        text: `Garantía con cobertura amplia (${collateralCoverage.toFixed(0)}% nominal / ${adjustedCollateralCoverage.toFixed(0)}% ajustada por liquidez).`
-      });
-    } else if (collateralCoverage >= 100) {
-      reasons.push({
-        type: 'success',
-        text: `Garantía suficiente (${collateralCoverage.toFixed(0)}% nominal) para respaldar el capital solicitado.`
-      });
-    } else if (collateralCoverage >= 75) {
-      reasons.push({
-        type: 'warning',
-        text: `Garantía parcial (${collateralCoverage.toFixed(0)}% nominal). Se sugiere reforzar con prenda agrícola o fianza complementaria.`
-      });
-    } else {
-      reasons.push({
-        type: 'danger',
-        text: `Garantía deficiente (${collateralCoverage.toFixed(0)}% nominal). Incumple los aforos mínimos requeridos para la operación.`
-      });
-    }
-
-    // 7. Determinación del Dictamen Final
-    // Estados requeridos: "Aprobado", "Riesgo Moderado", "Inviable"
-    let status = 'Aprobado';
-    let statusSubtitle = 'La operación reúne las condiciones técnico-agronómicas y de capacidad de pago para su aprobación.';
-
-    if (grossOperatingMargin <= 0 || icsd < 1.05 || (collateralCoverage < 75 && capital > 50000)) {
-      status = 'Inviable';
-      statusSubtitle = 'La operación presenta un perfil de riesgo inaceptable o capacidad de repago insuficiente.';
-    } else if (icsd < 1.30 || collateralCoverage < 100 || marginPct < 20 || capital > (recommendedLimit * 1.15)) {
-      status = 'Riesgo Moderado';
-      statusSubtitle = 'Viabilidad condicionada a mitigantes de riesgo, refuerzo de garantías o readecuación del monto.';
-    }
-
-    // 8. Generación del Dictamen Formal en Texto Técnico
-    const dictamenFormal = generateFormalDictamen({
-      producerName,
-      documentNumber,
-      cropType,
-      area,
-      yieldEst,
-      price,
-      productionVolumeTons,
-      grossIncome,
-      costHa,
-      totalOperatingCost,
-      grossOperatingMargin,
-      marginPct,
-      capital,
-      termMonths,
-      frequency,
-      interestRate,
-      existingDebts,
-      guaranteeType,
-      guaranteeVal,
-      collateralCoverage,
-      totalAnnualDebtService,
-      icsd,
-      status,
-      recommendedLimit
+    // 4. Generación de Texto Formal para Comité
+    const dictamenFormal = generarDictamenFormal({
+      nombreProductor,
+      identificacionFiscal,
+      cultivo,
+      hectareas,
+      rendimientoPorHa,
+      precioPorTon,
+      produccionTotalTon,
+      costoPorHa,
+      ingresoBruto,
+      costoTotal,
+      margenOperativo,
+      margenOperativoPct,
+      deudasFinancieras,
+      capitalSolicitado,
+      cargaFinancieraTotal,
+      flujoCajaNeto,
+      cobertura,
+      periodicidad,
+      dictamen,
+      dictamenSubtitulo
     });
 
     return {
-      status,
-      statusSubtitle,
-      metrics: {
-        grossIncome,
-        totalOperatingCost,
-        grossOperatingMargin,
-        marginPct,
-        totalAnnualDebtService,
-        icsd,
-        collateralCoverage,
-        recommendedLimit,
-        productionVolumeTons
+      dictamen,
+      dictamenSubtitulo,
+      metricas: {
+        ingresoBruto,
+        costoTotal,
+        margenOperativo,
+        margenOperativoPct,
+        cargaFinancieraTotal,
+        flujoCajaNeto,
+        cobertura,
+        deudasFinancieras,
+        capitalSolicitado,
+        produccionTotalTon
       },
-      reasons,
       dictamenFormal
     };
   }
 
   /**
-   * Genera el texto formal del dictamen de crédito para el comité de riesgos.
+   * Genera el dictamen técnico formal en formato texto para comités de riesgo.
    */
-  function generateFormalDictamen(d) {
-    const fmt = (num) => '$ ' + Math.round(num).toLocaleString('es-ES');
-    const freqLabels = {
-      ZAFRA_UNICA: 'Zafra Única (al vencimiento de cosecha)',
-      SEMESTRAL: 'Amortización Semestral',
-      MENSUAL: 'Amortización Mensual'
-    };
-    const guaranteeLabels = {
-      HIPOTECA: 'Hipoteca de Inmueble Rural',
-      PRENDA_COSECHA: 'Prenda Agrícola / Warrant de Cosecha',
-      MAQUINARIA: 'Prenda sobre Maquinaria y Equipos',
-      AVAL: 'Aval / Fianza Solidaria'
+  function generarDictamenFormal(d) {
+    const fmtUSD = (n) => {
+      const val = Math.round(Number(n) || 0);
+      return '$ ' + val.toLocaleString('es-ES');
     };
 
     const dateStr = new Date().toLocaleDateString('es-ES', {
@@ -288,60 +127,59 @@
     });
 
     return `======================================================================
-DICTAMEN TÉCNICO DE CRÉDITO AGROPECUARIO - COMITÉ DE RIESGO
+DICTAMEN TÉCNICO DE CRÉDITO RURAL - COMITÉ DE RIESGO
 Fecha de Emisión: ${dateStr}
-Estado del Dictamen: ${d.status.toUpperCase()}
+Moneda Oficial: USD ($)
+DICTAMEN OFICIAL: [ ${d.dictamen.toUpperCase()} ]
 ======================================================================
 
-1. IDENTIFICACIÓN DE LA OPERACIÓN
+1. IDENTIFICACIÓN DEL PRODUCTOR Y CULTIVO
 ----------------------------------------------------------------------
-• Productor / Titular     : ${d.producerName}
-• Identificación Fiscal   : ${d.documentNumber}
-• Actividad Productiva    : Cultivo de ${d.cropType}
-• Superficie Bajo Riego/Secano: ${d.area.toLocaleString('es-ES')} hectáreas
-• Volumen Físico Estimado : ${d.productionVolumeTons.toLocaleString('es-ES')} toneladas
+• Productor / Titular       : ${d.nombreProductor}
+• Identificación Fiscal     : ${d.identificacionFiscal}
+• Cultivo Evaluado          : ${d.cultivo}
+• Superficie Cultivada      : ${d.hectareas.toLocaleString('es-ES')} ha
+• Rendimiento Esperado      : ${d.rendimientoPorHa.toFixed(2)} t/ha
+• Producción Físico Total   : ${d.produccionTotalTon.toLocaleString('es-ES')} toneladas
 
-2. PARÁMETROS ECONÓMICO-PRODUCTIVOS PROYECTADOS
+2. FLUJO OPERATIVO AGRÍCOLA PROYECTADO (USD)
 ----------------------------------------------------------------------
-• Rendimiento Esperado    : ${d.yieldEst.toFixed(2)} t/ha
-• Precio de Mercado Base  : $ ${d.price.toLocaleString('es-ES')}/t
-• Ingreso Bruto Proyectado: ${fmt(d.grossIncome)}
-• Costo Directo por Ha    : $ ${d.costHa.toLocaleString('es-ES')}/ha
-• Costo Operacional Total : ${fmt(d.totalOperatingCost)}
-• Margen Operativo Bruto  : ${fmt(d.grossOperatingMargin)} (Margen: ${d.marginPct.toFixed(1)}%)
+• Precio de Mercado Base    : $ ${d.precioPorTon.toLocaleString('es-ES')}/t
+• Ingresos Proyectados (USD): ${fmtUSD(d.ingresoBruto)}
+• Costo Directo por Ha      : $ ${d.costoPorHa.toLocaleString('es-ES')}/ha
+• Costo Operacional de Prod.: ${fmtUSD(d.costoTotal)}
+• Margen Operativo Agrícola : ${fmtUSD(d.margenOperativo)} (${d.margenOperativoPct.toFixed(1)}% de margen)
 
-3. ESTRUCTURA FINANCIERA Y CAPACIDAD DE PAGO
+3. CARGA FINANCIERA TOTAL Y LIQUIDEZ (USD)
 ----------------------------------------------------------------------
-• Capital Solicitado      : ${fmt(d.capital)}
-• Plazo y Modalidad       : ${d.termMonths} meses | ${freqLabels[d.frequency] || d.frequency}
-• Tasa de Interés Pactada : ${d.interestRate.toFixed(2)}% anual
-• Deuda Financiera Previa : ${fmt(d.existingDebts)}
-• Servicio Anual de Deuda : ${fmt(d.totalAnnualDebtService)}
-• Cobertura de Deuda (ICSD): ${d.icsd >= 90 ? '> 10.0x' : d.icsd.toFixed(2) + 'x'} (Mínimo recomendado: 1.30x)
-• Límite Recomendado      : ${fmt(d.recommendedLimit)}
+• Compromisos en Sist. Fin. : ${fmtUSD(d.deudasFinancieras)}
+• Crédito Solicitado (c/int): ${fmtUSD(d.capitalSolicitado)}
+• Modalidad de Pago         : ${d.periodicidad}
+• Carga Financiera Total    : ${fmtUSD(d.cargaFinancieraTotal)} [Deudas previas + Crédito Solicitado]
+• Flujo de Caja Libre Neto  : ${fmtUSD(d.flujoCajaNeto)}
+• Cobertura de Deuda (x)    : ${d.cobertura >= 90 ? '> 10.0x' : d.cobertura.toFixed(2) + 'x'} (Umbral: ≥ 1.25x Aprobado | 1.00x - 1.24x Riesgo Moderado | < 1.00x Inviable)
 
-4. ESQUEMA DE GARANTÍAS
+4. CONCLUSIÓN Y RECOMENDACIÓN CREDITICIA
 ----------------------------------------------------------------------
-• Garantía Propuesta      : ${guaranteeLabels[d.guaranteeType] || d.guaranteeType}
-• Tasación Estimada       : ${fmt(d.guaranteeVal)}
-• Ratio Cobertura/Capital : ${d.collateralCoverage.toFixed(0)}%
+DICTAMEN: ${d.dictamen.toUpperCase()}
 
-5. CONCLUSIÓN Y RECOMENDACIÓN DEL ANALISTA
-----------------------------------------------------------------------
-DICTAMEN FINAL: [ ${d.status.toUpperCase()} ]
-
-${d.status === 'Aprobado' 
-  ? 'Se recomienda la aprobación de la línea solicitada en las condiciones presentadas. El flujo proyectado demuestra capacidad suficiente de absorción del servicio de deuda y las garantías aportadas resguardan adecuadamente el crédito.'
-  : d.status === 'Riesgo Moderado'
-  ? 'Se recomienda elevar la propuesta con condicionamientos: constituir garantía real complementaria y/o ajustar el desembolso a hitos de siembra y labores culturales para mitigar el riesgo de flujo.'
-  : 'Se desestima la solicitud en las condiciones actuales. El flujo operacional proyectado es insuficiente para afrontar el esquema de amortización, existiendo alto riesgo de cesación de pagos.'}
+${d.dictamen === 'Aprobado'
+  ? 'Dictamen Favorable. El productor genera un flujo de caja operativo suficiente para amortizar íntegramente la carga financiera total (deudas existentes + nuevo financiamiento), preservando un remanente neto positivo y un ratio de cobertura superior a 1.25x.'
+  : d.dictamen === 'Riesgo Moderado'
+  ? 'Dictamen Observado / Riesgo Moderado. El margen operativo proyectado cubre la carga financiera total pero con un índice de cobertura ajustado (entre 1.00x y 1.25x). Se recomienda requerir garantías reales adicionales o estructurar desembolsos contra certificación de labores de campo.'
+  : 'Dictamen Desfavorable / Inviable. La operación arroja un flujo de caja libre neto negativo (-). Los ingresos de la zafra deducidos los costos de producción no alcanzan para honrar los compromisos financieros previstos, configurando un riesgo inaceptable de incumplimiento.'}
 ======================================================================`;
   }
 
-  // Exportación para Node o Navegador
+  // Compatibilidad con evaluateCredit como alias
+  const CreditEngine = {
+    analisarProductor,
+    evaluateCredit: analisarProductor
+  };
+
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { evaluateCredit, calculateDebtService };
+    module.exports = CreditEngine;
   } else {
-    global.CreditEngine = { evaluateCredit, calculateDebtService };
+    global.CreditEngine = CreditEngine;
   }
 })(typeof window !== 'undefined' ? window : this);
