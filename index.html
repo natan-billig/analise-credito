@@ -39,13 +39,13 @@
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.5;
-      padding-bottom: 40px;
+      padding-bottom: 20px;
     }
 
     header {
       background: linear-gradient(135deg, #14532d 0%, #15803d 100%);
       color: white;
-      padding: 1.5rem 1rem;
+      padding: 1.25rem 1rem;
       box-shadow: var(--shadow-md);
       position: sticky;
       top: 0;
@@ -80,14 +80,51 @@
     }
 
     .brand-title {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 700;
       letter-spacing: -0.02em;
     }
 
     .brand-subtitle {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       opacity: 0.85;
+    }
+
+    /* Pestañas de Perfil en la Barra Superior */
+    .profile-tabs {
+      display: flex;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 0.25rem;
+      border-radius: 8px;
+      gap: 0.35rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.45rem 0.95rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .tab-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .tab-btn.active {
+      background: #ffffff;
+      color: #14532d;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
 
     .currency-pill {
@@ -616,6 +653,19 @@
       transform: translateY(0);
       opacity: 1;
     }
+
+    /* Clases de utilidad para el Pie de Página Institucional */
+    .mt-12 { margin-top: 3rem; }
+    .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+    .border-t { border-top-width: 1px; border-top-style: solid; }
+    .border-slate-800 { border-color: #1e293b; }
+    .text-center { text-align: center; }
+    .text-xs { font-size: 0.75rem; line-height: 1rem; }
+    .text-slate-500 { color: #64748b; }
+    .text-emerald-400 { color: #34d399; text-decoration: none; }
+    .text-emerald-400:hover, .hover\:text-emerald-300:hover { color: #6ee7b7; text-decoration: underline; }
+    .font-medium { font-weight: 500; }
+    .transition-colors { transition: color 0.15s ease-in-out; }
   </style>
 </head>
 <body>
@@ -628,80 +678,146 @@
           <div class="brand-subtitle">Modelo de Flujo de Caja y Riesgo Agropecuario</div>
         </div>
       </div>
+
+      <!-- Separador / Pestañas de Perfil en la Barra Superior -->
+      <nav class="profile-tabs" role="tablist" aria-label="Selección de Perfil de Crédito">
+        <button type="button" class="tab-btn active" id="tabProductor" role="tab" aria-selected="true">
+          🚜 Productor Agrícola
+        </button>
+        <button type="button" class="tab-btn" id="tabPrestador" role="tab" aria-selected="false">
+          🛠️ Prestador de Servicios
+        </button>
+      </nav>
+
       <div>
-        <span class="currency-pill">💵 Moneda Oficial: USD ($) • v0.3.0</span>
+        <span class="currency-pill">💵 Moneda Oficial: USD ($) • v0.4.0</span>
       </div>
     </div>
   </header>
 
   <main class="container">
-    <!-- Formulario del Productor -->
+    <!-- Formulario Dinámico (Productor o Prestador) -->
     <section class="card">
       <div class="card-header">
-        <h2 class="card-title">📝 Datos Técnicos y Financieros del Productor</h2>
-        <span style="font-size: 0.8rem; color: var(--text-muted);">Valores en USD ($) • Paraguay (C.I. / RUC)</span>
+        <h2 class="card-title" id="formCardTitle">📝 Datos Técnicos y Financieros del Productor</h2>
+        <span id="formCardSubtitle" style="font-size: 0.8rem; color: var(--text-muted);">Valores en USD ($) • Paraguay (C.I. / RUC)</span>
       </div>
       <div class="card-body">
         <form id="creditForm" onsubmit="return false;" novalidate>
-          <div class="section-title">1. Parámetros Agronómicos y Productivos</div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="producerName">Nombre del Productor / Razón Social</label>
-              <input type="text" id="producerName" placeholder="Ej: Agropecuaria Santa Rosa S.A." required value="Agropecuaria El Palmar S.A.">
+          
+          <!-- SECCIÓN ESPECÍFICA: PRODUCTOR AGRÍCOLA -->
+          <div id="sectionProductor">
+            <div class="section-title">1. Parámetros Agronómicos y Productivos</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="producerName">Nombre del Productor / Razón Social</label>
+                <input type="text" id="producerName" placeholder="Ej: Agropecuaria Santa Rosa S.A." required value="Agropecuaria El Palmar S.A.">
+              </div>
+              <div class="form-group">
+                <label for="documentNumber">Identificación (C.I. / RUC)</label>
+                <input type="text" id="documentNumber" placeholder="Ej: 4.892.150 o 80012345-6" required value="80034921-5">
+              </div>
+              <div class="form-group">
+                <label for="cropType">Cultivo Principal</label>
+                <select id="cropType" required>
+                  <option value="Soja" selected>Soja</option>
+                  <option value="Maíz">Maíz</option>
+                  <option value="Trigo">Trigo</option>
+                  <option value="Girasol">Girasol</option>
+                  <option value="Arroz">Arroz</option>
+                  <option value="Sésamo">Sésamo</option>
+                  <option value="Café">Café</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="areaHectares">Área Cultivada (ha)</label>
+                <input type="number" id="areaHectares" min="1" step="any" placeholder="0.00" required value="400">
+              </div>
+              <div class="form-group">
+                <label for="estimatedYield">Rendimiento Estimado (t/ha)</label>
+                <input type="number" id="estimatedYield" min="0.01" step="0.01" placeholder="0.00" required value="3.8">
+              </div>
+              <div class="form-group">
+                <label for="marketPrice">Precio de Mercado (USD/t)</label>
+                <input type="number" id="marketPrice" min="0.01" step="any" placeholder="0.00" required value="370">
+              </div>
             </div>
-            <div class="form-group">
-              <label for="documentNumber">Identificación (C.I. / RUC)</label>
-              <input type="text" id="documentNumber" placeholder="Ej: 4.892.150 o 80012345-6" required value="80034921-5">
-            </div>
-            <div class="form-group">
-              <label for="cropType">Cultivo Principal</label>
-              <select id="cropType" required>
-                <option value="Soja" selected>Soja</option>
-                <option value="Maíz">Maíz</option>
-                <option value="Trigo">Trigo</option>
-                <option value="Girasol">Girasol</option>
-                <option value="Arroz">Arroz</option>
-                <option value="Sésamo">Sésamo</option>
-                <option value="Café">Café</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="areaHectares">Área Cultivada (ha)</label>
-              <input type="number" id="areaHectares" min="1" step="any" placeholder="0.00" required value="400">
-            </div>
-            <div class="form-group">
-              <label for="estimatedYield">Rendimiento Estimado (t/ha)</label>
-              <input type="number" id="estimatedYield" min="0.01" step="0.01" placeholder="0.00" required value="3.8">
-            </div>
-            <div class="form-group">
-              <label for="marketPrice">Precio de Mercado (USD/t)</label>
-              <input type="number" id="marketPrice" min="0.01" step="any" placeholder="0.00" required value="370">
+
+            <div class="section-title">2. Costos Operacionales y Crédito Solicitado (USD)</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="costPerHectare">Costo de Producción por Hectárea (USD/ha)</label>
+                <input type="number" id="costPerHectare" min="0" step="any" placeholder="0.00" required value="720">
+              </div>
+              <div class="form-group">
+                <label for="requestedCapital">
+                  Monto del Crédito Solicitado (USD)
+                  <span class="label-hint">(Intereses ya incluidos)</span>
+                </label>
+                <input type="number" id="requestedCapital" min="1" step="any" placeholder="0.00 (Intereses ya incluidos)" required value="110000">
+              </div>
+              <div class="form-group">
+                <label for="paymentFrequency">Periodicidad de Pagos</label>
+                <select id="paymentFrequency" required>
+                  <option value="Zafra Única" selected>Zafra Única</option>
+                  <option value="Semestral">Semestral</option>
+                  <option value="Mensual">Mensual</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          <div class="section-title">2. Costos Operacionales y Crédito Solicitado (USD)</div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="costPerHectare">Costo de Producción por Hectárea (USD/ha)</label>
-              <input type="number" id="costPerHectare" min="0" step="any" placeholder="0.00" required value="720">
+          <!-- SECCIÓN ESPECÍFICA: PRESTADOR DE SERVICIOS -->
+          <div id="sectionPrestador" style="display: none;">
+            <div class="section-title">1. Parámetros del Prestador y Contrato con Silo</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="providerName">Nombre de la Empresa Prestadora</label>
+                <input type="text" id="providerName" placeholder="Ej: Maquinarias & Servicios del Este S.A." value="Maquinarias & Servicios del Este S.A.">
+              </div>
+              <div class="form-group">
+                <label for="providerDoc">Identificación (C.I. / RUC)</label>
+                <input type="text" id="providerDoc" placeholder="Ej: 80054321-9 o 3.125.400" value="80054321-9">
+              </div>
+              <div class="form-group">
+                <label for="contractClient">Silo o Cliente Contratante</label>
+                <input type="text" id="contractClient" placeholder="Ej: Silo Santa Rosa, Cargill, ADM, Cooperativa" value="Silo Santa Rosa (ADM)">
+              </div>
+              <div class="form-group">
+                <label for="serviceArea">Superficie de Servicio (ha)</label>
+                <input type="number" id="serviceArea" min="1" step="any" placeholder="0.00" value="600">
+              </div>
+              <div class="form-group">
+                <label for="serviceTariff">Tarifa / Ingreso por Hectárea (USD/ha)</label>
+                <input type="number" id="serviceTariff" min="0.01" step="any" placeholder="0.00" value="140">
+              </div>
             </div>
-            <div class="form-group">
-              <label for="requestedCapital">
-                Monto del Crédito Solicitado (USD)
-                <span class="label-hint">(Intereses ya incluidos)</span>
-              </label>
-              <input type="number" id="requestedCapital" min="1" step="any" placeholder="0.00 (Intereses ya incluidos)" required value="110000">
-            </div>
-            <div class="form-group">
-              <label for="paymentFrequency">Periodicidad de Pagos</label>
-              <select id="paymentFrequency" required>
-                <option value="Zafra Única" selected>Zafra Única</option>
-                <option value="Semestral">Semestral</option>
-                <option value="Mensual">Mensual</option>
-              </select>
+
+            <div class="section-title">2. Costos Operacionales del Servicio y Crédito Solicitado (USD)</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="serviceCost">Costo Operacional por Hectárea (USD/ha)</label>
+                <input type="number" id="serviceCost" min="0" step="any" placeholder="0.00" value="85">
+              </div>
+              <div class="form-group">
+                <label for="serviceRequestedCapital">
+                  Monto del Crédito Solicitado (USD)
+                  <span class="label-hint">(Intereses ya incluidos)</span>
+                </label>
+                <input type="number" id="serviceRequestedCapital" min="1" step="any" placeholder="0.00 (Intereses ya incluidos)" value="20000">
+              </div>
+              <div class="form-group">
+                <label for="servicePaymentFrequency">Periodicidad de Pagos</label>
+                <select id="servicePaymentFrequency">
+                  <option value="Zafra Única" selected>Zafra Única</option>
+                  <option value="Semestral">Semestral</option>
+                  <option value="Mensual">Mensual</option>
+                </select>
+              </div>
             </div>
           </div>
 
+          <!-- SECCIÓN COMPARTIDA: GESTOR DE COMPROMISOS FINANCIEROS -->
           <div class="section-title">3. Gestor Dinámico de Compromisos Financieros (USD)</div>
           <div class="commitments-wrapper">
             <div class="commitments-header-bar">
@@ -737,7 +853,6 @@
           </div>
 
           <div class="form-actions">
-            <!-- Botón con ID exacto btn-calcular y type="button" explícito (Fix de submit/Firefox) -->
             <button type="button" class="btn btn-primary" id="btn-calcular">
               ⚡ Ejecutar Análisis
             </button>
@@ -759,7 +874,7 @@
         <div id="resultPlaceholder" class="result-placeholder">
           <div class="result-placeholder-icon">📋</div>
           <h3>Ningún análisis realizado</h3>
-          <p>Complete los parámetros técnicos del productor y haga clic en "Ejecutar Análisis" para evaluar el flujo de caja y la cobertura.</p>
+          <p>Complete los parámetros técnicos y haga clic en "Ejecutar Análisis" para evaluar el flujo de caja y la cobertura.</p>
         </div>
 
         <div id="resultCard" class="result-card">
@@ -775,17 +890,17 @@
           <!-- Métricas del Modelo Consolidado -->
           <div class="metrics-grid">
             <div class="metric-box">
-              <div class="metric-label">Ingresos Proyectados (USD)</div>
+              <div class="metric-label" id="labelIngresos">Ingresos Proyectados (USD)</div>
               <div id="metricIngresos" class="metric-value">$ 562,400</div>
-              <div class="metric-badge badge-good">Ventas Totales</div>
+              <div class="metric-badge badge-good" id="badgeIngresos">Facturación Estimada</div>
             </div>
             <div class="metric-box">
-              <div class="metric-label">Costo Operacional de Producción (USD)</div>
+              <div class="metric-label" id="labelCostos">Costo Operacional de Producción (USD)</div>
               <div id="metricCostos" class="metric-value">$ 288,000</div>
-              <div class="metric-badge badge-alert">Costos de Siembra / Cosecha</div>
+              <div class="metric-badge badge-alert" id="badgeCostos">Costos Directos</div>
             </div>
             <div class="metric-box">
-              <div class="metric-label">Margen Operativo Agrícola (USD)</div>
+              <div class="metric-label" id="labelMargen">Margen Operativo Agrícola (USD)</div>
               <div id="metricMargen" class="metric-value">$ 274,400</div>
               <div id="metricMargenBadge" class="metric-badge badge-good">48.8% de Margen</div>
             </div>
@@ -806,7 +921,7 @@
             </div>
           </div>
 
-          <!-- Nueva Sección: Cronograma y Concentración de Cuotas por Mes -->
+          <!-- Sección: Cronograma y Concentración de Cuotas por Mes -->
           <div class="section-title">📅 Cronograma y Concentración de Cuotas por Mes</div>
           <div class="cronograma-table-wrapper">
             <table class="cronograma-table" id="tableCronograma">
@@ -836,6 +951,11 @@
       </div>
     </section>
   </main>
+
+  <!-- Rodapé Institucional -->
+  <footer class="mt-12 py-6 border-t border-slate-800 text-center text-xs text-slate-500">
+    <p>Desarrollado por <a href="https://wa.me/595994195695" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-medium transition-colors">Natan Billig</a></p>
+  </footer>
 
   <div id="toast" class="toast">¡Copiado al portapapeles!</div>
 

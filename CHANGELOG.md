@@ -5,6 +5,15 @@ Todas las modificaciones notables de este proyecto se documentan en este archivo
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [0.4.0] - Módulo Prestador de Servicios y Pie de Página Institucional - 2026-10-01
+
+### Añadido / Modificado
+- Añadida pestaña funcional 'Prestador de Servicios' con análisis de contratos con silos.
+- Parámetros de servicio: hectáreas contratadas, tarifa/ha, costos/ha y crédito solicitado.
+- Añadido pie de página oficial con enlace de contacto.
+- Incorporada función `CreditEngine.analisarPrestador` con modelo de flujo operativo para contratistas.
+- Actualizado generador de dictamen formal para reflejar la naturaleza contractual del prestador de servicios.
+
 ## [0.3.0] - Gestor Dinámico de Compromisos y Soporte Paraguay - 2026-09-30
 
 ### Añadido / Modificado

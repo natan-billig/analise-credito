@@ -1,6 +1,6 @@
 /**
  * Sistema de Análisis de Crédito Rural - Controlador de la Interfaz
- * Versión: 0.3.0 - Soporte C.I. / RUC (Paraguay), Gestor Dinámico de Compromisos y Fix de Firefox
+ * Versión: 0.4.0 - Soporte Dual: Productor Agrícola y Prestador de Servicios con Footer Institucional
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,6 +16,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const resultCard = document.getElementById('resultCard');
   const analysisTimestamp = document.getElementById('analysisTimestamp');
   const toast = document.getElementById('toast');
+
+  // Pestañas de Perfil
+  const tabProductor = document.getElementById('tabProductor');
+  const tabPrestador = document.getElementById('tabPrestador');
+  const sectionProductor = document.getElementById('sectionProductor');
+  const sectionPrestador = document.getElementById('sectionPrestador');
+  const formCardTitle = document.getElementById('formCardTitle');
+  const formCardSubtitle = document.getElementById('formCardSubtitle');
+
+  // Etiquetas Dinámicas de Métricas
+  const labelIngresos = document.getElementById('labelIngresos');
+  const badgeIngresos = document.getElementById('badgeIngresos');
+  const labelCostos = document.getElementById('labelCostos');
+  const badgeCostos = document.getElementById('badgeCostos');
+  const labelMargen = document.getElementById('labelMargen');
 
   // Banner del Dictamen Oficial
   const decisionBanner = document.getElementById('decisionBanner');
@@ -38,18 +53,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const boxCobertura = document.getElementById('boxCobertura');
   const dictamenText = document.getElementById('dictamenText');
 
+  let activeProfile = 'productor'; // 'productor' | 'prestador'
+
   const MESES = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Setiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ];
 
-  // Formato Monetario en USD ($ 123,456)
   const formatUSD = (val) => {
     const num = Math.round(Number(val) || 0);
     return '$ ' + num.toLocaleString('en-US');
   };
 
-  // Toast de Notificación
   const showToast = (message = '¡Copiado al portapapeles!') => {
     if (!toast) return;
     toast.textContent = message;
@@ -58,6 +73,60 @@ document.addEventListener('DOMContentLoaded', () => {
       toast.classList.remove('show');
     }, 2500);
   };
+
+  // --- CONTROL DE PESTAÑAS (TABS) ---
+  function setActiveProfile(profile) {
+    activeProfile = profile;
+    if (profile === 'productor') {
+      tabProductor.classList.add('active');
+      tabProductor.setAttribute('aria-selected', 'true');
+      tabPrestador.classList.remove('active');
+      tabPrestador.setAttribute('aria-selected', 'false');
+
+      sectionProductor.style.display = 'block';
+      sectionPrestador.style.display = 'none';
+
+      if (formCardTitle) formCardTitle.textContent = '📝 Datos Técnicos y Financieros del Productor';
+      if (formCardSubtitle) formCardSubtitle.textContent = 'Valores en USD ($) • Paraguay (C.I. / RUC)';
+      if (labelIngresos) labelIngresos.textContent = 'Ingresos Proyectados (USD)';
+      if (badgeIngresos) badgeIngresos.textContent = 'Ventas Totales';
+      if (labelCostos) labelCostos.textContent = 'Costo Operacional de Producción (USD)';
+      if (badgeCostos) badgeCostos.textContent = 'Costos Directos';
+      if (labelMargen) labelMargen.textContent = 'Margen Operativo Agrícola (USD)';
+    } else {
+      tabPrestador.classList.add('active');
+      tabPrestador.setAttribute('aria-selected', 'true');
+      tabProductor.classList.remove('active');
+      tabProductor.setAttribute('aria-selected', 'false');
+
+      sectionPrestador.style.display = 'block';
+      sectionProductor.style.display = 'none';
+
+      if (formCardTitle) formCardTitle.textContent = '📝 Datos Técnicos y Financieros del Prestador de Servicios';
+      if (formCardSubtitle) formCardSubtitle.textContent = 'Valores en USD ($) • Contratos con Silos';
+      if (labelIngresos) labelIngresos.textContent = 'Ingresos por Servicios Facturados (USD)';
+      if (badgeIngresos) badgeIngresos.textContent = 'Facturación a Silo';
+      if (labelCostos) labelCostos.textContent = 'Costo Operacional del Servicio (USD)';
+      if (badgeCostos) badgeCostos.textContent = 'Costos de Maquinaria';
+      if (labelMargen) labelMargen.textContent = 'Margen Operativo del Servicio (USD)';
+    }
+
+    executeAnalysis();
+  }
+
+  if (tabProductor) {
+    tabProductor.addEventListener('click', (e) => {
+      e.preventDefault();
+      setActiveProfile('productor');
+    });
+  }
+
+  if (tabPrestador) {
+    tabPrestador.addEventListener('click', (e) => {
+      e.preventDefault();
+      setActiveProfile('prestador');
+    });
+  }
 
   // --- GESTOR DINÁMICO DE COMPROMISOS FINANCIEROS ---
   function getCommitmentsData() {
@@ -139,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
       e.stopPropagation();
       tr.remove();
       updateTotalCommitments();
-      // Si no quedan filas, agregamos una vacía
       if (commitmentsBody.children.length === 0) {
         addCommitmentRow();
       }
@@ -168,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Carga inicial de compromisos predeterminados
   function resetCommitments(list) {
     commitmentsBody.innerHTML = '';
     if (list && list.length > 0) {
@@ -180,9 +247,9 @@ document.addEventListener('DOMContentLoaded', () => {
     updateTotalCommitments();
   }
 
-  // --- PERFILES DE PRUEBA DE PARAGUAY (USD / C.I. / RUC) ---
-  let sampleIndex = 0;
-  const sampleProfiles = [
+  // --- PERFILES DE PRUEBA DE PARAGUAY ---
+  let sampleIndexProductor = 0;
+  const sampleProfilesProductor = [
     {
       producerName: 'Agropecuaria El Palmar S.A.',
       documentNumber: '80034921-5',
@@ -230,25 +297,87 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   ];
 
+  let sampleIndexPrestador = 0;
+  const sampleProfilesPrestador = [
+    {
+      providerName: 'Maquinarias & Servicios del Este S.A.',
+      providerDoc: '80054321-9',
+      contractClient: 'Silo Santa Rosa (ADM)',
+      serviceArea: 600,
+      serviceTariff: 140,
+      serviceCost: 85,
+      serviceRequestedCapital: 20000,
+      servicePaymentFrequency: 'Zafra Única',
+      compromisos: [
+        { entidad: 'Banco Sudameris', mes: 'Mayo', monto: 8000 },
+        { entidad: 'Banco Continental', mes: 'Octubre', monto: 5000 }
+      ]
+    },
+    {
+      providerName: 'Agro Servicios Bella Vista SRL',
+      providerDoc: '80076543-1',
+      contractClient: 'Cargill Agropecuaria SACI',
+      serviceArea: 1000,
+      serviceTariff: 135,
+      serviceCost: 80,
+      serviceRequestedCapital: 35000,
+      servicePaymentFrequency: 'Semestral',
+      compromisos: [
+        { entidad: 'Itaú Paraguay', mes: 'Junio', monto: 10000 },
+        { entidad: 'Banco Atlas', mes: 'Diciembre', monto: 8000 }
+      ]
+    },
+    {
+      providerName: 'Cosechas y Fletes del Chaco',
+      providerDoc: '4.195.880',
+      contractClient: 'Cooperativa Fernheim Ltda.',
+      serviceArea: 450,
+      serviceTariff: 150,
+      serviceCost: 95,
+      serviceRequestedCapital: 15000,
+      servicePaymentFrequency: 'Zafra Única',
+      compromisos: [
+        { entidad: 'Banco Basa', mes: 'Agosto', monto: 6000 }
+      ]
+    }
+  ];
+
   if (btnSample) {
     btnSample.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
 
-      const sample = sampleProfiles[sampleIndex % sampleProfiles.length];
-      sampleIndex++;
+      if (activeProfile === 'productor') {
+        const sample = sampleProfilesProductor[sampleIndexProductor % sampleProfilesProductor.length];
+        sampleIndexProductor++;
 
-      document.getElementById('producerName').value = sample.producerName;
-      document.getElementById('documentNumber').value = sample.documentNumber;
-      document.getElementById('cropType').value = sample.cropType;
-      document.getElementById('areaHectares').value = sample.areaHectares;
-      document.getElementById('estimatedYield').value = sample.estimatedYield;
-      document.getElementById('marketPrice').value = sample.marketPrice;
-      document.getElementById('costPerHectare').value = sample.costPerHectare;
-      document.getElementById('requestedCapital').value = sample.requestedCapital;
-      document.getElementById('paymentFrequency').value = sample.paymentFrequency;
+        document.getElementById('producerName').value = sample.producerName;
+        document.getElementById('documentNumber').value = sample.documentNumber;
+        document.getElementById('cropType').value = sample.cropType;
+        document.getElementById('areaHectares').value = sample.areaHectares;
+        document.getElementById('estimatedYield').value = sample.estimatedYield;
+        document.getElementById('marketPrice').value = sample.marketPrice;
+        document.getElementById('costPerHectare').value = sample.costPerHectare;
+        document.getElementById('requestedCapital').value = sample.requestedCapital;
+        document.getElementById('paymentFrequency').value = sample.paymentFrequency;
 
-      resetCommitments(sample.compromisos);
+        resetCommitments(sample.compromisos);
+      } else {
+        const sample = sampleProfilesPrestador[sampleIndexPrestador % sampleProfilesPrestador.length];
+        sampleIndexPrestador++;
+
+        document.getElementById('providerName').value = sample.providerName;
+        document.getElementById('providerDoc').value = sample.providerDoc;
+        document.getElementById('contractClient').value = sample.contractClient;
+        document.getElementById('serviceArea').value = sample.serviceArea;
+        document.getElementById('serviceTariff').value = sample.serviceTariff;
+        document.getElementById('serviceCost').value = sample.serviceCost;
+        document.getElementById('serviceRequestedCapital').value = sample.serviceRequestedCapital;
+        document.getElementById('servicePaymentFrequency').value = sample.servicePaymentFrequency;
+
+        resetCommitments(sample.compromisos);
+      }
+
       executeAnalysis();
     });
   }
@@ -291,50 +420,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- EJECUCIÓN DEL ANÁLISIS (FIX FIREFOX: SIN SUBMIT NATIVO) ---
+  // --- EJECUCIÓN DEL ANÁLISIS ---
   function executeAnalysis() {
-    const requiredInputs = form.querySelectorAll('input[required]:not(.input-entidad):not(.input-monto), select[required]');
-    let hasEmpty = false;
-
-    requiredInputs.forEach((input) => {
-      if (!input.value.trim()) {
-        input.style.borderColor = '#dc2626';
-        hasEmpty = true;
-      } else {
-        input.style.borderColor = '';
-      }
-    });
-
-    if (hasEmpty) {
-      showToast('Por favor complete todos los campos obligatorios antes de calcular.');
-      return;
-    }
-
-    const compromisosList = getCommitmentsData();
-
-    const inputData = {
-      nombreProductor: document.getElementById('producerName').value.trim(),
-      identificacionFiscal: document.getElementById('documentNumber').value.trim(),
-      cultivo: document.getElementById('cropType').value,
-      hectareas: Number(document.getElementById('areaHectares').value),
-      rendimientoPorHa: Number(document.getElementById('estimatedYield').value),
-      precioPorTon: Number(document.getElementById('marketPrice').value),
-      costoPorHa: Number(document.getElementById('costPerHectare').value),
-      capitalSolicitado: Number(document.getElementById('requestedCapital').value),
-      periodicidad: document.getElementById('paymentFrequency').value,
-      compromisos: compromisosList
-    };
-
-    if (typeof CreditEngine === 'undefined' || typeof CreditEngine.analisarProductor !== 'function') {
+    if (typeof CreditEngine === 'undefined') {
       showToast('Error: Motor de análisis no disponible');
       return;
     }
 
-    const resultado = CreditEngine.analisarProductor(inputData);
+    const compromisosList = getCommitmentsData();
+    let resultado = null;
+
+    if (activeProfile === 'productor') {
+      const inputData = {
+        nombreProductor: document.getElementById('producerName').value.trim(),
+        identificacionFiscal: document.getElementById('documentNumber').value.trim(),
+        cultivo: document.getElementById('cropType').value,
+        hectareas: Number(document.getElementById('areaHectares').value),
+        rendimientoPorHa: Number(document.getElementById('estimatedYield').value),
+        precioPorTon: Number(document.getElementById('marketPrice').value),
+        costoPorHa: Number(document.getElementById('costPerHectare').value),
+        capitalSolicitado: Number(document.getElementById('requestedCapital').value),
+        periodicidad: document.getElementById('paymentFrequency').value,
+        compromisos: compromisosList
+      };
+
+      resultado = CreditEngine.analisarProductor(inputData);
+    } else {
+      const inputData = {
+        nombreEmpresa: document.getElementById('providerName').value.trim(),
+        identificacionFiscal: document.getElementById('providerDoc').value.trim(),
+        contratante: document.getElementById('contractClient').value.trim(),
+        hectareas: Number(document.getElementById('serviceArea').value),
+        tarifaPorHa: Number(document.getElementById('serviceTariff').value),
+        costoPorHa: Number(document.getElementById('serviceCost').value),
+        capitalSolicitado: Number(document.getElementById('serviceRequestedCapital').value),
+        periodicidad: document.getElementById('servicePaymentFrequency').value,
+        compromisos: compromisosList
+      };
+
+      resultado = CreditEngine.analisarPrestador(inputData);
+    }
+
     renderResults(resultado);
   }
 
-  // Interceptar clic en btn-calcular con preventDefault / stopPropagation
   if (btnCalcular) {
     btnCalcular.addEventListener('click', (e) => {
       e.preventDefault();
@@ -343,7 +472,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Prevención de submit accidental en el formulario para evitar loops en Firefox
   if (form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -360,7 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const now = new Date();
     analysisTimestamp.textContent = `Calculado: ${now.toLocaleTimeString('es-ES')}`;
 
-    // Configuración del Banner de Dictamen Oficial (Aprobado, Riesgo Moderado, Inviable)
+    // Configuración del Banner de Dictamen Oficial
     decisionBanner.className = 'decision-banner';
     if (res.dictamen === 'Aprobado') {
       decisionBanner.classList.add('decision-aprobado');
@@ -376,7 +504,7 @@ document.addEventListener('DOMContentLoaded', () => {
     decisionTitle.textContent = `Dictamen Oficial: ${res.dictamen}`;
     decisionSubtitle.textContent = res.dictamenSubtitulo;
 
-    // Métricas del Modelo Consolidado en USD
+    // Métricas del Modelo en USD
     const m = res.metricas;
     metricIngresos.textContent = formatUSD(m.ingresoBruto);
     metricCostos.textContent = formatUSD(m.costoTotal);
@@ -392,47 +520,35 @@ document.addEventListener('DOMContentLoaded', () => {
     if (m.flujoCajaNeto > 0) {
       metricFlujoBadge.textContent = 'Remanente Positivo (Superávit)';
       metricFlujoBadge.className = 'metric-badge badge-good';
-      if (boxFlujoCaja) {
-        boxFlujoCaja.className = 'metric-box highlight';
-      }
+      if (boxFlujoCaja) boxFlujoCaja.className = 'metric-box highlight';
     } else if (m.flujoCajaNeto === 0) {
       metricFlujoBadge.textContent = 'Punto de Equilibrio (Sin Remanente)';
       metricFlujoBadge.className = 'metric-badge badge-alert';
-      if (boxFlujoCaja) {
-        boxFlujoCaja.className = 'metric-box';
-      }
+      if (boxFlujoCaja) boxFlujoCaja.className = 'metric-box';
     } else {
       metricFlujoBadge.textContent = 'Flujo Deficitario (Déficit)';
       metricFlujoBadge.className = 'metric-badge badge-danger';
-      if (boxFlujoCaja) {
-        boxFlujoCaja.className = 'metric-box danger-highlight';
-      }
+      if (boxFlujoCaja) boxFlujoCaja.className = 'metric-box danger-highlight';
     }
 
     // Cobertura de Deuda / ICSD Global (x)
-    const coberturaVal = m.cobertura >= 90 ? '> 10.0x' : `${m.cobertura.toFixed(2)}x`;
+    const coberturaVal = m.icsd >= 90 ? '> 10.0x' : `${m.icsd.toFixed(2)}x`;
     metricCobertura.textContent = coberturaVal;
-    if (m.cobertura >= 1.25 && m.flujoCajaNeto > 0) {
+    if (m.icsd >= 1.25 && m.flujoCajaNeto > 0) {
       metricCoberturaBadge.textContent = 'Solvente (ICSD ≥ 1.25x)';
       metricCoberturaBadge.className = 'metric-badge badge-good';
-      if (boxCobertura) {
-        boxCobertura.className = 'metric-box highlight';
-      }
-    } else if (m.cobertura >= 1.00 && m.flujoCajaNeto >= 0) {
+      if (boxCobertura) boxCobertura.className = 'metric-box highlight';
+    } else if (m.icsd >= 1.00 && m.flujoCajaNeto >= 0) {
       metricCoberturaBadge.textContent = 'Riesgo Moderado (1.00x - 1.24x)';
       metricCoberturaBadge.className = 'metric-badge badge-alert';
-      if (boxCobertura) {
-        boxCobertura.className = 'metric-box';
-      }
+      if (boxCobertura) boxCobertura.className = 'metric-box';
     } else {
       metricCoberturaBadge.textContent = 'Inviable (ICSD < 1.00x)';
       metricCoberturaBadge.className = 'metric-badge badge-danger';
-      if (boxCobertura) {
-        boxCobertura.className = 'metric-box danger-highlight';
-      }
+      if (boxCobertura) boxCobertura.className = 'metric-box danger-highlight';
     }
 
-    // Renderizado de la Sección: Cronograma y Concentración Mensual
+    // Renderizado del Cronograma y Concentración Mensual
     if (cronogramaBody) {
       cronogramaBody.innerHTML = '';
       if (!res.cronogramaMensual || res.cronogramaMensual.length === 0) {
@@ -474,5 +590,5 @@ document.addEventListener('DOMContentLoaded', () => {
     { entidad: 'Banco Sudameris', mes: 'Mayo', monto: 15000 },
     { entidad: 'Banco Atlas', mes: 'Agosto', monto: 10000 }
   ]);
-  executeAnalysis();
+  setActiveProfile('productor');
 });
