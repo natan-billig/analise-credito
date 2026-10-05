@@ -703,6 +703,10 @@
     }
 
     /* Clases utilitarias de soporte para logo y contenedor */
+    .h-10 {
+      height: 2.5rem;
+    }
+
     .h-14 {
       height: 3.5rem;
     }
@@ -716,19 +720,19 @@
       display: none;
     }
 
-    /* Estructura formal del Reporte A4 para Impresión */
+    /* Estructura formal del Reporte A4 ONE-PAGER para Impresión */
     .reporte-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 1rem;
-      margin-bottom: 0.5rem;
+      gap: 0.75rem;
+      margin-bottom: 0.25rem;
     }
 
     .reporte-header-left {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.5rem;
     }
 
     .reporte-header-right {
@@ -736,97 +740,108 @@
     }
 
     .reporte-doc-title {
-      font-size: 1.25rem;
+      font-size: 1.05rem;
       font-weight: 800;
       color: #0f172a;
       letter-spacing: -0.02em;
-      line-height: 1.2;
+      line-height: 1.15;
       text-transform: uppercase;
     }
 
     .reporte-meta {
-      font-size: 0.75rem;
+      font-size: 9.5px;
       color: #475569;
-      margin-top: 0.25rem;
-      line-height: 1.35;
+      margin-top: 0.15rem;
+      line-height: 1.25;
     }
 
     .reporte-divider {
-      height: 2px;
-      background: linear-gradient(90deg, #15803d 0%, #0f172a 100%);
-      margin-bottom: 0.75rem;
+      height: 1.5px;
+      background: #0f172a;
+      margin-bottom: 0.4rem;
     }
 
     .reporte-section {
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.35rem;
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
 
     .reporte-section-title {
-      font-size: 0.78rem;
+      font-size: 9.5px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
       color: #15803d;
-      margin-bottom: 0.35rem;
-      padding-bottom: 0.2rem;
-      border-bottom: 1.5px solid #dcfce7;
+      margin-bottom: 0.2rem;
+      padding-bottom: 0.1rem;
+      border-bottom: 1px solid #dcfce7;
     }
 
+    /* Seção 1: Grid de 4 Colunas Compacto */
     .reporte-grid-datos {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.35rem 1.25rem;
-      background: #f8fafc;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.25rem 0.6rem;
+      background-color: #f8fafc;
       border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      padding: 0.5rem 0.85rem;
-      font-size: 0.8rem;
+      border-radius: 4px;
+      padding: 0.35rem 0.5rem;
+      font-size: 11px;
+      line-height: 1.25;
     }
 
     .reporte-dato-item {
       display: flex;
-      justify-content: space-between;
-      gap: 0.5rem;
-      border-bottom: 1px dashed #e2e8f0;
-      padding-bottom: 0.15rem;
+      flex-direction: column;
+      border-bottom: none;
+      padding-bottom: 0;
     }
 
     .reporte-dato-label {
       color: #64748b;
-      font-weight: 500;
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
     }
 
     .reporte-dato-val {
       color: #0f172a;
+      font-size: 11px;
       font-weight: 700;
-      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
+    /* Seções 2 e 3: Tabelas Densas com Cabeçalho Escuro */
     .reporte-tabla {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.8rem;
-      margin-bottom: 0.25rem;
+      font-size: 11px;
+      margin-bottom: 0.15rem;
       border: 1px solid #cbd5e1;
     }
 
     .reporte-tabla th {
-      background-color: #f1f5f9;
-      color: #334155;
+      background-color: #1e293b;
+      color: #f8fafc;
       font-weight: 700;
-      font-size: 0.72rem;
+      font-size: 9.5px;
       text-transform: uppercase;
       letter-spacing: 0.03em;
-      padding: 0.35rem 0.6rem;
-      border: 1px solid #cbd5e1;
+      padding: 2px 6px;
+      border: 1px solid #334155;
       text-align: left;
     }
 
     .reporte-tabla td {
-      padding: 0.35rem 0.6rem;
+      padding: 2px 6px;
       border: 1px solid #e2e8f0;
       color: #0f172a;
       vertical-align: middle;
+      font-size: 11px;
     }
 
     .reporte-fila-destacada {
@@ -844,11 +859,12 @@
       font-weight: 700;
     }
 
+    /* Seção 4: Dictamen Oficial Sutil e Sintético */
     .reporte-veredicto-box {
-      border: 2px solid #16a34a;
+      border: 1.5px solid #16a34a;
       background-color: #f0fdf4;
-      border-radius: 6px;
-      padding: 0.6rem 0.85rem;
+      border-radius: 4px;
+      padding: 0.35rem 0.6rem;
     }
 
     .reporte-veredicto-header {
@@ -856,90 +872,96 @@
       align-items: center;
       justify-content: space-between;
       gap: 0.75rem;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0;
     }
 
     .reporte-veredicto-badge {
-      font-size: 0.92rem;
+      font-size: 10px;
       font-weight: 800;
-      padding: 0.25rem 0.65rem;
-      border-radius: 4px;
+      padding: 0.2rem 0.5rem;
+      border-radius: 3px;
       color: #ffffff;
       background-color: #15803d;
       letter-spacing: 0.04em;
     }
 
     .reporte-veredicto-sub {
-      font-size: 0.78rem;
+      font-size: 10.5px;
       font-weight: 600;
       color: #14532d;
     }
 
-    .reporte-veredicto-texto {
-      font-size: 0.75rem;
-      color: #1e293b;
-      line-height: 1.4;
-      white-space: pre-wrap;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      background: #ffffff;
-      border: 1px solid #bbf7d0;
-      border-radius: 4px;
-      padding: 0.5rem;
-      max-height: 180px;
-      overflow: hidden;
-    }
-
+    /* Assinaturas */
     .reporte-signatures {
       display: flex;
       justify-content: space-around;
-      margin-top: 1.35rem;
-      margin-bottom: 0.5rem;
+      margin-top: 0.9rem;
+      margin-bottom: 0.3rem;
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
 
     .reporte-signature-col {
       text-align: center;
-      width: 42%;
+      width: 44%;
     }
 
     .reporte-signature-line {
       border-top: 1px solid #0f172a;
-      width: 90%;
-      margin: 0 auto 0.35rem auto;
+      width: 92%;
+      margin: 0 auto 0.25rem auto;
     }
 
     .reporte-signature-role {
-      font-size: 0.8rem;
+      font-size: 10px;
       font-weight: 700;
       color: #0f172a;
     }
 
     .reporte-signature-sub {
-      font-size: 0.7rem;
+      font-size: 9px;
       color: #64748b;
-      margin-top: 0.1rem;
+      margin-top: 0.05rem;
     }
 
+    /* Rodapé Corporativo e Cláusula de Confidencialidade */
     .reporte-footer {
-      font-size: 0.68rem;
+      margin-top: 0.45rem;
+      padding-top: 0;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .reporte-clausula {
+      font-size: 9px;
       color: #64748b;
-      text-align: center;
-      border-top: 1px solid #cbd5e1;
-      padding-top: 0.4rem;
-      margin-top: 0.75rem;
+      line-height: 1.25;
+      text-align: justify;
+      margin-bottom: 0.2rem;
+    }
+
+    .reporte-meta-footer {
+      font-size: 8px;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 0.2rem;
+      border-top: 1px solid #e2e8f0;
     }
 
     .print-logo-fallback {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
       border: 1px solid #cbd5e1;
-      padding: 0.25rem 0.6rem;
-      border-radius: 6px;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
       background-color: #f8fafc;
     }
 
     .fallback-icon {
-      font-size: 1.8rem;
+      font-size: 1.4rem;
       line-height: 1;
     }
 
@@ -950,22 +972,22 @@
 
     .fallback-title {
       font-weight: 800;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #15803d;
       letter-spacing: 0.05em;
     }
 
     .fallback-sub {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       color: #64748b;
       font-weight: 600;
       letter-spacing: 0.03em;
     }
 
-    /* Reglas Oficiales de Impresión A4 */
+    /* Regras Oficiais de Impressão A4 - ONE PAGER */
     @page {
       size: A4 portrait;
-      margin: 10mm 12mm 10mm 12mm;
+      margin: 6mm 10mm 6mm 10mm;
     }
 
     @media print {
@@ -973,8 +995,8 @@
         background-color: #ffffff !important;
         color: #000000 !important;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-        font-size: 9pt !important;
-        line-height: 1.35 !important;
+        font-size: 11px !important;
+        line-height: 1.25 !important;
         margin: 0 !important;
         padding: 0 !important;
         -webkit-print-color-adjust: exact !important;
@@ -1028,7 +1050,7 @@
       </nav>
 
       <div>
-        <span class="currency-pill">💵 Moneda Oficial: USD ($) • v0.5.0</span>
+        <span class="currency-pill">💵 Moneda Oficial: USD ($) • v0.5.1</span>
       </div>
     </div>
   </header>
@@ -1300,23 +1322,24 @@
   <!-- ========================================================================= -->
   <div id="reporte-impresion" class="reporte-print-container" style="display: none;">
     
-    <!-- a) Cabeçalho Executivo -->
+    <!-- a) Cabeçalho Executivo Cotripar S.A. -->
     <div class="reporte-header">
       <div class="reporte-header-left">
-        <img id="printLogo" src="assets/logo.png" class="h-14 object-contain" alt="Logo de la Empresa" onerror="this.style.display='none'; var fb = document.getElementById('printLogoFallback'); if (fb) fb.style.display='flex';">
+        <img id="printLogo" src="assets/logo.png" class="h-10 object-contain" alt="Cotripar S.A." onerror="this.style.display='none'; var fb = document.getElementById('printLogoFallback'); if (fb) fb.style.display='flex';">
         <div id="printLogoFallback" class="print-logo-fallback" style="display: none;">
           <span class="fallback-icon">🌾</span>
           <div class="fallback-text">
-            <span class="fallback-title">AGROCRÉDITO</span>
-            <span class="fallback-sub">DICTAMEN INSTITUCIONAL</span>
+            <span class="fallback-title">COTRIPAR S.A.</span>
+            <span class="fallback-sub">CRÉDITO RURAL</span>
           </div>
         </div>
       </div>
       <div class="reporte-header-right">
         <h1 class="reporte-doc-title">DICTAMEN DE ANÁLISIS DE CRÉDITO</h1>
         <div class="reporte-meta">
-          <div><strong>Fecha y Hora de Emisión:</strong> <span id="printFechaEmision">--/--/---- --:--</span></div>
-          <div><strong>Protocolo:</strong> <span id="printProtocolo">SAC-PY-00000000-0000</span> • <strong>Versión:</strong> v0.5.0</div>
+          <span><strong>Emisión:</strong> <span id="printFechaEmision">--/--/---- --:--</span></span> • 
+          <span><strong>Protocolo:</strong> <span id="printProtocolo">SAC-PY-00000000-0000</span></span> • 
+          <span><strong>Versión:</strong> v0.5.1</span>
         </div>
       </div>
     </div>
@@ -1324,7 +1347,7 @@
     <!-- Linha divisória formal -->
     <div class="reporte-divider"></div>
 
-    <!-- b) Dados do Solicitante e Operação -->
+    <!-- b) Seção 1: Dados do Solicitante e Operação (Grid 4 colunas compacto) -->
     <div class="reporte-section">
       <h2 class="reporte-section-title">1. Datos del Solicitante y Condiciones de la Operación</h2>
       <div class="reporte-grid-datos">
@@ -1337,11 +1360,11 @@
           <span class="reporte-dato-val" id="printDocCliente">-</span>
         </div>
         <div class="reporte-dato-item">
-          <span class="reporte-dato-label">Tipo de Cliente / Perfil:</span>
+          <span class="reporte-dato-label">Tipo de Cliente:</span>
           <span class="reporte-dato-val" id="printTipoCliente">-</span>
         </div>
         <div class="reporte-dato-item">
-          <span class="reporte-dato-label" id="printLabelDetalleEspecifico">Cultivo Principal:</span>
+          <span class="reporte-dato-label" id="printLabelDetalleEspecifico">Cultivo / Silo:</span>
           <span class="reporte-dato-val" id="printValDetalleEspecifico">-</span>
         </div>
         <div class="reporte-dato-item">
@@ -1349,84 +1372,84 @@
           <span class="reporte-dato-val" id="printSuperficie">-</span>
         </div>
         <div class="reporte-dato-item">
-          <span class="reporte-dato-label" id="printLabelRendTarifa">Rendimiento Estimado:</span>
+          <span class="reporte-dato-label" id="printLabelRendTarifa">Rendimiento / Tarifa:</span>
           <span class="reporte-dato-val" id="printValRendTarifa">-</span>
         </div>
         <div class="reporte-dato-item">
-          <span class="reporte-dato-label" id="printLabelPrecioCosto">Precio de Mercado:</span>
+          <span class="reporte-dato-label" id="printLabelPrecioCosto">Precio / Costo:</span>
           <span class="reporte-dato-val" id="printValPrecioCosto">-</span>
         </div>
         <div class="reporte-dato-item">
-          <span class="reporte-dato-label">Periodicidad de Pago:</span>
+          <span class="reporte-dato-label">Periodicidad:</span>
           <span class="reporte-dato-val" id="printPeriodicidad">-</span>
         </div>
       </div>
     </div>
 
-    <!-- c) Demonstrativo de Fluxo de Caixa e Indicadores -->
+    <!-- c) Seção 2: Demonstrativo de Fluxo de Caixa e Indicadores (Tabela densa) -->
     <div class="reporte-section">
-      <h2 class="reporte-section-title">2. Demonstrativo de Flujo de Caja e Indicadores Financieros (USD)</h2>
+      <h2 class="reporte-section-title">2. Demostrativo de Flujo de Caja y Capacidad de Repago (USD)</h2>
       <table class="reporte-tabla">
         <thead>
           <tr>
             <th style="width: 48%;">Concepto Financiero y Operativo</th>
             <th style="width: 26%; text-align: right;">Monto (USD)</th>
-            <th style="width: 26%;">Referencia / Observación</th>
+            <th style="width: 26%;">Referencia / Indicador</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><strong>Ingresos Proyectados</strong> (Facturación bruta estimada)</td>
+            <td><strong>Ingresos Proyectados</strong> (Facturación estimada)</td>
             <td style="text-align: right; font-weight: 600;" id="printIngresos">$ 0</td>
             <td id="printIngresosRef">Ventas brutas</td>
           </tr>
           <tr>
-            <td><strong>Costo Operativo</strong> (Insumos, siembra o laboreo directo)</td>
+            <td><strong>Costo Operativo</strong> (Costos directos)</td>
             <td style="text-align: right; font-weight: 600;" id="printCostos">$ 0</td>
-            <td id="printCostosRef">Costos directos</td>
+            <td id="printCostosRef">Costos operacionales</td>
           </tr>
           <tr class="reporte-fila-destacada">
-            <td><strong id="printMargenLabel">Margen Agropecuario</strong></td>
+            <td><strong id="printMargenLabel">Margen Operativo Agropecuario</strong></td>
             <td style="text-align: right; font-weight: 700;" id="printMargen">$ 0</td>
             <td id="printMargenPct">0.0% s/ ingresos</td>
           </tr>
           <tr>
-            <td><strong>Compromisos Financieros Previos</strong> (Deudas bancarias/comerciales)</td>
+            <td><strong>Compromisos Financieros Previos</strong> (Deudas vigentes)</td>
             <td style="text-align: right; font-weight: 600;" id="printCompromisosPrevios">$ 0</td>
             <td>Carga financiera previa</td>
           </tr>
           <tr>
-            <td><strong>Crédito Solicitado</strong> (Intereses y amortización incluidos)</td>
+            <td><strong>Crédito Solicitado</strong> (Amortización + intereses)</td>
             <td style="text-align: right; font-weight: 600;" id="printCreditoSolicitado">$ 0</td>
-            <td>Financiamiento solicitado</td>
+            <td>Nuevo financiamiento</td>
           </tr>
           <tr class="reporte-fila-subtotal">
             <td><strong>Carga Financiera Total</strong> (Compromisos previos + Solicitado)</td>
             <td style="text-align: right; font-weight: 700;" id="printCargaTotal">$ 0</td>
-            <td>Total exigibilidad anual</td>
+            <td>Exigibilidad consolidada</td>
           </tr>
           <tr class="reporte-fila-principal">
             <td><strong>Flujo de Caja Libre / Remanente Neto</strong></td>
-            <td style="text-align: right; font-weight: 700; font-size: 0.95rem;" id="printFlujoNeto">$ 0</td>
-            <td id="printFlujoNetoRef" style="font-weight: 600;">Superávit disponible</td>
+            <td style="text-align: right; font-weight: 800; font-size: 11.5px;" id="printFlujoNeto">$ 0</td>
+            <td id="printFlujoNetoRef" style="font-weight: 700;">Superávit disponible</td>
           </tr>
           <tr class="reporte-fila-principal">
-            <td><strong>Índice de Cobertura del Servicio de la Deuda (ICSD)</strong></td>
-            <td style="text-align: right; font-weight: 700; font-size: 0.95rem;" id="printICSD">0.00x</td>
-            <td id="printICSDRef" style="font-weight: 600;">Solvente (≥ 1.25x)</td>
+            <td><strong>Índice de Cobertura del Servicio de la Deuda (ICSD Global)</strong></td>
+            <td style="text-align: right; font-weight: 800; font-size: 11.5px;" id="printICSD">0.00x</td>
+            <td id="printICSDRef" style="font-weight: 700;">Solvente (≥ 1.25x)</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- d) Cronograma de Compromissos Mensais -->
+    <!-- d) Seção 3: Cronograma de Compromissos Mensais (Tabela densa) -->
     <div class="reporte-section">
-      <h2 class="reporte-section-title">3. Cronograma de Compromisos Mensuales (USD)</h2>
+      <h2 class="reporte-section-title">3. Cronograma de Compromisos Mensuales Previos (USD)</h2>
       <table class="reporte-tabla" id="printTablaCronograma">
         <thead>
           <tr>
             <th style="width: 25%;">Mes de Vencimiento</th>
-            <th style="width: 25%; text-align: right;">Monto Cuota (USD)</th>
+            <th style="width: 25%; text-align: right;">Total Cuota (USD)</th>
             <th style="width: 20%; text-align: center;">% de Compromisos</th>
             <th style="width: 30%;">Entidades Acreedoras</th>
           </tr>
@@ -1435,26 +1458,23 @@
           <!-- Rellenado dinámico -->
         </tbody>
         <tfoot id="printCronogramaFoot">
-          <tr style="background-color: #f1f5f9; font-weight: 700;">
+          <tr style="background-color: #f8fafc; font-weight: 700;">
             <td>Total Compromisos Previos</td>
             <td style="text-align: right;" id="printTotalCronograma">$ 0</td>
             <td style="text-align: center;">100.0%</td>
-            <td id="printEntidadesTotal" style="font-size: 0.72rem; color: #475569;">-</td>
+            <td id="printEntidadesTotal" style="font-size: 10px; color: #475569;">-</td>
           </tr>
         </tfoot>
       </table>
     </div>
 
-    <!-- e) Parecer Oficial e Conclusão -->
+    <!-- e) Seção 4: Dictamen Oficial y Resolución (Card sutil y compacto) -->
     <div class="reporte-section">
-      <h2 class="reporte-section-title">4. Parecer Oficial y Conclusión Técnica</h2>
+      <h2 class="reporte-section-title">4. Dictamen Técnico Oficial y Resolución de Crédito</h2>
       <div id="printVeredictoBox" class="reporte-veredicto-box">
         <div class="reporte-veredicto-header">
           <span class="reporte-veredicto-badge" id="printVeredictoBadge">DICTAMEN: APROBADO</span>
           <span class="reporte-veredicto-sub" id="printVeredictoSub">Operación viable y solvente bajo los parámetros analizados.</span>
-        </div>
-        <div class="reporte-veredicto-texto" id="printVeredictoTexto">
-          <!-- Texto del dictamen formal -->
         </div>
       </div>
     </div>
@@ -1464,18 +1484,24 @@
       <div class="reporte-signature-col">
         <div class="reporte-signature-line"></div>
         <div class="reporte-signature-role">Firma del Analista de Crédito</div>
-        <div class="reporte-signature-sub">Comité de Riesgos y Aprobación</div>
+        <div class="reporte-signature-sub">Cotripar S.A. • Comité de Crédito</div>
       </div>
       <div class="reporte-signature-col">
         <div class="reporte-signature-line"></div>
-        <div class="reporte-signature-role">Firma del Solicitante</div>
-        <div class="reporte-signature-sub">Titular / Representante Legal</div>
+        <div class="reporte-signature-role">Firma del Solicitante / Representante Legal</div>
+        <div class="reporte-signature-sub">Titular de la Solicitud</div>
       </div>
     </div>
 
-    <!-- g) Rodapé Discreto na Impressão -->
+    <!-- g) Rodapé Corporativo y Cláusula de Confidencialidad Cotripar S.A. -->
     <div class="reporte-footer">
-      <p>Documento confidencial generado por Sistema de Análisis de Crédito • Desarrollado por Natan Billig (wa.me/595994195695)</p>
+      <p class="reporte-clausula">
+        USO INTERNO Y CONFIDENCIALIDAD: Este dictamen contiene información financiera confidencial de uso reservado y exclusivo de Cotripar S.A. Queda terminantemente prohibida su reproducción, distribución o divulgación total o parcial a terceros sin la autorización previa del Comité de Créditos.
+      </p>
+      <div class="reporte-meta-footer">
+        <span>Cotripar S.A. • Sistema de Análisis de Crédito Rural</span>
+        <span>v0.5.1 • N. Billig</span>
+      </div>
     </div>
   </div>
 

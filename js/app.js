@@ -1,6 +1,6 @@
 /**
  * Sistema de Análisis de Crédito Rural - Controlador de la Interfaz
- * Versión: 0.5.0 - Reporte Ejecutivo A4 Imprimible con Membrete y Exportación a PDF
+ * Versión: 0.5.1 - Reporte Ejecutivo A4 One-Pager Estricto con Confidencialidad Cotripar S.A.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -742,15 +742,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // e) Parecer Oficial e Conclusão
+    // e) Dictamen Oficial y Resolución
     const elBoxVeredicto = document.getElementById('printVeredictoBox');
     const elBadgeVeredicto = document.getElementById('printVeredictoBadge');
     const elSubVeredicto = document.getElementById('printVeredictoSub');
-    const elTextoVeredicto = document.getElementById('printVeredictoTexto');
 
     if (elBadgeVeredicto) elBadgeVeredicto.textContent = `DICTAMEN: ${res.dictamen.toUpperCase()}`;
     if (elSubVeredicto) elSubVeredicto.textContent = res.dictamenSubtitulo;
-    if (elTextoVeredicto) elTextoVeredicto.textContent = res.dictamenFormal;
 
     if (elBoxVeredicto && elBadgeVeredicto && elSubVeredicto) {
       if (res.dictamen === 'Aprobado') {

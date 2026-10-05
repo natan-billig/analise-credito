@@ -5,6 +5,16 @@ Todas las modificaciones notables de este proyecto se documentan en este archivo
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [0.5.1] - Rediseño Ejecutivo One-Pager y Confidencialidad Cotripar S.A. - 2026-10-05
+
+### Modificado
+- Rediseño total del dictamen impreso a formato One-Pager ejecutivo estricto.
+- Eliminada duplicación de texto ASCII en el reporte.
+- Incorporada cláusula oficial de confidencialidad para Cotripar S.A.
+- Ocultado enlace de WhatsApp en impresión y sustituido por firma técnica sutil.
+- Optimización de márgenes de impresión a `@page { size: A4 portrait; margin: 6mm 10mm 6mm 10mm; }`.
+- Condensación del grid de solicitante a 4 columnas y densificación tipográfica de tablas de flujo y cronograma.
+
 ## [0.5.0] - Reporte Ejecutivo A4 Imprimible con Membrete y Exportación a PDF - 2026-10-05
 
 ### Añadido / Modificado
