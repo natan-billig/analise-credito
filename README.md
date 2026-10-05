@@ -2,7 +2,7 @@
 
 Plataforma técnica especializada para la evaluación de riesgo crediticio, análisis agronómico y emisión automatizada de dictámenes de crédito para **Productores Agropecuarios** y **Prestadores de Servicios Agrícolas** en **USD ($)**, con soporte para la **República del Paraguay (C.I. / RUC)**.
 
-## 🌾 Características Principales (v0.4.0)
+## 🌾 Características Principales (v0.5.0)
 
 - **Módulo Dual de Evaluación**:
   - **🚜 Productor Agrícola**: Evaluación de superficie (`ha`), rendimiento esperado (`t/ha`), precio de mercado (`USD/t`), costo por hectárea (`USD/ha`) y financiamiento.
@@ -20,8 +20,9 @@ Plataforma técnica especializada para la evaluación de riesgo crediticio, aná
     - **Riesgo Moderado**: `flujoCajaNeto >= 0` e `1.00x <= icsd < 1.25x`.
     - **Inviable**: `flujoCajaNeto < 0` o `icsd < 1.00x`.
 
-- **Dictamen Técnico Formal para Comité**:
-  - Resumen ejecutivo estructurado en español formal con identificación del tipo de cliente (Productor o Prestador con Silo contratante), listo para copiar al portapapeles.
+- **Dictamen Técnico Formal para Comité y Reporte Ejecutivo Imprimible A4 (PDF)**:
+  - Resumen ejecutivo estructurado en español formal con identificación del tipo de cliente (Productor o Prestador con Silo contratante).
+  - Emisión e impresión de **Dictamen Ejecutivo en hoja A4** (`🖨️ Imprimir / Guardar PDF`), con membrete corporativo, logotipo, indicadores de flujo de caja, cronograma de vencimientos, conclusión técnica formal, campo para firmas físicas y pie de página discreto.
 
 - **Pie de Página Institucional**:
   - Enlace de contacto directo con el desarrollador del sistema.

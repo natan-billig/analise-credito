@@ -1,6 +1,6 @@
 /**
  * Sistema de Análisis de Crédito Rural - Controlador de la Interfaz
- * Versión: 0.4.0 - Soporte Dual: Productor Agrícola y Prestador de Servicios con Footer Institucional
+ * Versión: 0.5.0 - Reporte Ejecutivo A4 Imprimible con Membrete y Exportación a PDF
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -12,10 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const totalCommitmentsBadge = document.getElementById('totalCommitmentsBadge');
   const cronogramaBody = document.getElementById('cronogramaBody');
   const btnCopyDictamen = document.getElementById('btnCopyDictamen');
+  const btnImprimir = document.getElementById('btn-imprimir');
   const resultPlaceholder = document.getElementById('resultPlaceholder');
   const resultCard = document.getElementById('resultCard');
   const analysisTimestamp = document.getElementById('analysisTimestamp');
   const toast = document.getElementById('toast');
+
+  let ultimoAnalisis = null;
 
   // Pestañas de Perfil
   const tabProductor = document.getElementById('tabProductor');
@@ -580,9 +583,213 @@ document.addEventListener('DOMContentLoaded', () => {
     // Texto del Dictamen Oficial
     dictamenText.textContent = res.dictamenFormal;
 
+    // Almacenar el último análisis ejecutado para el reporte imprimible
+    ultimoAnalisis = res;
+
     if (window.innerWidth < 1024) {
       resultCard.scrollIntoView({ behavior: 'smooth' });
     }
+  }
+
+  // --- PREPARACIÓN DEL REPORTE EJECUTIVO IMPRIMIBLE EN A4 ---
+  function prepararReporteImpresion(res) {
+    if (!res) return;
+
+    const ahora = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    const dia = pad(ahora.getDate());
+    const mesNum = pad(ahora.getMonth() + 1);
+    const anio = ahora.getFullYear();
+    const hora = pad(ahora.getHours());
+    const min = pad(ahora.getMinutes());
+    const fechaStr = `${dia}/${mesNum}/${anio} ${hora}:${min}`;
+    const codAleatorio = Math.floor(1000 + Math.random() * 9000);
+    const protocoloStr = `SAC-PY-${anio}${mesNum}${dia}-${codAleatorio}`;
+
+    // a) Cabeçalho Executivo
+    const elFecha = document.getElementById('printFechaEmision');
+    const elProto = document.getElementById('printProtocolo');
+    if (elFecha) elFecha.textContent = fechaStr;
+    if (elProto) elProto.textContent = protocoloStr;
+
+    // b) Dados do Solicitante e Operação
+    const esProductor = res.perfil === 'productor';
+    const elNombre = document.getElementById('printNombreCliente');
+    const elDoc = document.getElementById('printDocCliente');
+    const elTipo = document.getElementById('printTipoCliente');
+    const elLabelDetalle = document.getElementById('printLabelDetalleEspecifico');
+    const elValDetalle = document.getElementById('printValDetalleEspecifico');
+    const elSup = document.getElementById('printSuperficie');
+    const elLabelRend = document.getElementById('printLabelRendTarifa');
+    const elValRend = document.getElementById('printValRendTarifa');
+    const elLabelPrecio = document.getElementById('printLabelPrecioCosto');
+    const elValPrecio = document.getElementById('printValPrecioCosto');
+    const elPer = document.getElementById('printPeriodicidad');
+    const elMargenLabel = document.getElementById('printMargenLabel');
+
+    if (esProductor) {
+      if (elNombre) elNombre.textContent = document.getElementById('producerName').value.trim() || 'Productor Agrícola';
+      if (elDoc) elDoc.textContent = document.getElementById('documentNumber').value.trim() || 'S/D';
+      if (elTipo) elTipo.textContent = 'Productor Agrícola';
+      if (elLabelDetalle) elLabelDetalle.textContent = 'Cultivo Principal:';
+      if (elValDetalle) elValDetalle.textContent = document.getElementById('cropType').value || 'Soja';
+      if (elSup) elSup.textContent = `${document.getElementById('areaHectares').value || 0} ha`;
+      if (elLabelRend) elLabelRend.textContent = 'Rendimiento Estimado:';
+      if (elValRend) elValRend.textContent = `${document.getElementById('estimatedYield').value || 0} t/ha`;
+      if (elLabelPrecio) elLabelPrecio.textContent = 'Precio de Mercado:';
+      if (elValPrecio) elValPrecio.textContent = `$ ${document.getElementById('marketPrice').value || 0} / t`;
+      if (elPer) elPer.textContent = document.getElementById('paymentFrequency').value || 'Zafra Única';
+      if (elMargenLabel) elMargenLabel.textContent = 'Margen Agropecuario';
+    } else {
+      if (elNombre) elNombre.textContent = document.getElementById('providerName').value.trim() || 'Prestador de Servicios';
+      if (elDoc) elDoc.textContent = document.getElementById('providerDoc').value.trim() || 'S/D';
+      if (elTipo) elTipo.textContent = 'Prestador de Servicios Agrícolas';
+      if (elLabelDetalle) elLabelDetalle.textContent = 'Silo Contratante:';
+      if (elValDetalle) elValDetalle.textContent = document.getElementById('contractClient').value.trim() || 'Silo Contratante';
+      if (elSup) elSup.textContent = `${document.getElementById('serviceArea').value || 0} ha`;
+      if (elLabelRend) elLabelRend.textContent = 'Tarifa Facturada:';
+      if (elValRend) elValRend.textContent = `$ ${document.getElementById('serviceTariff').value || 0} / ha`;
+      if (elLabelPrecio) elLabelPrecio.textContent = 'Costo Operacional:';
+      if (elValPrecio) elValPrecio.textContent = `$ ${document.getElementById('serviceCost').value || 0} / ha`;
+      if (elPer) elPer.textContent = document.getElementById('servicePaymentFrequency').value || 'Zafra Única';
+      if (elMargenLabel) elMargenLabel.textContent = 'Margen Operativo del Servicio';
+    }
+
+    // c) Demonstrativo de Fluxo de Caixa e Indicadores
+    const m = res.metricas;
+    const elIng = document.getElementById('printIngresos');
+    const elCost = document.getElementById('printCostos');
+    const elMarg = document.getElementById('printMargen');
+    const elMargPct = document.getElementById('printMargenPct');
+    const elComp = document.getElementById('printCompromisosPrevios');
+    const elCred = document.getElementById('printCreditoSolicitado');
+    const elCarga = document.getElementById('printCargaTotal');
+    const elFlujo = document.getElementById('printFlujoNeto');
+    const elFlujoRef = document.getElementById('printFlujoNetoRef');
+    const elICSD = document.getElementById('printICSD');
+    const elICSDRef = document.getElementById('printICSDRef');
+
+    if (elIng) elIng.textContent = formatUSD(m.ingresoBruto);
+    if (elCost) elCost.textContent = formatUSD(m.costoTotal);
+    if (elMarg) elMarg.textContent = formatUSD(m.margenOperativo);
+    if (elMargPct) elMargPct.textContent = `${m.margenOperativoPct.toFixed(1)}% s/ ingresos`;
+    if (elComp) elComp.textContent = formatUSD(m.deudasFinancieras);
+    if (elCred) elCred.textContent = formatUSD(m.capitalSolicitado);
+    if (elCarga) elCarga.textContent = formatUSD(m.cargaFinancieraTotal);
+    if (elFlujo) elFlujo.textContent = formatUSD(m.flujoCajaNeto);
+
+    if (elFlujoRef) {
+      if (m.flujoCajaNeto > 0) {
+        elFlujoRef.textContent = 'Superávit disponible';
+        elFlujoRef.style.color = '#15803d';
+      } else if (m.flujoCajaNeto === 0) {
+        elFlujoRef.textContent = 'Equilibrio exacto';
+        elFlujoRef.style.color = '#b45309';
+      } else {
+        elFlujoRef.textContent = 'Déficit proyectado';
+        elFlujoRef.style.color = '#b91c1c';
+      }
+    }
+
+    const coberturaStr = m.icsd >= 90 ? '> 10.0x' : `${m.icsd.toFixed(2)}x`;
+    if (elICSD) elICSD.textContent = coberturaStr;
+    if (elICSDRef) {
+      if (m.icsd >= 1.25 && m.flujoCajaNeto > 0) {
+        elICSDRef.textContent = 'Solvente (≥ 1.25x)';
+        elICSDRef.style.color = '#15803d';
+      } else if (m.icsd >= 1.00 && m.flujoCajaNeto >= 0) {
+        elICSDRef.textContent = 'Riesgo Moderado (1.00x - 1.24x)';
+        elICSDRef.style.color = '#b45309';
+      } else {
+        elICSDRef.textContent = 'Inviable (< 1.00x)';
+        elICSDRef.style.color = '#b91c1c';
+      }
+    }
+
+    // d) Cronograma de Compromissos Mensais
+    const cronBody = document.getElementById('printCronogramaBody');
+    const cronFoot = document.getElementById('printCronogramaFoot');
+    const elTotalCron = document.getElementById('printTotalCronograma');
+    const elEntidades = document.getElementById('printEntidadesTotal');
+
+    if (cronBody) {
+      cronBody.innerHTML = '';
+      if (!res.cronogramaMensual || res.cronogramaMensual.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="4" style="text-align: center; color: #64748b; padding: 0.5rem;">
+          Sin compromisos financieros previos registrados en el sistema financiero.
+        </td>`;
+        cronBody.appendChild(tr);
+        if (cronFoot) cronFoot.style.display = 'none';
+      } else {
+        if (cronFoot) cronFoot.style.display = '';
+        let totalMonto = 0;
+        const todasEntidades = new Set();
+        res.cronogramaMensual.forEach(c => {
+          totalMonto += c.totalMes;
+          c.entidades.forEach(e => todasEntidades.add(e));
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="font-weight: 600;">${c.mes}</td>
+            <td style="text-align: right; font-weight: 600;">${formatUSD(c.totalMes)}</td>
+            <td style="text-align: center;">${c.porcentajeCompromisos.toFixed(1)}%</td>
+            <td style="font-size: 0.72rem; color: #334155;">${c.entidades.join(', ')}</td>
+          `;
+          cronBody.appendChild(tr);
+        });
+        if (elTotalCron) elTotalCron.textContent = formatUSD(totalMonto);
+        if (elEntidades) elEntidades.textContent = Array.from(todasEntidades).join(', ') || '-';
+      }
+    }
+
+    // e) Parecer Oficial e Conclusão
+    const elBoxVeredicto = document.getElementById('printVeredictoBox');
+    const elBadgeVeredicto = document.getElementById('printVeredictoBadge');
+    const elSubVeredicto = document.getElementById('printVeredictoSub');
+    const elTextoVeredicto = document.getElementById('printVeredictoTexto');
+
+    if (elBadgeVeredicto) elBadgeVeredicto.textContent = `DICTAMEN: ${res.dictamen.toUpperCase()}`;
+    if (elSubVeredicto) elSubVeredicto.textContent = res.dictamenSubtitulo;
+    if (elTextoVeredicto) elTextoVeredicto.textContent = res.dictamenFormal;
+
+    if (elBoxVeredicto && elBadgeVeredicto && elSubVeredicto) {
+      if (res.dictamen === 'Aprobado') {
+        elBoxVeredicto.style.borderColor = '#16a34a';
+        elBoxVeredicto.style.backgroundColor = '#f0fdf4';
+        elBadgeVeredicto.style.backgroundColor = '#15803d';
+        elBadgeVeredicto.style.color = '#ffffff';
+        elSubVeredicto.style.color = '#14532d';
+      } else if (res.dictamen === 'Riesgo Moderado') {
+        elBoxVeredicto.style.borderColor = '#d97706';
+        elBoxVeredicto.style.backgroundColor = '#fffbeb';
+        elBadgeVeredicto.style.backgroundColor = '#d97706';
+        elBadgeVeredicto.style.color = '#ffffff';
+        elSubVeredicto.style.color = '#78350f';
+      } else {
+        elBoxVeredicto.style.borderColor = '#dc2626';
+        elBoxVeredicto.style.backgroundColor = '#fef2f2';
+        elBadgeVeredicto.style.backgroundColor = '#dc2626';
+        elBadgeVeredicto.style.color = '#ffffff';
+        elSubVeredicto.style.color = '#7f1d1d';
+      }
+    }
+  }
+
+  // Listener del Botón de Impresión
+  if (btnImprimir) {
+    btnImprimir.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (!ultimoAnalisis) {
+        alert('Por favor, ejecute el análisis antes de imprimir.');
+        showToast('Por favor, ejecute el análisis antes de imprimir.');
+        return;
+      }
+
+      prepararReporteImpresion(ultimoAnalisis);
+      window.print();
+    });
   }
 
   // Inicialización

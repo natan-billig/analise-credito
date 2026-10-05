@@ -5,6 +5,16 @@ Todas las modificaciones notables de este proyecto se documentan en este archivo
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [0.5.0] - Reporte Ejecutivo A4 Imprimible con Membrete y Exportación a PDF - 2026-10-05
+
+### Añadido / Modificado
+- Implementado formato de dictamen ejecutivo imprimible en hoja A4 con soporte para PDF nativo.
+- Incorporado membrete corporativo con logotipo de la empresa.
+- Añadido bloque de firmas formales y pie de página discreto con créditos de desarrollo.
+- Agregado botón de acción destacado `🖨️ Imprimir / Guardar PDF` (`#btn-imprimir`) en el panel de dictamen con estilización moderna slate/emerald.
+- Estructuración del contenedor `#reporte-impresion` con datos del solicitante, demostrativo de flujo de caja, cronograma de vencimientos y conclusión técnica.
+- Configuración de estilos `@page { size: A4 portrait; margin: 10mm 12mm 10mm 12mm; }` y aislamiento de visualización en `@media print`.
+
 ## [0.4.0] - Módulo Prestador de Servicios y Pie de Página Institucional - 2026-10-01
 
 ### Añadido / Modificado

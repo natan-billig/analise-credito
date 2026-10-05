@@ -666,6 +666,344 @@
     .text-emerald-400:hover, .hover\:text-emerald-300:hover { color: #6ee7b7; text-decoration: underline; }
     .font-medium { font-weight: 500; }
     .transition-colors { transition: color 0.15s ease-in-out; }
+
+    /* Acciones del Dictamen y Botón Imprimir */
+    .dictamen-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-print {
+      background: linear-gradient(135deg, #0f172a 0%, #065f46 100%);
+      color: #ffffff;
+      border: 1px solid #059669;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.45rem 0.95rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-print:hover {
+      background: linear-gradient(135deg, #1e293b 0%, #047857 100%);
+      border-color: #10b981;
+      box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-print:active {
+      transform: translateY(0);
+    }
+
+    /* Clases utilitarias de soporte para logo y contenedor */
+    .h-14 {
+      height: 3.5rem;
+    }
+
+    .object-contain {
+      object-fit: contain;
+    }
+
+    /* Ocultar reporte de impresión en pantalla normal */
+    #reporte-impresion {
+      display: none;
+    }
+
+    /* Estructura formal del Reporte A4 para Impresión */
+    .reporte-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .reporte-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .reporte-header-right {
+      text-align: right;
+    }
+
+    .reporte-doc-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .reporte-meta {
+      font-size: 0.75rem;
+      color: #475569;
+      margin-top: 0.25rem;
+      line-height: 1.35;
+    }
+
+    .reporte-divider {
+      height: 2px;
+      background: linear-gradient(90deg, #15803d 0%, #0f172a 100%);
+      margin-bottom: 0.75rem;
+    }
+
+    .reporte-section {
+      margin-bottom: 0.75rem;
+    }
+
+    .reporte-section-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #15803d;
+      margin-bottom: 0.35rem;
+      padding-bottom: 0.2rem;
+      border-bottom: 1.5px solid #dcfce7;
+    }
+
+    .reporte-grid-datos {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.35rem 1.25rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 0.5rem 0.85rem;
+      font-size: 0.8rem;
+    }
+
+    .reporte-dato-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      border-bottom: 1px dashed #e2e8f0;
+      padding-bottom: 0.15rem;
+    }
+
+    .reporte-dato-label {
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .reporte-dato-val {
+      color: #0f172a;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .reporte-tabla {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-bottom: 0.25rem;
+      border: 1px solid #cbd5e1;
+    }
+
+    .reporte-tabla th {
+      background-color: #f1f5f9;
+      color: #334155;
+      font-weight: 700;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 0.35rem 0.6rem;
+      border: 1px solid #cbd5e1;
+      text-align: left;
+    }
+
+    .reporte-tabla td {
+      padding: 0.35rem 0.6rem;
+      border: 1px solid #e2e8f0;
+      color: #0f172a;
+      vertical-align: middle;
+    }
+
+    .reporte-fila-destacada {
+      background-color: #f0fdf4;
+      font-weight: 600;
+    }
+
+    .reporte-fila-subtotal {
+      background-color: #fffbeb;
+      font-weight: 600;
+    }
+
+    .reporte-fila-principal {
+      background-color: #f8fafc;
+      font-weight: 700;
+    }
+
+    .reporte-veredicto-box {
+      border: 2px solid #16a34a;
+      background-color: #f0fdf4;
+      border-radius: 6px;
+      padding: 0.6rem 0.85rem;
+    }
+
+    .reporte-veredicto-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .reporte-veredicto-badge {
+      font-size: 0.92rem;
+      font-weight: 800;
+      padding: 0.25rem 0.65rem;
+      border-radius: 4px;
+      color: #ffffff;
+      background-color: #15803d;
+      letter-spacing: 0.04em;
+    }
+
+    .reporte-veredicto-sub {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #14532d;
+    }
+
+    .reporte-veredicto-texto {
+      font-size: 0.75rem;
+      color: #1e293b;
+      line-height: 1.4;
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: #ffffff;
+      border: 1px solid #bbf7d0;
+      border-radius: 4px;
+      padding: 0.5rem;
+      max-height: 180px;
+      overflow: hidden;
+    }
+
+    .reporte-signatures {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 1.35rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .reporte-signature-col {
+      text-align: center;
+      width: 42%;
+    }
+
+    .reporte-signature-line {
+      border-top: 1px solid #0f172a;
+      width: 90%;
+      margin: 0 auto 0.35rem auto;
+    }
+
+    .reporte-signature-role {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .reporte-signature-sub {
+      font-size: 0.7rem;
+      color: #64748b;
+      margin-top: 0.1rem;
+    }
+
+    .reporte-footer {
+      font-size: 0.68rem;
+      color: #64748b;
+      text-align: center;
+      border-top: 1px solid #cbd5e1;
+      padding-top: 0.4rem;
+      margin-top: 0.75rem;
+    }
+
+    .print-logo-fallback {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid #cbd5e1;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      background-color: #f8fafc;
+    }
+
+    .fallback-icon {
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+
+    .fallback-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .fallback-title {
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: #15803d;
+      letter-spacing: 0.05em;
+    }
+
+    .fallback-sub {
+      font-size: 0.65rem;
+      color: #64748b;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    /* Reglas Oficiales de Impresión A4 */
+    @page {
+      size: A4 portrait;
+      margin: 10mm 12mm 10mm 12mm;
+    }
+
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        font-size: 9pt !important;
+        line-height: 1.35 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .no-print, header, nav, form, .lg\:col-span-6:first-child, footer, .container, #toast, .toast {
+        display: none !important;
+      }
+
+      #reporte-impresion {
+        display: block !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .reporte-section,
+      .reporte-tabla,
+      .reporte-veredicto-box,
+      .reporte-signatures,
+      .reporte-footer {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -690,7 +1028,7 @@
       </nav>
 
       <div>
-        <span class="currency-pill">💵 Moneda Oficial: USD ($) • v0.4.0</span>
+        <span class="currency-pill">💵 Moneda Oficial: USD ($) • v0.5.0</span>
       </div>
     </div>
   </header>
@@ -939,18 +1277,207 @@
             </table>
           </div>
 
-          <!-- Dictamen Técnico Copiable -->
+          <!-- Dictamen Técnico Copiable y Botón de Impresión -->
           <div class="dictamen-header">
             <span class="dictamen-title">📄 Dictamen Oficial y Resumen Técnico (Para Comité)</span>
-            <button type="button" class="btn-copy" id="btnCopyDictamen">
-              📋 Copiar Dictamen
-            </button>
+            <div class="dictamen-actions">
+              <button type="button" class="btn-copy" id="btnCopyDictamen">
+                📋 Copiar Dictamen
+              </button>
+              <button type="button" class="btn-print" id="btn-imprimir">
+                🖨️ Imprimir / Guardar PDF
+              </button>
+            </div>
           </div>
           <div id="dictamenText" class="dictamen-box"></div>
         </div>
       </div>
     </section>
   </main>
+
+  <!-- ========================================================================= -->
+  <!-- CONTAINER ESPECÍFICO PARA REPORTE EJECUTIVO IMPRIMIBLE EN HOJA A4 (PDF) -->
+  <!-- ========================================================================= -->
+  <div id="reporte-impresion" class="reporte-print-container" style="display: none;">
+    
+    <!-- a) Cabeçalho Executivo -->
+    <div class="reporte-header">
+      <div class="reporte-header-left">
+        <img id="printLogo" src="assets/logo.png" class="h-14 object-contain" alt="Logo de la Empresa" onerror="this.style.display='none'; var fb = document.getElementById('printLogoFallback'); if (fb) fb.style.display='flex';">
+        <div id="printLogoFallback" class="print-logo-fallback" style="display: none;">
+          <span class="fallback-icon">🌾</span>
+          <div class="fallback-text">
+            <span class="fallback-title">AGROCRÉDITO</span>
+            <span class="fallback-sub">DICTAMEN INSTITUCIONAL</span>
+          </div>
+        </div>
+      </div>
+      <div class="reporte-header-right">
+        <h1 class="reporte-doc-title">DICTAMEN DE ANÁLISIS DE CRÉDITO</h1>
+        <div class="reporte-meta">
+          <div><strong>Fecha y Hora de Emisión:</strong> <span id="printFechaEmision">--/--/---- --:--</span></div>
+          <div><strong>Protocolo:</strong> <span id="printProtocolo">SAC-PY-00000000-0000</span> • <strong>Versión:</strong> v0.5.0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Linha divisória formal -->
+    <div class="reporte-divider"></div>
+
+    <!-- b) Dados do Solicitante e Operação -->
+    <div class="reporte-section">
+      <h2 class="reporte-section-title">1. Datos del Solicitante y Condiciones de la Operación</h2>
+      <div class="reporte-grid-datos">
+        <div class="reporte-dato-item">
+          <span class="reporte-dato-label">Nombre / Razón Social:</span>
+          <span class="reporte-dato-val" id="printNombreCliente">-</span>
+        </div>
+        <div class="reporte-dato-item">
+          <span class="reporte-dato-label">Identificación (C.I. / RUC):</span>
+          <span class="reporte-dato-val" id="printDocCliente">-</span>
+        </div>
+        <div class="reporte-dato-item">
+          <span class="reporte-dato-label">Tipo de Cliente / Perfil:</span>
+          <span class="reporte-dato-val" id="printTipoCliente">-</span>
+        </div>
+        <div class="reporte-dato-item">
+          <span class="reporte-dato-label" id="printLabelDetalleEspecifico">Cultivo Principal:</span>
+          <span class="reporte-dato-val" id="printValDetalleEspecifico">-</span>
+        </div>
+        <div class="reporte-dato-item">
+          <span class="reporte-dato-label">Superficie Total:</span>
+          <span class="reporte-dato-val" id="printSuperficie">-</span>
+        </div>
+        <div class="reporte-dato-item">
+          <span class="reporte-dato-label" id="printLabelRendTarifa">Rendimiento Estimado:</span>
+          <span class="reporte-dato-val" id="printValRendTarifa">-</span>
+        </div>
+        <div class="reporte-dato-item">
+          <span class="reporte-dato-label" id="printLabelPrecioCosto">Precio de Mercado:</span>
+          <span class="reporte-dato-val" id="printValPrecioCosto">-</span>
+        </div>
+        <div class="reporte-dato-item">
+          <span class="reporte-dato-label">Periodicidad de Pago:</span>
+          <span class="reporte-dato-val" id="printPeriodicidad">-</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- c) Demonstrativo de Fluxo de Caixa e Indicadores -->
+    <div class="reporte-section">
+      <h2 class="reporte-section-title">2. Demonstrativo de Flujo de Caja e Indicadores Financieros (USD)</h2>
+      <table class="reporte-tabla">
+        <thead>
+          <tr>
+            <th style="width: 48%;">Concepto Financiero y Operativo</th>
+            <th style="width: 26%; text-align: right;">Monto (USD)</th>
+            <th style="width: 26%;">Referencia / Observación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Ingresos Proyectados</strong> (Facturación bruta estimada)</td>
+            <td style="text-align: right; font-weight: 600;" id="printIngresos">$ 0</td>
+            <td id="printIngresosRef">Ventas brutas</td>
+          </tr>
+          <tr>
+            <td><strong>Costo Operativo</strong> (Insumos, siembra o laboreo directo)</td>
+            <td style="text-align: right; font-weight: 600;" id="printCostos">$ 0</td>
+            <td id="printCostosRef">Costos directos</td>
+          </tr>
+          <tr class="reporte-fila-destacada">
+            <td><strong id="printMargenLabel">Margen Agropecuario</strong></td>
+            <td style="text-align: right; font-weight: 700;" id="printMargen">$ 0</td>
+            <td id="printMargenPct">0.0% s/ ingresos</td>
+          </tr>
+          <tr>
+            <td><strong>Compromisos Financieros Previos</strong> (Deudas bancarias/comerciales)</td>
+            <td style="text-align: right; font-weight: 600;" id="printCompromisosPrevios">$ 0</td>
+            <td>Carga financiera previa</td>
+          </tr>
+          <tr>
+            <td><strong>Crédito Solicitado</strong> (Intereses y amortización incluidos)</td>
+            <td style="text-align: right; font-weight: 600;" id="printCreditoSolicitado">$ 0</td>
+            <td>Financiamiento solicitado</td>
+          </tr>
+          <tr class="reporte-fila-subtotal">
+            <td><strong>Carga Financiera Total</strong> (Compromisos previos + Solicitado)</td>
+            <td style="text-align: right; font-weight: 700;" id="printCargaTotal">$ 0</td>
+            <td>Total exigibilidad anual</td>
+          </tr>
+          <tr class="reporte-fila-principal">
+            <td><strong>Flujo de Caja Libre / Remanente Neto</strong></td>
+            <td style="text-align: right; font-weight: 700; font-size: 0.95rem;" id="printFlujoNeto">$ 0</td>
+            <td id="printFlujoNetoRef" style="font-weight: 600;">Superávit disponible</td>
+          </tr>
+          <tr class="reporte-fila-principal">
+            <td><strong>Índice de Cobertura del Servicio de la Deuda (ICSD)</strong></td>
+            <td style="text-align: right; font-weight: 700; font-size: 0.95rem;" id="printICSD">0.00x</td>
+            <td id="printICSDRef" style="font-weight: 600;">Solvente (≥ 1.25x)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- d) Cronograma de Compromissos Mensais -->
+    <div class="reporte-section">
+      <h2 class="reporte-section-title">3. Cronograma de Compromisos Mensuales (USD)</h2>
+      <table class="reporte-tabla" id="printTablaCronograma">
+        <thead>
+          <tr>
+            <th style="width: 25%;">Mes de Vencimiento</th>
+            <th style="width: 25%; text-align: right;">Monto Cuota (USD)</th>
+            <th style="width: 20%; text-align: center;">% de Compromisos</th>
+            <th style="width: 30%;">Entidades Acreedoras</th>
+          </tr>
+        </thead>
+        <tbody id="printCronogramaBody">
+          <!-- Rellenado dinámico -->
+        </tbody>
+        <tfoot id="printCronogramaFoot">
+          <tr style="background-color: #f1f5f9; font-weight: 700;">
+            <td>Total Compromisos Previos</td>
+            <td style="text-align: right;" id="printTotalCronograma">$ 0</td>
+            <td style="text-align: center;">100.0%</td>
+            <td id="printEntidadesTotal" style="font-size: 0.72rem; color: #475569;">-</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- e) Parecer Oficial e Conclusão -->
+    <div class="reporte-section">
+      <h2 class="reporte-section-title">4. Parecer Oficial y Conclusión Técnica</h2>
+      <div id="printVeredictoBox" class="reporte-veredicto-box">
+        <div class="reporte-veredicto-header">
+          <span class="reporte-veredicto-badge" id="printVeredictoBadge">DICTAMEN: APROBADO</span>
+          <span class="reporte-veredicto-sub" id="printVeredictoSub">Operación viable y solvente bajo los parámetros analizados.</span>
+        </div>
+        <div class="reporte-veredicto-texto" id="printVeredictoTexto">
+          <!-- Texto del dictamen formal -->
+        </div>
+      </div>
+    </div>
+
+    <!-- f) Campo para Assinaturas -->
+    <div class="reporte-signatures">
+      <div class="reporte-signature-col">
+        <div class="reporte-signature-line"></div>
+        <div class="reporte-signature-role">Firma del Analista de Crédito</div>
+        <div class="reporte-signature-sub">Comité de Riesgos y Aprobación</div>
+      </div>
+      <div class="reporte-signature-col">
+        <div class="reporte-signature-line"></div>
+        <div class="reporte-signature-role">Firma del Solicitante</div>
+        <div class="reporte-signature-sub">Titular / Representante Legal</div>
+      </div>
+    </div>
+
+    <!-- g) Rodapé Discreto na Impressão -->
+    <div class="reporte-footer">
+      <p>Documento confidencial generado por Sistema de Análisis de Crédito • Desarrollado por Natan Billig (wa.me/595994195695)</p>
+    </div>
+  </div>
 
   <!-- Rodapé Institucional -->
   <footer class="mt-12 py-6 border-t border-slate-800 text-center text-xs text-slate-500">
