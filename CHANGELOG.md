@@ -5,6 +5,13 @@ Todas las modificaciones notables de este proyecto se documentan en este archivo
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [0.5.2] - 2026-10-05
+
+### Modificado
+- Rediseñado bloque de firmas con espacio vertical de 55px para firma manual y sello.
+- Rebalanceada la distribución vertical de la hoja A4 para mayor legibilidad y presencia ejecutiva.
+- Ajustado padding de tablas financieras en modo impresión.
+
 ## [0.5.1] - Rediseño Ejecutivo One-Pager y Confidencialidad Cotripar S.A. - 2026-10-05
 
 ### Modificado

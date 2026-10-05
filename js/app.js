@@ -1,6 +1,6 @@
 /**
  * Sistema de Análisis de Crédito Rural - Controlador de la Interfaz
- * Versión: 0.5.1 - Reporte Ejecutivo A4 One-Pager Estricto con Confidencialidad Cotripar S.A.
+ * Versión: 0.5.2 - Espacio para firmas manuales y balanceo A4
  */
 
 document.addEventListener('DOMContentLoaded', () => {
