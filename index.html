@@ -719,6 +719,432 @@
       object-fit: contain;
     }
 
+    /* ========================================================================= */
+    /* BOTÓN TRIGGER Y MODAL DE LA CALCULADORA FINANCIERA (SISTEMA ALEMÁN)       */
+    /* ========================================================================= */
+    .label-with-action {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .btn-calc-trigger {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      color: #15803d;
+      border: 1px solid #86efac;
+      padding: 0.32rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-calc-trigger:hover {
+      background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+      border-color: #4ade80;
+      color: #14532d;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(21, 128, 61, 0.18);
+    }
+
+    .calc-status-badge {
+      font-size: 0.75rem;
+      color: #15803d;
+      background-color: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 6px;
+      padding: 0.3rem 0.55rem;
+      margin-top: 0.35rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      animation: fadeIn 0.2s ease;
+    }
+
+    /* Modal Backdrop y Estructura */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-backdrop.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-dialog {
+      width: 100%;
+      max-width: 920px;
+      max-height: 90vh;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(20px) scale(0.98);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid var(--border);
+    }
+
+    .modal-backdrop.show .modal-dialog {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #14532d 0%, #15803d 100%);
+      color: #ffffff;
+      padding: 1.15rem 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .modal-title {
+      font-size: 1.12rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #ffffff;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+
+    .modal-subtitle {
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.85);
+      margin-top: 0.2rem;
+    }
+
+    .modal-close {
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: #ffffff;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      font-size: 1.4rem;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.15s ease, transform 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .modal-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+
+    .modal-body {
+      padding: 1.25rem 1.5rem;
+      overflow-y: auto;
+      max-height: calc(90vh - 135px);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      background-color: #f8fafc;
+    }
+
+    /* Grilla de Entradas de la Calculadora */
+    .calc-inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.85rem;
+      background: #ffffff;
+      padding: 1.1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .calc-input-full {
+      grid-column: 1 / -1;
+    }
+
+    .calc-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .calc-input-group label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--secondary);
+    }
+
+    .input-prefix-wrapper, .input-suffix-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-prefix {
+      position: absolute;
+      left: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+
+    .input-prefix-wrapper input {
+      padding-left: 1.75rem;
+      width: 100%;
+    }
+
+    .input-suffix {
+      position: absolute;
+      right: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      pointer-events: none;
+    }
+
+    .input-suffix-wrapper input {
+      padding-right: 1.75rem;
+      width: 100%;
+    }
+
+    .input-readonly {
+      background-color: #f1f5f9 !important;
+      color: #334155 !important;
+      font-weight: 700 !important;
+      cursor: not-allowed;
+    }
+
+    /* Sección de la Tabla */
+    .calc-table-section {
+      background: #ffffff;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .calc-table-title-row {
+      background-color: #f8fafc;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .calc-table-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .calc-table-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      background-color: #dcfce7;
+      color: #166534;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #bbf7d0;
+    }
+
+    .calc-table-wrapper {
+      overflow-x: auto;
+    }
+
+    .calc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      min-width: 620px;
+    }
+
+    .calc-table th {
+      background-color: #f1f5f9;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .calc-table td {
+      padding: 0.55rem 0.75rem;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
+      vertical-align: middle;
+    }
+
+    .calc-table tr:hover {
+      background-color: #f8fafc;
+    }
+
+    .calc-table tr:first-child td {
+      background-color: #f0fdf4;
+      font-weight: 600;
+    }
+
+    .calc-table .text-right {
+      text-align: right;
+    }
+
+    .calc-table .text-center {
+      text-align: center;
+    }
+
+    .calc-table .highlight-col {
+      background-color: rgba(220, 252, 231, 0.4);
+      font-weight: 700;
+      color: #14532d;
+    }
+
+    .calc-table tr:first-child .highlight-col {
+      background-color: #bbf7d0;
+      color: #14532d;
+      font-weight: 800;
+    }
+
+    /* Resumen Financiero KPI Cards */
+    .calc-summary-section {
+      background: #ffffff;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      padding: 1rem;
+    }
+
+    .calc-summary-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 0.75rem;
+    }
+
+    .calc-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .calc-kpi-card {
+      background-color: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .calc-kpi-card.highlight-card {
+      background-color: #f0fdf4;
+      border-color: #86efac;
+    }
+
+    .calc-kpi-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .calc-kpi-value {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .calc-kpi-sub {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+
+    .text-amber { color: #b45309; }
+    .text-blue { color: #0369a1; }
+    .text-rose { color: #be123c; }
+    .text-emerald { color: #15803d; }
+
+    /* Modal Footer */
+    .modal-footer {
+      background-color: #ffffff;
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-modal-close {
+      background-color: #f1f5f9;
+      color: #475569;
+      border: 1px solid var(--border);
+      padding: 0.6rem 1.25rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-modal-close:hover {
+      background-color: #e2e8f0;
+      color: #1e293b;
+    }
+
+    .btn-modal-apply {
+      background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+      color: #ffffff;
+      border: 1px solid #14532d;
+      padding: 0.6rem 1.35rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-modal-apply:hover {
+      background: linear-gradient(135deg, #166534 0%, #14532d 100%);
+      box-shadow: 0 4px 6px -1px rgba(21, 128, 61, 0.3);
+      transform: translateY(-1px);
+    }
+
     /* Ocultar reporte de impresión en pantalla normal */
     #reporte-impresion {
       display: none;
@@ -1020,7 +1446,7 @@
         print-color-adjust: exact !important;
       }
 
-      .no-print, header, nav, form, .lg\:col-span-6:first-child, footer, .container, #toast, .toast {
+      .no-print, header, nav, form, .lg\:col-span-6:first-child, footer, .container, #toast, .toast, .modal-backdrop, #modal-calculadora {
         display: none !important;
       }
 
@@ -1127,11 +1553,19 @@
                 <input type="number" id="costPerHectare" min="0" step="any" placeholder="0.00" required value="720">
               </div>
               <div class="form-group">
-                <label for="requestedCapital">
-                  Monto del Crédito Solicitado (USD)
-                  <span class="label-hint">(Intereses ya incluidos)</span>
-                </label>
+                <div class="label-with-action">
+                  <label for="requestedCapital">
+                    Monto del Crédito Solicitado (USD)
+                    <span class="label-hint">(Intereses ya incluidos)</span>
+                  </label>
+                  <button type="button" id="btn-abrir-calculadora" class="btn-calc-trigger" title="Simular cronograma de cuotas bajo el Sistema Alemán">
+                    🧮 Simular Cuotas (Sistema Alemán)
+                  </button>
+                </div>
                 <input type="number" id="requestedCapital" min="1" step="any" placeholder="0.00 (Intereses ya incluidos)" required value="110000">
+                <div id="calc-aplicada-badge" class="calc-status-badge" style="display: none;">
+                  <span>ℹ️ <strong>Cuota Año 1 aplicada:</strong> Sistema Alemán a <span id="badgeCalcAnios">5</span> años al <span id="badgeCalcTasa">7.5</span>% + IVA.</span>
+                </div>
               </div>
               <div class="form-group">
                 <label for="paymentFrequency">Periodicidad de Pagos</label>
@@ -1177,11 +1611,19 @@
                 <input type="number" id="serviceCost" min="0" step="any" placeholder="0.00" value="85">
               </div>
               <div class="form-group">
-                <label for="serviceRequestedCapital">
-                  Monto del Crédito Solicitado (USD)
-                  <span class="label-hint">(Intereses ya incluidos)</span>
-                </label>
+                <div class="label-with-action">
+                  <label for="serviceRequestedCapital">
+                    Monto del Crédito Solicitado (USD)
+                    <span class="label-hint">(Intereses ya incluidos)</span>
+                  </label>
+                  <button type="button" id="btn-abrir-calculadora-prestador" class="btn-calc-trigger" title="Simular cronograma de cuotas bajo el Sistema Alemán">
+                    🧮 Simular Cuotas (Sistema Alemán)
+                  </button>
+                </div>
                 <input type="number" id="serviceRequestedCapital" min="1" step="any" placeholder="0.00 (Intereses ya incluidos)" value="20000">
+                <div id="calc-aplicada-badge-prestador" class="calc-status-badge" style="display: none;">
+                  <span>ℹ️ <strong>Cuota Año 1 aplicada:</strong> Sistema Alemán a <span id="badgeCalcAniosPrestador">5</span> años al <span id="badgeCalcTasaPrestador">7.5</span>% + IVA.</span>
+                </div>
               </div>
               <div class="form-group">
                 <label for="servicePaymentFrequency">Periodicidad de Pagos</label>
@@ -1436,7 +1878,12 @@
             <td>Carga financiera previa</td>
           </tr>
           <tr>
-            <td><strong>Crédito Solicitado</strong> (Amortización + intereses)</td>
+            <td>
+              <strong>Crédito Solicitado</strong> (Amortización + intereses)
+              <div id="printNotaCalculadora" style="display: none; font-size: 7.5px; color: #475569; font-style: italic; margin-top: 1px;">
+                Amortización proyectada bajo Sistema Alemán a <span id="printCalcAnios">5</span> años al <span id="printCalcTasa">7.5</span>% anual + IVA.
+              </div>
+            </td>
             <td style="text-align: right; font-weight: 600;" id="printCreditoSolicitado">$ 0</td>
             <td>Nuevo financiamiento</td>
           </tr>
@@ -1519,7 +1966,7 @@
       </p>
       <div class="reporte-meta-footer">
         <span>Cotripar S.A. • Sistema de Análisis de Crédito Rural</span>
-        <span>v0.5.2 • N. Billig</span>
+        <span>v0.6.0 • N. Billig</span>
       </div>
     </div>
   </div>
@@ -1528,6 +1975,154 @@
   <footer class="mt-12 py-6 border-t border-slate-800 text-center text-xs text-slate-500">
     <p>Desarrollado por <a href="https://wa.me/595994195695" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-medium transition-colors">Natan Billig</a></p>
   </footer>
+
+  <!-- MODAL: CALCULADORA FINANCIERA (SISTEMA ALEMÁN DE AMORTIZACIÓN) -->
+  <div id="modal-calculadora" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modalCalcTitle">
+    <div class="modal-dialog">
+      <!-- Header -->
+      <div class="modal-header">
+        <div class="modal-header-info">
+          <h3 class="modal-title" id="modalCalcTitle">
+            <span>🧮</span>
+            Calculadora Financiera - Sistema Alemán de Amortización
+          </h3>
+          <p class="modal-subtitle">Proyección oficial con amortización de capital constante, IVA bancario (10%) y 1% de gasto administrativo.</p>
+        </div>
+        <button type="button" class="modal-close" id="btn-cerrar-modal-x" aria-label="Cerrar modal">&times;</button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <!-- Campos de Entrada -->
+        <div class="calc-inputs-grid">
+          <div class="calc-input-group">
+            <label for="calcCapital">
+              1. Capital Solicitado (USD)
+              <span class="label-hint">(Principal a financiar)</span>
+            </label>
+            <div class="input-prefix-wrapper">
+              <span class="input-prefix">$</span>
+              <input type="number" id="calcCapital" min="1" step="any" placeholder="110,000">
+            </div>
+          </div>
+
+          <div class="calc-input-group">
+            <label for="calcGastoAdmin">
+              2. Gasto Administrativo (1%)
+              <span class="label-hint">(Calculado automáticamente)</span>
+            </label>
+            <div class="input-prefix-wrapper">
+              <span class="input-prefix">$</span>
+              <input type="text" id="calcGastoAdmin" readonly class="input-readonly" value="$ 0">
+            </div>
+          </div>
+
+          <div class="calc-input-group">
+            <label for="calcTasaInteres">
+              3. Tasa de Interés Anual (%)
+              <span class="label-hint">(Valor estándar: 7.5%)</span>
+            </label>
+            <div class="input-suffix-wrapper">
+              <input type="number" id="calcTasaInteres" min="0.1" max="100" step="0.1" value="7.5">
+              <span class="input-suffix">%</span>
+            </div>
+          </div>
+
+          <div class="calc-input-group">
+            <label for="calcPlazoAnios">
+              4. Plazo (Años)
+              <span class="label-hint">(1 a 10 años)</span>
+            </label>
+            <select id="calcPlazoAnios">
+              <option value="1">1 Año (Zafra Única)</option>
+              <option value="2">2 Años</option>
+              <option value="3">3 Años</option>
+              <option value="4">4 Años</option>
+              <option value="5" selected>5 Años (Estándar)</option>
+              <option value="6">6 Años</option>
+              <option value="7">7 Años</option>
+              <option value="8">8 Años</option>
+              <option value="9">9 Años</option>
+              <option value="10">10 Años</option>
+            </select>
+          </div>
+
+          <div class="calc-input-group calc-input-full">
+            <label for="calcEntidad">
+              5. Entidad Bancaria
+              <span class="label-hint">(Opcional: ej. Banco Sudameris, Banco Atlas, Continental, Itaú)</span>
+            </label>
+            <input type="text" id="calcEntidad" placeholder="Ej: Banco Sudameris, Atlas, Continental">
+          </div>
+        </div>
+
+        <!-- Tabla de Resultados del Cronograma -->
+        <div class="calc-table-section">
+          <div class="calc-table-title-row">
+            <div class="calc-table-title">📅 Cronograma de Pagos - Sistema Alemán</div>
+            <div class="calc-table-badge">Amortización Constante • Cuota Año 1 Más Exigente</div>
+          </div>
+
+          <div class="calc-table-wrapper">
+            <table class="calc-table" id="tabla-cronograma-aleman">
+              <thead>
+                <tr>
+                  <th>Año</th>
+                  <th class="text-right">Saldo Inicial</th>
+                  <th class="text-right">Amortización</th>
+                  <th class="text-right">Interés</th>
+                  <th class="text-right">IVA (10%)</th>
+                  <th class="text-right highlight-col">Cuota Anual</th>
+                  <th class="text-right">Saldo Final</th>
+                </tr>
+              </thead>
+              <tbody id="calcCronogramaBody">
+                <!-- Rellenado dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Resumen Financiero -->
+        <div class="calc-summary-section">
+          <div class="calc-summary-title">📊 Resumen Financiero Consolidado</div>
+          <div class="calc-kpi-grid">
+            <div class="calc-kpi-card">
+              <div class="calc-kpi-label">Total Intereses Pagados (USD)</div>
+              <div class="calc-kpi-value text-amber" id="calcKpiIntereses">$ 0</div>
+              <div class="calc-kpi-sub">Intereses compensatorios</div>
+            </div>
+
+            <div class="calc-kpi-card">
+              <div class="calc-kpi-label">Gasto Administrativo (USD)</div>
+              <div class="calc-kpi-value text-blue" id="calcKpiGastoAdmin">$ 0</div>
+              <div class="calc-kpi-sub">1% sobre capital solicitado</div>
+            </div>
+
+            <div class="calc-kpi-card">
+              <div class="calc-kpi-label">Costo Financiero Total (USD)</div>
+              <div class="calc-kpi-value text-rose" id="calcKpiCostoTotal">$ 0</div>
+              <div class="calc-kpi-sub">Intereses + IVA (10%) + Gasto Admin</div>
+            </div>
+
+            <div class="calc-kpi-card highlight-card">
+              <div class="calc-kpi-label">Total Pagado (USD)</div>
+              <div class="calc-kpi-value text-emerald" id="calcKpiTotalPagado">$ 0</div>
+              <div class="calc-kpi-sub">Capital + Costo Financiero Total</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer con Botones de Acción -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-modal-close" id="btn-cerrar-calculadora">Cerrar</button>
+        <button type="button" class="btn btn-modal-apply" id="btn-aplicar-calculadora">
+          ✅ Aplicar Cuota Año 1 al Análisis
+        </button>
+      </div>
+    </div>
+  </div>
 
   <div id="toast" class="toast">¡Copiado al portapapeles!</div>
 

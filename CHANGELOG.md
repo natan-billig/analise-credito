@@ -5,6 +5,14 @@ Todas las modificaciones notables de este proyecto se documentan en este archivo
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [0.6.0] - 2026-10-09
+
+### Añadido / Modificado
+- Incorporada calculadora financiera integrada con Sistema Alemán de amortización.
+- Añadido cálculo automático del 1% de gasto administrativo sobre el capital solicitado.
+- Implementado cómputo oficial de IVA del 10% sobre intereses bancarios según régimen PY.
+- Posibilidad de proyectar de 1 a 10 años y transferir la cuota inicial al flujo de caja.
+
 ## [0.5.2] - 2026-10-05
 
 ### Modificado

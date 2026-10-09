@@ -1,6 +1,6 @@
 /**
  * Sistema de Análisis de Crédito Rural - Motor de Flujo de Caja y Riesgo Agropecuario
- * Versión: 0.4.0 - Módulo de Prestador de Servicios Agrícolas y Productor Agropecuario
+ * Versión: 0.6.0 - Calculadora Financiera de Sistema Alemán con IVA y Gasto Administrativo
  */
 
 (function (global) {
@@ -91,6 +91,75 @@
   }
 
   /**
+   * Calculadora de Amortización bajo el Sistema Alemán (Cuotas Decrecientes)
+   * con cómputo oficial de IVA (10%) sobre intereses bancarios según régimen PY
+   * y 1% de gasto administrativo sobre el capital solicitado.
+   *
+   * @param {number} capital - Monto del capital solicitado en USD
+   * @param {number} tasaAnual - Tasa de interés anual (%)
+   * @param {number} plazoAnios - Plazo en años (1 a 10)
+   * @returns {Object} Cronograma detallado y totales consolidados
+   */
+  function calcularSistemaAleman(capital, tasaAnual, plazoAnios) {
+    const cap = Math.max(0, Number(capital) || 0);
+    const tasa = Math.max(0, Number(tasaAnual) || 0);
+    const plazo = Math.max(1, Math.min(10, Math.round(Number(plazoAnios) || 1)));
+
+    const gastoAdmin = cap * 0.01;
+    const amortizacionAnual = plazo > 0 ? (cap / plazo) : 0;
+    const tasaDecimal = tasa / 100;
+
+    const cronograma = [];
+    let saldoActual = cap;
+    let totalIntereses = 0;
+    let totalIva = 0;
+    let totalCuotas = 0;
+
+    for (let i = 1; i <= plazo; i++) {
+      const saldoInicial = saldoActual;
+      const interes = saldoInicial * tasaDecimal;
+      const iva = interes * 0.10; // IVA bancario PY al 10%
+      const cuota = amortizacionAnual + interes + iva;
+      const saldoFinal = Math.max(0, saldoInicial - amortizacionAnual);
+
+      totalIntereses += interes;
+      totalIva += iva;
+      totalCuotas += cuota;
+
+      cronograma.push({
+        anio: i,
+        saldoInicial,
+        amortizacion: amortizacionAnual,
+        interes,
+        iva,
+        cuota,
+        saldoFinal: i === plazo ? 0 : saldoFinal
+      });
+
+      saldoActual = saldoFinal;
+    }
+
+    const costoFinancieroTotal = totalIntereses + totalIva + gastoAdmin;
+    const totalPagado = cap + costoFinancieroTotal;
+    const cuotaAnio1 = cronograma.length > 0 ? cronograma[0].cuota : 0;
+
+    return {
+      capital: cap,
+      tasaAnual: tasa,
+      plazoAnios: plazo,
+      gastoAdmin,
+      amortizacionAnual,
+      cronograma,
+      totalIntereses,
+      totalIva,
+      totalCuotas,
+      costoFinancieroTotal,
+      totalPagado,
+      cuotaAnio1
+    };
+  }
+
+  /**
    * Análisis para PRODUCTOR AGRÍCOLA
    */
   function analisarProductor(input) {
@@ -150,13 +219,15 @@
       icsd,
       periodicidad,
       dictamen,
-      dictamenSubtitulo
+      dictamenSubtitulo,
+      sistemaAlemanInfo: input.sistemaAlemanInfo
     });
 
     return {
       perfil: 'productor',
       dictamen,
       dictamenSubtitulo,
+      sistemaAlemanInfo: input.sistemaAlemanInfo || null,
       metricas: {
         ingresoBruto,
         costoTotal,
@@ -240,13 +311,15 @@
       icsd,
       periodicidad,
       dictamen,
-      dictamenSubtitulo
+      dictamenSubtitulo,
+      sistemaAlemanInfo: input.sistemaAlemanInfo
     });
 
     return {
       perfil: 'prestador',
       dictamen,
       dictamenSubtitulo,
+      sistemaAlemanInfo: input.sistemaAlemanInfo || null,
       metricas: {
         ingresoBruto,
         costoTotal,
@@ -327,7 +400,7 @@ ${picoTxt}
 4. CARGA FINANCIERA TOTAL Y LIQUIDEZ (USD)
 ----------------------------------------------------------------------
 • Suma de Compromisos Prev. : ${fmtUSD(d.deudasFinancierasTotal)}
-• Crédito Solicitado (c/int): ${fmtUSD(d.capitalSolicitado)}
+• Crédito Solicitado (c/int): ${fmtUSD(d.capitalSolicitado)}${d.sistemaAlemanInfo ? ` [Cuota Año 1 - Sist. Alemán a ${d.sistemaAlemanInfo.plazoAnios} años al ${d.sistemaAlemanInfo.tasaAnual}% + IVA]` : ''}
 • Modalidad del Crédito     : ${d.periodicidad}
 • Carga Financiera Total    : ${fmtUSD(d.cargaFinancieraTotal)} [Compromisos + Crédito Solicitado]
 • Flujo de Caja Libre Neto  : ${fmtUSD(d.flujoCajaNeto)}
@@ -404,7 +477,7 @@ ${picoTxt}
 4. CARGA FINANCIERA TOTAL Y LIQUIDEZ (USD)
 ----------------------------------------------------------------------
 • Suma de Compromisos Prev. : ${fmtUSD(d.deudasFinancierasTotal)}
-• Crédito Solicitado (c/int): ${fmtUSD(d.capitalSolicitado)}
+• Crédito Solicitado (c/int): ${fmtUSD(d.capitalSolicitado)}${d.sistemaAlemanInfo ? ` [Cuota Año 1 - Sist. Alemán a ${d.sistemaAlemanInfo.plazoAnios} años al ${d.sistemaAlemanInfo.tasaAnual}% + IVA]` : ''}
 • Modalidad del Crédito     : ${d.periodicidad}
 • Carga Financiera Total    : ${fmtUSD(d.cargaFinancieraTotal)} [Compromisos + Crédito Solicitado]
 • Flujo de Caja Libre Neto  : ${fmtUSD(d.flujoCajaNeto)}
@@ -436,6 +509,7 @@ ${d.dictamen === 'Aprobado'
     analisarProductor,
     analisarPrestador,
     evaluateCredit,
+    calcularSistemaAleman,
     MESES_ANIO
   };
 

@@ -1,6 +1,6 @@
 /**
  * Sistema de Análisis de Crédito Rural - Controlador de la Interfaz
- * Versión: 0.5.2 - Espacio para firmas manuales y balanceo A4
+ * Versión: 0.6.0 - Calculadora Financiera de Sistema Alemán con IVA y Gasto Administrativo
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -19,6 +19,36 @@ document.addEventListener('DOMContentLoaded', () => {
   const toast = document.getElementById('toast');
 
   let ultimoAnalisis = null;
+
+  // Calculadora Financiera (Sistema Alemán)
+  const modalCalculadora = document.getElementById('modal-calculadora');
+  const btnAbrirCalculadora = document.getElementById('btn-abrir-calculadora');
+  const btnAbrirCalculadoraPrestador = document.getElementById('btn-abrir-calculadora-prestador');
+  const btnCerrarModalX = document.getElementById('btn-cerrar-modal-x');
+  const btnCerrarCalculadora = document.getElementById('btn-cerrar-calculadora');
+  const btnAplicarCalculadora = document.getElementById('btn-aplicar-calculadora');
+
+  const calcCapital = document.getElementById('calcCapital');
+  const calcGastoAdmin = document.getElementById('calcGastoAdmin');
+  const calcTasaInteres = document.getElementById('calcTasaInteres');
+  const calcPlazoAnios = document.getElementById('calcPlazoAnios');
+  const calcEntidad = document.getElementById('calcEntidad');
+
+  const calcCronogramaBody = document.getElementById('calcCronogramaBody');
+  const calcKpiIntereses = document.getElementById('calcKpiIntereses');
+  const calcKpiGastoAdmin = document.getElementById('calcKpiGastoAdmin');
+  const calcKpiCostoTotal = document.getElementById('calcKpiCostoTotal');
+  const calcKpiTotalPagado = document.getElementById('calcKpiTotalPagado');
+
+  const calcAplicadaBadge = document.getElementById('calc-aplicada-badge');
+  const badgeCalcAnios = document.getElementById('badgeCalcAnios');
+  const badgeCalcTasa = document.getElementById('badgeCalcTasa');
+  const calcAplicadaBadgePrestador = document.getElementById('calc-aplicada-badge-prestador');
+  const badgeCalcAniosPrestador = document.getElementById('badgeCalcAniosPrestador');
+  const badgeCalcTasaPrestador = document.getElementById('badgeCalcTasaPrestador');
+
+  let calculadoraAplicada = null;
+  let ultimoResultadoAleman = null;
 
   // Pestañas de Perfil
   const tabProductor = document.getElementById('tabProductor');
@@ -381,6 +411,10 @@ document.addEventListener('DOMContentLoaded', () => {
         resetCommitments(sample.compromisos);
       }
 
+      calculadoraAplicada = null;
+      if (calcAplicadaBadge) calcAplicadaBadge.style.display = 'none';
+      if (calcAplicadaBadgePrestador) calcAplicadaBadgePrestador.style.display = 'none';
+
       executeAnalysis();
     });
   }
@@ -444,7 +478,8 @@ document.addEventListener('DOMContentLoaded', () => {
         costoPorHa: Number(document.getElementById('costPerHectare').value),
         capitalSolicitado: Number(document.getElementById('requestedCapital').value),
         periodicidad: document.getElementById('paymentFrequency').value,
-        compromisos: compromisosList
+        compromisos: compromisosList,
+        sistemaAlemanInfo: calculadoraAplicada
       };
 
       resultado = CreditEngine.analisarProductor(inputData);
@@ -458,7 +493,8 @@ document.addEventListener('DOMContentLoaded', () => {
         costoPorHa: Number(document.getElementById('serviceCost').value),
         capitalSolicitado: Number(document.getElementById('serviceRequestedCapital').value),
         periodicidad: document.getElementById('servicePaymentFrequency').value,
-        compromisos: compromisosList
+        compromisos: compromisosList,
+        sistemaAlemanInfo: calculadoraAplicada
       };
 
       resultado = CreditEngine.analisarPrestador(inputData);
@@ -675,6 +711,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elMargPct) elMargPct.textContent = `${m.margenOperativoPct.toFixed(1)}% s/ ingresos`;
     if (elComp) elComp.textContent = formatUSD(m.deudasFinancieras);
     if (elCred) elCred.textContent = formatUSD(m.capitalSolicitado);
+
+    // Observación de Amortización bajo Sistema Alemán en el demostrativo de impresión
+    const elNota = document.getElementById('printNotaCalculadora');
+    const elAnios = document.getElementById('printCalcAnios');
+    const elTasa = document.getElementById('printCalcTasa');
+    const infoAleman = res.sistemaAlemanInfo || calculadoraAplicada;
+    if (elNota && infoAleman) {
+      elNota.style.display = 'block';
+      if (elAnios) elAnios.textContent = infoAleman.plazoAnios;
+      if (elTasa) elTasa.textContent = infoAleman.tasaAnual;
+    } else if (elNota) {
+      elNota.style.display = 'none';
+    }
+
     if (elCarga) elCarga.textContent = formatUSD(m.cargaFinancieraTotal);
     if (elFlujo) elFlujo.textContent = formatUSD(m.flujoCajaNeto);
 
@@ -787,6 +837,215 @@ document.addEventListener('DOMContentLoaded', () => {
 
       prepararReporteImpresion(ultimoAnalisis);
       window.print();
+    });
+  }
+
+  // --- CALCULADORA FINANCIERA (SISTEMA ALEMÁN) ---
+  function abrirModalCalculadora() {
+    if (!modalCalculadora) return;
+
+    let capitalActual = 110000;
+    if (activeProfile === 'productor') {
+      const val = parseFloat(document.getElementById('requestedCapital')?.value);
+      if (!isNaN(val) && val > 0) capitalActual = val;
+    } else {
+      const val = parseFloat(document.getElementById('serviceRequestedCapital')?.value);
+      if (!isNaN(val) && val > 0) capitalActual = val;
+    }
+
+    if (calculadoraAplicada) {
+      if (calcCapital) calcCapital.value = calculadoraAplicada.capital;
+      if (calcTasaInteres) calcTasaInteres.value = calculadoraAplicada.tasaAnual;
+      if (calcPlazoAnios) calcPlazoAnios.value = calculadoraAplicada.plazoAnios;
+      if (calcEntidad) calcEntidad.value = calculadoraAplicada.entidad || '';
+    } else {
+      if (calcCapital) calcCapital.value = capitalActual;
+      if (calcTasaInteres) calcTasaInteres.value = 7.5;
+      if (calcPlazoAnios) calcPlazoAnios.value = 5;
+    }
+
+    recalcularModalCalculadora();
+
+    modalCalculadora.style.display = 'flex';
+    requestAnimationFrame(() => {
+      modalCalculadora.classList.add('show');
+    });
+    document.body.style.overflow = 'hidden';
+  }
+
+  function cerrarModalCalculadora() {
+    if (!modalCalculadora) return;
+    modalCalculadora.classList.remove('show');
+    setTimeout(() => {
+      modalCalculadora.style.display = 'none';
+      document.body.style.overflow = '';
+    }, 250);
+  }
+
+  function recalcularModalCalculadora() {
+    if (!calcCapital || !calcTasaInteres || !calcPlazoAnios) return;
+
+    const capital = Math.max(0, parseFloat(calcCapital.value) || 0);
+    const tasa = Math.max(0, parseFloat(calcTasaInteres.value) || 0);
+    const plazo = Math.max(1, Math.min(10, parseInt(calcPlazoAnios.value, 10) || 1));
+
+    // 1% Gasto Administrativo calculado automáticamente [Capital * 0.01]
+    const gastoAdmin = capital * 0.01;
+    if (calcGastoAdmin) {
+      calcGastoAdmin.value = formatUSD(gastoAdmin);
+    }
+
+    if (typeof CreditEngine === 'undefined' || !CreditEngine.calcularSistemaAleman) {
+      return;
+    }
+
+    const res = CreditEngine.calcularSistemaAleman(capital, tasa, plazo);
+    ultimoResultadoAleman = res;
+
+    // Renderizado del cronograma
+    if (calcCronogramaBody) {
+      calcCronogramaBody.innerHTML = '';
+      if (!res.cronograma || res.cronograma.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="7" style="text-align: center; color: var(--text-muted); padding: 1rem;">
+          Ingrese un monto de capital válido para generar el cronograma.
+        </td>`;
+        calcCronogramaBody.appendChild(tr);
+      } else {
+        res.cronograma.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="font-weight: 700;">Año ${c.anio}</td>
+            <td class="text-right">${formatUSD(c.saldoInicial)}</td>
+            <td class="text-right">${formatUSD(c.amortizacion)}</td>
+            <td class="text-right">${formatUSD(c.interes)}</td>
+            <td class="text-right">${formatUSD(c.iva)}</td>
+            <td class="text-right highlight-col">${formatUSD(c.cuota)}</td>
+            <td class="text-right">${formatUSD(c.saldoFinal)}</td>
+          `;
+          calcCronogramaBody.appendChild(tr);
+        });
+      }
+    }
+
+    // Actualización de KPIs del Resumen Financiero
+    if (calcKpiIntereses) calcKpiIntereses.textContent = formatUSD(res.totalIntereses);
+    if (calcKpiGastoAdmin) calcKpiGastoAdmin.textContent = formatUSD(res.gastoAdmin);
+    if (calcKpiCostoTotal) calcKpiCostoTotal.textContent = formatUSD(res.costoFinancieroTotal);
+    if (calcKpiTotalPagado) calcKpiTotalPagado.textContent = formatUSD(res.totalPagado);
+  }
+
+  function aplicarCuotaAlAnalisis() {
+    if (!ultimoResultadoAleman || ultimoResultadoAleman.capital <= 0) {
+      showToast('Ingrese un monto de capital válido');
+      return;
+    }
+
+    const cuotaAnio1 = Math.round(ultimoResultadoAleman.cuotaAnio1);
+    const entidadBancaria = calcEntidad ? calcEntidad.value.trim() : '';
+
+    calculadoraAplicada = {
+      capital: ultimoResultadoAleman.capital,
+      tasaAnual: ultimoResultadoAleman.tasaAnual,
+      plazoAnios: ultimoResultadoAleman.plazoAnios,
+      cuotaAnio1: cuotaAnio1,
+      gastoAdmin: ultimoResultadoAleman.gastoAdmin,
+      entidad: entidadBancaria
+    };
+
+    if (activeProfile === 'productor') {
+      const inputCredito = document.getElementById('requestedCapital');
+      if (inputCredito) inputCredito.value = cuotaAnio1;
+      if (badgeCalcAnios) badgeCalcAnios.textContent = ultimoResultadoAleman.plazoAnios;
+      if (badgeCalcTasa) badgeCalcTasa.textContent = ultimoResultadoAleman.tasaAnual;
+      if (calcAplicadaBadge) calcAplicadaBadge.style.display = 'flex';
+      if (calcAplicadaBadgePrestador) calcAplicadaBadgePrestador.style.display = 'none';
+    } else {
+      const inputCredito = document.getElementById('serviceRequestedCapital');
+      if (inputCredito) inputCredito.value = cuotaAnio1;
+      if (badgeCalcAniosPrestador) badgeCalcAniosPrestador.textContent = ultimoResultadoAleman.plazoAnios;
+      if (badgeCalcTasaPrestador) badgeCalcTasaPrestador.textContent = ultimoResultadoAleman.tasaAnual;
+      if (calcAplicadaBadgePrestador) calcAplicadaBadgePrestador.style.display = 'flex';
+      if (calcAplicadaBadge) calcAplicadaBadge.style.display = 'none';
+    }
+
+    cerrarModalCalculadora();
+    executeAnalysis();
+    showToast(`¡Cuota Año 1 (${formatUSD(cuotaAnio1)}) aplicada al análisis!`);
+  }
+
+  // Listeners de la Calculadora
+  if (btnAbrirCalculadora) {
+    btnAbrirCalculadora.addEventListener('click', (e) => {
+      e.preventDefault();
+      abrirModalCalculadora();
+    });
+  }
+
+  if (btnAbrirCalculadoraPrestador) {
+    btnAbrirCalculadoraPrestador.addEventListener('click', (e) => {
+      e.preventDefault();
+      abrirModalCalculadora();
+    });
+  }
+
+  if (btnCerrarModalX) {
+    btnCerrarModalX.addEventListener('click', (e) => {
+      e.preventDefault();
+      cerrarModalCalculadora();
+    });
+  }
+
+  if (btnCerrarCalculadora) {
+    btnCerrarCalculadora.addEventListener('click', (e) => {
+      e.preventDefault();
+      cerrarModalCalculadora();
+    });
+  }
+
+  if (btnAplicarCalculadora) {
+    btnAplicarCalculadora.addEventListener('click', (e) => {
+      e.preventDefault();
+      aplicarCuotaAlAnalisis();
+    });
+  }
+
+  if (modalCalculadora) {
+    modalCalculadora.addEventListener('click', (e) => {
+      if (e.target === modalCalculadora) {
+        cerrarModalCalculadora();
+      }
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalCalculadora && modalCalculadora.classList.contains('show')) {
+      cerrarModalCalculadora();
+    }
+  });
+
+  if (calcCapital) calcCapital.addEventListener('input', recalcularModalCalculadora);
+  if (calcTasaInteres) calcTasaInteres.addEventListener('input', recalcularModalCalculadora);
+  if (calcPlazoAnios) calcPlazoAnios.addEventListener('change', recalcularModalCalculadora);
+
+  // Reset de la observación si el usuario modifica el campo principal manualmente
+  const reqCapInput = document.getElementById('requestedCapital');
+  if (reqCapInput) {
+    reqCapInput.addEventListener('input', () => {
+      if (calculadoraAplicada && Math.round(Number(reqCapInput.value)) !== calculadoraAplicada.cuotaAnio1) {
+        calculadoraAplicada = null;
+        if (calcAplicadaBadge) calcAplicadaBadge.style.display = 'none';
+      }
+    });
+  }
+
+  const servCapInput = document.getElementById('serviceRequestedCapital');
+  if (servCapInput) {
+    servCapInput.addEventListener('input', () => {
+      if (calculadoraAplicada && Math.round(Number(servCapInput.value)) !== calculadoraAplicada.cuotaAnio1) {
+        calculadoraAplicada = null;
+        if (calcAplicadaBadgePrestador) calcAplicadaBadgePrestador.style.display = 'none';
+      }
     });
   }
 
