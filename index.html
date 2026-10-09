@@ -720,40 +720,49 @@
     }
 
     /* ========================================================================= */
-    /* BOTÓN TRIGGER Y MODAL DE LA CALCULADORA FINANCIERA (SISTEMA ALEMÁN)       */
+    /* GRUPO DE ACCIÓN (INPUT-GROUP) Y BOTÓN DE LA CALCULADORA FINANCIERA         */
     /* ========================================================================= */
-    .label-with-action {
+    .input-action-group {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 0.25rem;
+      align-items: stretch;
+      width: 100%;
     }
 
-    .btn-calc-trigger {
-      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-      color: #15803d;
-      border: 1px solid #86efac;
-      padding: 0.32rem 0.75rem;
-      border-radius: 6px;
-      font-size: 0.76rem;
+    .input-action-group input {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      flex: 1;
+    }
+
+    .input-action-group input:focus {
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-input-calc {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      border-top-right-radius: var(--radius);
+      border-bottom-right-radius: var(--radius);
+      border: 1px solid var(--border);
+      border-left: none;
+      background-color: #1e293b;
+      color: #34d399;
+      font-size: 0.8rem;
       font-weight: 600;
-      cursor: pointer;
+      padding: 0 0.85rem;
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
+      cursor: pointer;
+      white-space: nowrap;
       transition: all 0.2s ease;
       font-family: inherit;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
-    .btn-calc-trigger:hover {
-      background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-      border-color: #4ade80;
-      color: #14532d;
-      transform: translateY(-1px);
-      box-shadow: 0 2px 5px rgba(21, 128, 61, 0.18);
+    .btn-input-calc:hover {
+      background-color: #064e3b;
+      color: #a7f3d0;
     }
 
     .calc-status-badge {
@@ -1493,7 +1502,7 @@
       </nav>
 
       <div>
-        <span class="currency-pill">💵 Moneda Oficial: USD ($) • v0.5.2</span>
+        <span class="currency-pill">💵 Moneda Oficial: USD ($) • v0.6.0</span>
       </div>
     </div>
   </header>
@@ -1553,16 +1562,14 @@
                 <input type="number" id="costPerHectare" min="0" step="any" placeholder="0.00" required value="720">
               </div>
               <div class="form-group">
-                <div class="label-with-action">
-                  <label for="requestedCapital">
-                    Monto del Crédito Solicitado (USD)
-                    <span class="label-hint">(Intereses ya incluidos)</span>
-                  </label>
-                  <button type="button" id="btn-abrir-calculadora" class="btn-calc-trigger" title="Simular cronograma de cuotas bajo el Sistema Alemán">
-                    🧮 Simular Cuotas (Sistema Alemán)
+                <label for="requestedCapital">Monto del Crédito Solicitado (USD) <span class="label-hint">(Intereses incluidos)</span></label>
+                <div class="input-action-group">
+                  <input type="number" id="requestedCapital" min="1" step="any" placeholder="0.00" required value="110000">
+                  <button type="button" id="btn-abrir-calculadora" class="btn-input-calc" title="Simular cuotas bajo el Sistema Alemán">
+                    <span>🧮</span>
+                    <span>Simular</span>
                   </button>
                 </div>
-                <input type="number" id="requestedCapital" min="1" step="any" placeholder="0.00 (Intereses ya incluidos)" required value="110000">
                 <div id="calc-aplicada-badge" class="calc-status-badge" style="display: none;">
                   <span>ℹ️ <strong>Cuota Año 1 aplicada:</strong> Sistema Alemán a <span id="badgeCalcAnios">5</span> años al <span id="badgeCalcTasa">7.5</span>% + IVA.</span>
                 </div>
@@ -1611,16 +1618,14 @@
                 <input type="number" id="serviceCost" min="0" step="any" placeholder="0.00" value="85">
               </div>
               <div class="form-group">
-                <div class="label-with-action">
-                  <label for="serviceRequestedCapital">
-                    Monto del Crédito Solicitado (USD)
-                    <span class="label-hint">(Intereses ya incluidos)</span>
-                  </label>
-                  <button type="button" id="btn-abrir-calculadora-prestador" class="btn-calc-trigger" title="Simular cronograma de cuotas bajo el Sistema Alemán">
-                    🧮 Simular Cuotas (Sistema Alemán)
+                <label for="serviceRequestedCapital">Monto del Crédito Solicitado (USD) <span class="label-hint">(Intereses incluidos)</span></label>
+                <div class="input-action-group">
+                  <input type="number" id="serviceRequestedCapital" min="1" step="any" placeholder="0.00" value="20000">
+                  <button type="button" id="btn-abrir-calculadora-prestador" class="btn-input-calc" title="Simular cuotas bajo el Sistema Alemán">
+                    <span>🧮</span>
+                    <span>Simular</span>
                   </button>
                 </div>
-                <input type="number" id="serviceRequestedCapital" min="1" step="any" placeholder="0.00 (Intereses ya incluidos)" value="20000">
                 <div id="calc-aplicada-badge-prestador" class="calc-status-badge" style="display: none;">
                   <span>ℹ️ <strong>Cuota Año 1 aplicada:</strong> Sistema Alemán a <span id="badgeCalcAniosPrestador">5</span> años al <span id="badgeCalcTasaPrestador">7.5</span>% + IVA.</span>
                 </div>
@@ -1798,7 +1803,7 @@
         <div class="reporte-meta">
           <span><strong>Emisión:</strong> <span id="printFechaEmision">--/--/---- --:--</span></span> • 
           <span><strong>Protocolo:</strong> <span id="printProtocolo">SAC-PY-00000000-0000</span></span> • 
-          <span><strong>Versión:</strong> v0.5.2</span>
+          <span><strong>Versión:</strong> v0.6.0</span>
         </div>
       </div>
     </div>

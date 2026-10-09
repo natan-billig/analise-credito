@@ -5,6 +5,13 @@ Todas las modificaciones notables de este proyecto se documentan en este archivo
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [0.6.1] - 2026-10-09
+
+### Modificado
+- Rediseñado el botón de la calculadora a formato 'input-group' integrado.
+- Corregido el alineamiento horizontal y vertical de los campos de costos y capital.
+- Actualizadas las etiquetas estáticas de versión a v0.6.0/v0.6.1.
+
 ## [0.6.0] - 2026-10-09
 
 ### Añadido / Modificado
