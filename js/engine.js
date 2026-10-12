@@ -1,6 +1,6 @@
 /**
  * Sistema de Análisis de Crédito Rural - Motor de Flujo de Caja y Riesgo Agropecuario
- * Versión: 0.8.0 - Gestor de Tasas Bancarias Persistente y Sistema Alemán de Amortización
+ * Versión: 0.8.1 - Referencias Comerciales y Formato Bifrontal A4
  */
 
 (function (global) {
@@ -245,6 +245,7 @@
     const identificacionFiscal = (input.identificacionFiscal || input.documentNumber || 'S/D').trim();
     const cultivo = (input.cultivo || input.cropType || 'Soja').trim();
     const periodicidad = (input.periodicidad || input.paymentFrequency || 'Zafra Única').trim();
+    const referenciasComerciales = (input.referenciasComerciales || input.refComerciales || '').trim();
 
     // 1. Ingresos y Margen Operativo Agrícola
     const ingresoBruto = hectareas * rendimientoPorHa * precioPorTon;
@@ -290,6 +291,7 @@
       flujoCajaNeto,
       icsd,
       periodicidad,
+      referenciasComerciales,
       dictamen,
       dictamenSubtitulo,
       sistemaAlemanInfo: input.sistemaAlemanInfo
@@ -300,6 +302,7 @@
       dictamen,
       dictamenSubtitulo,
       sistemaAlemanInfo: input.sistemaAlemanInfo || null,
+      referenciasComerciales,
       metricas: {
         ingresoBruto,
         costoTotal,
@@ -340,6 +343,7 @@
     const identificacionFiscal = (input.identificacionFiscal || input.providerDoc || 'S/D').trim();
     const contratante = (input.contratante || input.contractClient || 'Silo / Cliente Contratante').trim();
     const periodicidad = (input.periodicidad || input.servicePaymentFrequency || 'Zafra Única').trim();
+    const referenciasComerciales = (input.referenciasComerciales || input.serviceRefComerciales || input.refComerciales || '').trim();
 
     // 1. Cálculos de Facturación y Costos de Servicio
     const ingresoBruto = hectareas * tarifaPorHa;
@@ -382,6 +386,7 @@
       flujoCajaNeto,
       icsd,
       periodicidad,
+      referenciasComerciales,
       dictamen,
       dictamenSubtitulo,
       sistemaAlemanInfo: input.sistemaAlemanInfo
@@ -392,6 +397,7 @@
       dictamen,
       dictamenSubtitulo,
       sistemaAlemanInfo: input.sistemaAlemanInfo || null,
+      referenciasComerciales,
       metricas: {
         ingresoBruto,
         costoTotal,
@@ -469,7 +475,11 @@ Concentración de Vencimientos por Mes:
 ${cronogramaTxt}
 ${picoTxt}
 
-4. CARGA FINANCIERA TOTAL Y LIQUIDEZ (USD)
+4. REFERENCIAS COMERCIALES:
+----------------------------------------------------------------------
+${d.referenciasComerciales ? d.referenciasComerciales : 'Sin referencias comerciales registradas para esta operación.'}
+
+5. CARGA FINANCIERA TOTAL Y LIQUIDEZ (USD)
 ----------------------------------------------------------------------
 • Suma de Compromisos Prev. : ${fmtUSD(d.deudasFinancierasTotal)}
 • Crédito Solicitado (c/int): ${fmtUSD(d.capitalSolicitado)}${d.sistemaAlemanInfo ? ` [Cuota Año 1 - Sist. Alemán (${d.sistemaAlemanInfo.frecuencia === 'semestral' ? 'Semestral' : 'Anual'}) a ${d.sistemaAlemanInfo.plazoAnios} años al ${d.sistemaAlemanInfo.tasaAnual}% + IVA${d.sistemaAlemanInfo.entidad ? ` en ${d.sistemaAlemanInfo.entidad}` : ''}]` : ''}
@@ -478,7 +488,7 @@ ${picoTxt}
 • Flujo de Caja Libre Neto  : ${fmtUSD(d.flujoCajaNeto)}
 • Cobertura / ICSD Global   : ${d.icsd >= 90 ? '> 10.0x' : d.icsd.toFixed(2) + 'x'} (Umbral: ≥ 1.25x Aprobado | 1.00x - 1.24x Riesgo Moderado | < 1.00x Inviable)
 
-5. CONCLUSIÓN Y RECOMENDACIÓN CREDITICIA
+6. CONCLUSIÓN Y RECOMENDACIÓN CREDITICIA
 ----------------------------------------------------------------------
 DICTAMEN: ${d.dictamen.toUpperCase()}
 
@@ -546,7 +556,11 @@ Concentración de Vencimientos por Mes:
 ${cronogramaTxt}
 ${picoTxt}
 
-4. CARGA FINANCIERA TOTAL Y LIQUIDEZ (USD)
+4. REFERENCIAS COMERCIALES:
+----------------------------------------------------------------------
+${d.referenciasComerciales ? d.referenciasComerciales : 'Sin referencias comerciales registradas para esta operación.'}
+
+5. CARGA FINANCIERA TOTAL Y LIQUIDEZ (USD)
 ----------------------------------------------------------------------
 • Suma de Compromisos Prev. : ${fmtUSD(d.deudasFinancierasTotal)}
 • Crédito Solicitado (c/int): ${fmtUSD(d.capitalSolicitado)}${d.sistemaAlemanInfo ? ` [Cuota Año 1 - Sist. Alemán (${d.sistemaAlemanInfo.frecuencia === 'semestral' ? 'Semestral' : 'Anual'}) a ${d.sistemaAlemanInfo.plazoAnios} años al ${d.sistemaAlemanInfo.tasaAnual}% + IVA${d.sistemaAlemanInfo.entidad ? ` en ${d.sistemaAlemanInfo.entidad}` : ''}]` : ''}
@@ -555,7 +569,7 @@ ${picoTxt}
 • Flujo de Caja Libre Neto  : ${fmtUSD(d.flujoCajaNeto)}
 • Cobertura / ICSD Global   : ${d.icsd >= 90 ? '> 10.0x' : d.icsd.toFixed(2) + 'x'} (Umbral: ≥ 1.25x Aprobado | 1.00x - 1.24x Riesgo Moderado | < 1.00x Inviable)
 
-5. CONCLUSIÓN Y RECOMENDACIÓN CREDITICIA
+6. CONCLUSIÓN Y RECOMENDACIÓN CREDITICIA
 ----------------------------------------------------------------------
 DICTAMEN: ${d.dictamen.toUpperCase()}
 

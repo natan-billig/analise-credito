@@ -1,6 +1,6 @@
 /**
  * Sistema de Análisis de Crédito Rural - Controlador de la Interfaz
- * Versión: 0.8.0 - Gestor de Tasas Bancarias Persistente (localStorage) e Integración con Calculadora
+ * Versión: 0.8.1 - Referencias Comerciales y Formato Bifrontal A4 en Reporte de Impresión
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -106,6 +106,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const boxCobertura = document.getElementById('boxCobertura');
   const dictamenText = document.getElementById('dictamenText');
 
+  // Referencias Comerciales
+  const refComerciales = document.getElementById('refComerciales');
+  const serviceRefComerciales = document.getElementById('serviceRefComerciales');
+  const groupRefComercialesProductor = document.getElementById('groupRefComercialesProductor');
+  const groupRefComercialesPrestador = document.getElementById('groupRefComercialesPrestador');
+  const printRefComercialesBox = document.getElementById('printRefComercialesBox');
+
   let activeProfile = 'productor'; // 'productor' | 'prestador'
 
   const MESES = [
@@ -139,6 +146,9 @@ document.addEventListener('DOMContentLoaded', () => {
       sectionProductor.style.display = 'block';
       sectionPrestador.style.display = 'none';
 
+      if (groupRefComercialesProductor) groupRefComercialesProductor.style.display = 'block';
+      if (groupRefComercialesPrestador) groupRefComercialesPrestador.style.display = 'none';
+
       if (formCardTitle) formCardTitle.textContent = '📝 Datos Técnicos y Financieros del Productor';
       if (formCardSubtitle) formCardSubtitle.textContent = 'Valores en USD ($) • Paraguay (C.I. / RUC)';
       if (labelIngresos) labelIngresos.textContent = 'Ingresos Proyectados (USD)';
@@ -154,6 +164,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       sectionPrestador.style.display = 'block';
       sectionProductor.style.display = 'none';
+
+      if (groupRefComercialesPrestador) groupRefComercialesPrestador.style.display = 'block';
+      if (groupRefComercialesProductor) groupRefComercialesProductor.style.display = 'none';
 
       if (formCardTitle) formCardTitle.textContent = '📝 Datos Técnicos y Financieros del Prestador de Servicios';
       if (formCardSubtitle) formCardSubtitle.textContent = 'Valores en USD ($) • Contratos con Silos';
@@ -313,6 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
       costPerHectare: 720,
       requestedCapital: 110000,
       paymentFrequency: 'Zafra Única',
+      refComerciales: 'Agrofértil S.A.: Línea de crédito activa, excelente cumplimiento. Dekalpar S.A.: Compras al día a cosecha sin reclamos. Silo Santa Rosa: Entrega normal de granos.',
       compromisos: [
         { entidad: 'Banco Sudameris', mes: 'Mayo', monto: 15000 },
         { entidad: 'Banco Atlas', mes: 'Agosto', monto: 10000 }
@@ -328,6 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
       costPerHectare: 1050,
       requestedCapital: 75000,
       paymentFrequency: 'Semestral',
+      refComerciales: 'Ciabay S.A.: Cumplimiento intachable en insumos. Cooperativa Colonias Unidas: Socio clase A con entregas periódicas. Diagro: Cancelación puntual a cosecha.',
       compromisos: [
         { entidad: 'Banco Continental', mes: 'Junio', monto: 12000 },
         { entidad: 'Itaú Paraguay', mes: 'Noviembre', monto: 6000 }
@@ -343,6 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
       costPerHectare: 650,
       requestedCapital: 55000,
       paymentFrequency: 'Zafra Única',
+      refComerciales: 'Somax Agro: Cuenta corriente comercial normal sin atrasos. Matrisoja: Proveedor de fertilizantes con historial regular y positivo.',
       compromisos: [
         { entidad: 'Banco Regional / Sudameris', mes: 'Setiembre', monto: 18000 },
         { entidad: 'Cooperativa Colonias Unidas', mes: 'Diciembre', monto: 12000 }
@@ -361,6 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
       serviceCost: 85,
       serviceRequestedCapital: 20000,
       servicePaymentFrequency: 'Zafra Única',
+      refComerciales: 'Silo Santa Rosa (ADM): Contratista homologado hace 4 zafras con cumplimiento óptimo. Agrofértil S.A.: Línea de lubricantes y repuestos al día.',
       compromisos: [
         { entidad: 'Banco Sudameris', mes: 'Mayo', monto: 8000 },
         { entidad: 'Banco Continental', mes: 'Octubre', monto: 5000 }
@@ -375,6 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
       serviceCost: 80,
       serviceRequestedCapital: 35000,
       servicePaymentFrequency: 'Semestral',
+      refComerciales: 'Cargill Agropecuaria: Cumplimiento riguroso de cronograma de cosecha. Kurosu & Cía. (John Deere): Mantenimiento de parque de cosechadoras al día.',
       compromisos: [
         { entidad: 'Itaú Paraguay', mes: 'Junio', monto: 10000 },
         { entidad: 'Banco Atlas', mes: 'Diciembre', monto: 8000 }
@@ -389,6 +407,7 @@ document.addEventListener('DOMContentLoaded', () => {
       serviceCost: 95,
       serviceRequestedCapital: 15000,
       servicePaymentFrequency: 'Zafra Única',
+      refComerciales: 'Cooperativa Fernheim: Prestador de servicios con calificación comercial excelente. Tracto Agro Vial: Créditos para maquinarias al día.',
       compromisos: [
         { entidad: 'Banco Basa', mes: 'Agosto', monto: 6000 }
       ]
@@ -413,6 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('costPerHectare').value = sample.costPerHectare;
         document.getElementById('requestedCapital').value = sample.requestedCapital;
         document.getElementById('paymentFrequency').value = sample.paymentFrequency;
+        if (refComerciales) refComerciales.value = sample.refComerciales || '';
 
         resetCommitments(sample.compromisos);
       } else {
@@ -427,6 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('serviceCost').value = sample.serviceCost;
         document.getElementById('serviceRequestedCapital').value = sample.serviceRequestedCapital;
         document.getElementById('servicePaymentFrequency').value = sample.servicePaymentFrequency;
+        if (serviceRefComerciales) serviceRefComerciales.value = sample.refComerciales || '';
 
         resetCommitments(sample.compromisos);
       }
@@ -498,6 +519,7 @@ document.addEventListener('DOMContentLoaded', () => {
         costoPorHa: Number(document.getElementById('costPerHectare').value),
         capitalSolicitado: Number(document.getElementById('requestedCapital').value),
         periodicidad: document.getElementById('paymentFrequency').value,
+        referenciasComerciales: refComerciales ? refComerciales.value.trim() : '',
         compromisos: compromisosList,
         sistemaAlemanInfo: calculadoraAplicada
       };
@@ -513,6 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
         costoPorHa: Number(document.getElementById('serviceCost').value),
         capitalSolicitado: Number(document.getElementById('serviceRequestedCapital').value),
         periodicidad: document.getElementById('servicePaymentFrequency').value,
+        referenciasComerciales: serviceRefComerciales ? serviceRefComerciales.value.trim() : '',
         compromisos: compromisosList,
         sistemaAlemanInfo: calculadoraAplicada
       };
@@ -638,6 +661,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Texto del Dictamen Oficial
     dictamenText.textContent = res.dictamenFormal;
+
+    // Inyección de Referencias Comerciales en el Reporte Impreso
+    if (printRefComercialesBox) {
+      const activeRef = (res && res.referenciasComerciales) ? res.referenciasComerciales : (activeProfile === 'productor'
+        ? (refComerciales ? refComerciales.value.trim() : '')
+        : (serviceRefComerciales ? serviceRefComerciales.value.trim() : ''));
+      printRefComercialesBox.textContent = activeRef || 'Sin referencias comerciales registradas para esta operación.';
+    }
 
     // Almacenar el último análisis ejecutado para el reporte imprimible
     ultimoAnalisis = res;
@@ -842,6 +873,32 @@ document.addEventListener('DOMContentLoaded', () => {
         elSubVeredicto.style.color = '#7f1d1d';
       }
     }
+
+    // f) Referencias Comerciales en Reporte Impreso
+    const elRefBox = document.getElementById('printRefComercialesBox');
+    if (elRefBox) {
+      const activeRef = (res && res.referenciasComerciales) ? res.referenciasComerciales : (esProductor
+        ? (document.getElementById('refComerciales') ? document.getElementById('refComerciales').value.trim() : '')
+        : (document.getElementById('serviceRefComerciales') ? document.getElementById('serviceRefComerciales').value.trim() : ''));
+      elRefBox.textContent = activeRef || 'Sin referencias comerciales registradas para esta operación.';
+    }
+  }
+
+  // Sincronización en tiempo real de Referencias Comerciales con el reporte A4
+  if (refComerciales) {
+    refComerciales.addEventListener('input', () => {
+      if (printRefComercialesBox && activeProfile === 'productor') {
+        printRefComercialesBox.textContent = refComerciales.value.trim() || 'Sin referencias comerciales registradas para esta operación.';
+      }
+    });
+  }
+
+  if (serviceRefComerciales) {
+    serviceRefComerciales.addEventListener('input', () => {
+      if (printRefComercialesBox && activeProfile === 'prestador') {
+        printRefComercialesBox.textContent = serviceRefComerciales.value.trim() || 'Sin referencias comerciales registradas para esta operación.';
+      }
+    });
   }
 
   // Listener del Botón de Impresión

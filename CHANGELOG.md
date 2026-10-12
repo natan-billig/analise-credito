@@ -5,6 +5,13 @@ Todas las modificaciones notables de este proyecto se documentan en este archivo
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [0.8.1] - 2026-10-12
+
+### Añadido / Modificado
+- Añadida sección de Referencias Comerciales para Productor y Prestador de Servicios.
+- Integrado bloque de referencias en el reporte impreso A4 en formato bifrontal con el cronograma mensual (One-Pager garantizado).
+- Añadido detalle de referencias comerciales al texto copiable del dictamen.
+
 ## [0.8.0] - 2026-10-12
 
 ### Añadido / Modificado

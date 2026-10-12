@@ -2,7 +2,12 @@
 
 Plataforma técnica especializada para la evaluación de riesgo crediticio, análisis agronómico y emisión automatizada de dictámenes de crédito para **Productores Agropecuarios** y **Prestadores de Servicios Agrícolas** en **USD ($)**, con soporte para la **República del Paraguay (C.I. / RUC)**.
 
-## 🌾 Características Principales (v0.8.0)
+## 🌾 Características Principales (v0.8.1)
+
+- **Referencias Comerciales y Maquetación Bifrontal A4 (v0.8.1)**:
+  - Relevamiento cualitativo de antecedentes comerciales con casas proveedoras de insumos, silos y distribuidores agrícolas para Productores y Prestadores de Servicios.
+  - Maquetación en grid bifrontal de dos columnas para el Cronograma de Compromisos Previos y las Referencias Comerciales en el informe impreso A4, garantizando el formato One-Pager sin desbordes.
+  - Integración dinámica en el dictamen formal técnico copiable y sincronización en tiempo real.
 
 - **Gestor de Tasas Bancarias Persistente (localStorage)**:
   - Integración nativa con la Calculadora Financiera (`⚙️ Tasas`).
