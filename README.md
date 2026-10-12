@@ -2,7 +2,7 @@
 
 Plataforma técnica especializada para la evaluación de riesgo crediticio, análisis agronómico y emisión automatizada de dictámenes de crédito para **Productores Agropecuarios** y **Prestadores de Servicios Agrícolas** en **USD ($)**, con soporte para la **República del Paraguay (C.I. / RUC)**.
 
-## 🌾 Características Principales (v0.7.0)
+## 🌾 Características Principales (v0.7.1)
 
 - **Calculadora Financiera Independiente - Sistema Alemán de Amortización**:
   - Herramienta ejecutiva accesible desde el encabezado general de la plataforma (`🧮 Calculadora Financiera`).

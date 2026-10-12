@@ -979,7 +979,7 @@
       background: #ffffff;
       border-radius: 8px;
       border: 1px solid var(--border);
-      overflow: hidden;
+      overflow: visible;
     }
 
     .calc-table-title-row {
@@ -1010,9 +1010,12 @@
     }
 
     .calc-table-wrapper {
-      max-height: 280px;
-      overflow-y: auto;
-      overflow-x: auto;
+      max-height: 205px !important;
+      overflow-y: auto !important;
+      overflow-x: auto !important;
+      border-top: 1px solid var(--border);
+      display: block;
+      width: 100%;
     }
 
     .calc-table {
@@ -1025,7 +1028,7 @@
     .calc-table thead th {
       position: sticky;
       top: 0;
-      z-index: 2;
+      z-index: 10;
       background-color: #f1f5f9;
       color: var(--text-muted);
       font-weight: 700;
@@ -1034,6 +1037,7 @@
       letter-spacing: 0.04em;
       padding: 0.6rem 0.75rem;
       border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
 
     .calc-table td {
@@ -1549,7 +1553,7 @@
           <span>🧮</span>
           <span>Calculadora Financiera</span>
         </button>
-        <span class="currency-pill">💵 Moneda Oficial: USD ($) • v0.7.0</span>
+        <span class="currency-pill">💵 Moneda Oficial: USD ($) • v0.7.1</span>
       </div>
     </div>
   </header>
@@ -1838,7 +1842,7 @@
         <div class="reporte-meta">
           <span><strong>Emisión:</strong> <span id="printFechaEmision">--/--/---- --:--</span></span> • 
           <span><strong>Protocolo:</strong> <span id="printProtocolo">SAC-PY-00000000-0000</span></span> • 
-          <span><strong>Versión:</strong> v0.7.0</span>
+          <span><strong>Versión:</strong> v0.7.1</span>
         </div>
       </div>
     </div>
@@ -2006,7 +2010,7 @@
       </p>
       <div class="reporte-meta-footer">
         <span>Cotripar S.A. • Sistema de Análisis de Crédito Rural</span>
-        <span>v0.7.0 • N. Billig</span>
+        <span>v0.7.1 • N. Billig</span>
       </div>
     </div>
   </div>

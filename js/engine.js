@@ -1,6 +1,6 @@
 /**
  * Sistema de Análisis de Crédito Rural - Motor de Flujo de Caja y Riesgo Agropecuario
- * Versión: 0.7.0 - Calculadora Financiera Independiente, Sistema Alemán con Cuotas Semestrales (Zafra)
+ * Versión: 0.7.1 - Calculadora Financiera Sistema Alemán con Cuotas Semestrales (Zafra)
  */
 
 (function (global) {

@@ -1,6 +1,6 @@
 /**
  * Sistema de Análisis de Crédito Rural - Controlador de la Interfaz
- * Versión: 0.7.0 - Calculadora Financiera Independiente, Cuotas Semestrales Zafra y Fix de Zoom
+ * Versión: 0.7.1 - Scrollbar continuo en cronograma y thead sticky
  */
 
 document.addEventListener('DOMContentLoaded', () => {

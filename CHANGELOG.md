@@ -5,6 +5,13 @@ Todas las modificaciones notables de este proyecto se documentan en este archivo
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [0.7.1] - 2026-10-12
+
+### Corregido / Modificado
+- Corregido el scrollbar del cronograma en la Calculadora Financiera para visualización Anual.
+- Ajustada altura máxima del contenedor a 205px con thead sticky para garantizar acceso a los años 5 y 6.
+- Eliminada restricción condicional de desbordamiento en el modal.
+
 ## [0.7.0] - 2026-10-12
 
 ### Añadido / Modificado
