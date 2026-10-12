@@ -5,6 +5,13 @@ Todas las modificaciones notables de este proyecto se documentan en este archivo
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [0.8.0] - 2026-10-12
+
+### Añadido / Modificado
+- Implementado Gestor de Tasas Bancarias persistente en localStorage para entidades de Paraguay.
+- Automatizada la carga de tasa de interés anual según el banco seleccionado (ej. Interfisa Banco al 7.40%).
+- Creado panel de configuración (CRUD) para agregar, editar o restablecer entidades financieras y sus tasas periódicas.
+
 ## [0.7.1] - 2026-10-12
 
 ### Corregido / Modificado

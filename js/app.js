@@ -1,6 +1,6 @@
 /**
  * Sistema de Análisis de Crédito Rural - Controlador de la Interfaz
- * Versión: 0.7.1 - Scrollbar continuo en cronograma y thead sticky
+ * Versión: 0.8.0 - Gestor de Tasas Bancarias Persistente (localStorage) e Integración con Calculadora
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -36,7 +36,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const calcFrecuencia = document.getElementById('calcFrecuencia');
   const calcEsquemaSemestral = document.getElementById('calcEsquemaSemestral');
   const groupEsquemaSemestral = document.getElementById('groupEsquemaSemestral');
-  const calcEntidad = document.getElementById('calcEntidad');
+  const calcEntidadSelect = document.getElementById('calcEntidadSelect');
+  const btnGestionarTasas = document.getElementById('btn-gestionar-tasas');
+
+  // Gestor de Tasas de Bancos
+  const modalGestorTasas = document.getElementById('modal-gestor-tasas');
+  const btnCerrarTasasX = document.getElementById('btn-cerrar-tasas-x');
+  const btnCerrarTasas = document.getElementById('btn-cerrar-tasas');
+  const btnGuardarEntidad = document.getElementById('btn-guardar-entidad');
+  const btnResetTasas = document.getElementById('btn-reset-tasas');
+  const inputNombreBanco = document.getElementById('inputNombreBanco');
+  const inputTasaBanco = document.getElementById('inputTasaBanco');
+  const tasaBancoEditId = document.getElementById('tasaBancoEditId');
+  const tasasBancosBody = document.getElementById('tasasBancosBody');
+  const badgeTotalBancos = document.getElementById('badgeTotalBancos');
 
   const calcCronogramaBody = document.getElementById('calcCronogramaBody');
   const calcTableBadge = document.getElementById('calcTableBadge');
@@ -727,7 +740,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elNota && infoAleman) {
       elNota.style.display = 'block';
       if (elAnios) elAnios.textContent = infoAleman.plazoAnios;
-      if (elTasa) elTasa.textContent = `${infoAleman.tasaAnual}${infoAleman.frecuencia === 'semestral' ? ' (Semestral)' : ''}`;
+      const entidadDesc = infoAleman.entidad ? ` (${infoAleman.entidad})` : '';
+      if (elTasa) elTasa.textContent = `${infoAleman.tasaAnual}${infoAleman.frecuencia === 'semestral' ? ' (Semestral)' : ''}${entidadDesc}`;
     } else if (elNota) {
       elNota.style.display = 'none';
     }
@@ -847,6 +861,266 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // --- GESTOR DE TASAS BANCARIAS PERSISTENTE (LOCALSTORAGE) ---
+  const BANCOS_DEFAULT = [
+    { id: 'interfisa', nombre: 'Interfisa Banco', tasa: 7.40 },
+    { id: 'sudameris', nombre: 'Banco Sudameris', tasa: 7.50 },
+    { id: 'atlas', nombre: 'Banco Atlas', tasa: 7.50 },
+    { id: 'continental', nombre: 'Banco Continental', tasa: 7.65 },
+    { id: 'itau', nombre: 'Banco Itaú', tasa: 7.75 },
+    { id: 'basa', nombre: 'Banco Basa', tasa: 7.60 }
+  ];
+  const STORAGE_KEY_TASAS = 'sac_tasas_bancos_py';
+  let bancosList = [];
+
+  function carregarBancos() {
+    try {
+      const data = localStorage.getItem(STORAGE_KEY_TASAS);
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          bancosList = parsed.map(b => ({
+            id: String(b.id || 'banco_' + Math.random().toString(36).substr(2, 9)),
+            nombre: String(b.nombre || 'Entidad Financiera'),
+            tasa: parseFloat(b.tasa) || 7.50
+          }));
+          return bancosList;
+        }
+      }
+    } catch (err) {
+      console.warn('Error al cargar tasas de localStorage:', err);
+    }
+    bancosList = BANCOS_DEFAULT.map(b => ({ ...b }));
+    salvarBancos(bancosList, false);
+    return bancosList;
+  }
+
+  function salvarBancos(bancos, sincronizar = true) {
+    try {
+      localStorage.setItem(STORAGE_KEY_TASAS, JSON.stringify(bancos));
+    } catch (err) {
+      console.warn('Error al guardar tasas en localStorage:', err);
+    }
+    bancosList = bancos;
+    if (sincronizar) {
+      sincronizarSelectBancos();
+      renderizarTablaBancos();
+    }
+  }
+
+  function sincronizarSelectBancos() {
+    if (!calcEntidadSelect) return;
+    const prevVal = calcEntidadSelect.value;
+    calcEntidadSelect.innerHTML = '';
+
+    bancosList.forEach(b => {
+      const opt = document.createElement('option');
+      opt.value = b.id;
+      opt.textContent = `${b.nombre} — ${b.tasa.toFixed(2)}% anual`;
+      opt.dataset.tasa = b.tasa;
+      opt.dataset.nombre = b.nombre;
+      calcEntidadSelect.appendChild(opt);
+    });
+
+    const existe = bancosList.some(b => b.id === prevVal);
+    if (existe) {
+      calcEntidadSelect.value = prevVal;
+    } else if (bancosList.length > 0) {
+      calcEntidadSelect.value = bancosList[0].id;
+    }
+  }
+
+  function renderizarTablaBancos() {
+    if (!tasasBancosBody) return;
+    tasasBancosBody.innerHTML = '';
+
+    if (badgeTotalBancos) {
+      badgeTotalBancos.textContent = `${bancosList.length} ${bancosList.length === 1 ? 'entidad activa' : 'entidades activas'}`;
+    }
+
+    if (bancosList.length === 0) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="3" style="text-align: center; color: var(--text-muted); padding: 1rem;">
+        No hay entidades configuradas. Presione "Restablecer Tasas Predeterminadas".
+      </td>`;
+      tasasBancosBody.appendChild(tr);
+      return;
+    }
+
+    bancosList.forEach(b => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-weight: 600; color: #1e293b;">
+          ${b.nombre}
+        </td>
+        <td class="text-right" style="font-weight: 700; color: #15803d; font-size: 0.9rem;">
+          ${b.tasa.toFixed(2)}%
+        </td>
+        <td class="text-center">
+          <div style="display: inline-flex; gap: 0.35rem; justify-content: center;">
+            <button type="button" class="btn-table-action edit btn-edit-tasa" data-id="${b.id}" title="Editar tasa de ${b.nombre}">
+              ✏️ Editar
+            </button>
+            <button type="button" class="btn-table-action delete btn-del-tasa" data-id="${b.id}" title="Eliminar ${b.nombre}">
+              🗑️ Eliminar
+            </button>
+          </div>
+        </td>
+      `;
+      tasasBancosBody.appendChild(tr);
+    });
+
+    // Event listeners de la tabla
+    tasasBancosBody.querySelectorAll('.btn-edit-tasa').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        iniciarEdicionBanco(id);
+      });
+    });
+
+    tasasBancosBody.querySelectorAll('.btn-del-tasa').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        removerBanco(id);
+      });
+    });
+  }
+
+  function limpiarFormularioBanco() {
+    if (inputNombreBanco) inputNombreBanco.value = '';
+    if (inputTasaBanco) inputTasaBanco.value = '';
+    if (tasaBancoEditId) tasaBancoEditId.value = '';
+    if (btnGuardarEntidad) btnGuardarEntidad.textContent = '+ Guardar Entidad';
+  }
+
+  function iniciarEdicionBanco(id) {
+    const banco = bancosList.find(b => b.id === id);
+    if (!banco) return;
+    if (inputNombreBanco) inputNombreBanco.value = banco.nombre;
+    if (inputTasaBanco) inputTasaBanco.value = banco.tasa;
+    if (tasaBancoEditId) tasaBancoEditId.value = banco.id;
+    if (btnGuardarEntidad) btnGuardarEntidad.textContent = '💾 Actualizar Entidad';
+    if (inputNombreBanco) inputNombreBanco.focus();
+  }
+
+  function adicionarBanco(nombre, tasa) {
+    const trimmedNombre = (nombre || '').trim();
+    const numTasa = parseFloat(tasa);
+
+    if (!trimmedNombre) {
+      showToast('Por favor, ingrese el nombre de la entidad financiera');
+      if (inputNombreBanco) inputNombreBanco.focus();
+      return false;
+    }
+
+    if (isNaN(numTasa) || numTasa <= 0 || numTasa > 100) {
+      showToast('Por favor, ingrese una tasa anual válida (ej: 7.40)');
+      if (inputTasaBanco) inputTasaBanco.focus();
+      return false;
+    }
+
+    const editId = tasaBancoEditId ? tasaBancoEditId.value.trim() : '';
+    if (editId) {
+      const idx = bancosList.findIndex(b => b.id === editId);
+      if (idx !== -1) {
+        bancosList[idx].nombre = trimmedNombre;
+        bancosList[idx].tasa = numTasa;
+        salvarBancos(bancosList);
+        limpiarFormularioBanco();
+        showToast(`Entidad "${trimmedNombre}" actualizada (${numTasa.toFixed(2)}%)`);
+
+        // Si la entidad editada está seleccionada actualmente, actualizar tasa y recalcular
+        if (calcEntidadSelect && calcEntidadSelect.value === editId && calcTasaInteres) {
+          calcTasaInteres.value = numTasa;
+          recalcularModalCalculadora();
+        }
+        return true;
+      }
+    }
+
+    const slugId = 'banco_' + Date.now();
+    bancosList.push({
+      id: slugId,
+      nombre: trimmedNombre,
+      tasa: numTasa
+    });
+
+    salvarBancos(bancosList);
+    limpiarFormularioBanco();
+    showToast(`Entidad "${trimmedNombre}" agregada (${numTasa.toFixed(2)}%)`);
+
+    // Asignar en el select de la calculadora
+    if (calcEntidadSelect) {
+      calcEntidadSelect.value = slugId;
+      if (calcTasaInteres) {
+        calcTasaInteres.value = numTasa;
+        recalcularModalCalculadora();
+      }
+    }
+    return true;
+  }
+
+  function removerBanco(id) {
+    if (bancosList.length <= 1) {
+      showToast('Debe existir al menos una entidad bancaria configurada');
+      return;
+    }
+    const banco = bancosList.find(b => b.id === id);
+    const nombre = banco ? banco.nombre : 'Entidad';
+    bancosList = bancosList.filter(b => b.id !== id);
+    salvarBancos(bancosList);
+    limpiarFormularioBanco();
+    showToast(`Entidad "${nombre}" eliminada`);
+
+    if (calcEntidadSelect && calcEntidadSelect.value === id) {
+      if (bancosList.length > 0) {
+        calcEntidadSelect.value = bancosList[0].id;
+        if (calcTasaInteres) {
+          calcTasaInteres.value = bancosList[0].tasa;
+          recalcularModalCalculadora();
+        }
+      }
+    }
+  }
+
+  function resetarBancos() {
+    bancosList = BANCOS_DEFAULT.map(b => ({ ...b }));
+    salvarBancos(bancosList);
+    limpiarFormularioBanco();
+    showToast('Tasas bancarias restablecidas a los valores predeterminados');
+
+    if (calcEntidadSelect && bancosList.length > 0) {
+      calcEntidadSelect.value = bancosList[0].id;
+      if (calcTasaInteres) {
+        calcTasaInteres.value = bancosList[0].tasa;
+        recalcularModalCalculadora();
+      }
+    }
+  }
+
+  function abrirModalGestorTasas() {
+    if (!modalGestorTasas) return;
+    limpiarFormularioBanco();
+    renderizarTablaBancos();
+    modalGestorTasas.style.display = 'flex';
+    requestAnimationFrame(() => {
+      modalGestorTasas.classList.add('show');
+    });
+    document.body.style.overflow = 'hidden';
+  }
+
+  function cerrarModalGestorTasas() {
+    if (!modalGestorTasas) return;
+    limpiarFormularioBanco();
+    modalGestorTasas.classList.remove('show');
+    setTimeout(() => {
+      modalGestorTasas.style.display = 'none';
+      if (!modalCalculadora || !modalCalculadora.classList.contains('show')) {
+        document.body.style.overflow = '';
+      }
+    }, 250);
+  }
+
   // --- CALCULADORA FINANCIERA (SISTEMA ALEMÁN) ---
   function abrirModalCalculadora() {
     if (!modalCalculadora) return;
@@ -866,13 +1140,32 @@ document.addEventListener('DOMContentLoaded', () => {
       if (calcPlazoAnios) calcPlazoAnios.value = Math.min(6, calculadoraAplicada.plazoAnios);
       if (calcFrecuencia) calcFrecuencia.value = calculadoraAplicada.frecuencia || 'anual';
       if (calcEsquemaSemestral) calcEsquemaSemestral.value = calculadoraAplicada.esquemaSemestral || 'zafra_interes_primero';
-      if (calcEntidad) calcEntidad.value = calculadoraAplicada.entidad || '';
+
+      // Sincronizar select con banco asociado
+      if (calcEntidadSelect) {
+        const bancoEncontrado = bancosList.find(b => 
+          b.id === calculadoraAplicada.bancoId || 
+          b.nombre.toLowerCase() === (calculadoraAplicada.entidad || '').toLowerCase()
+        );
+        if (bancoEncontrado) {
+          calcEntidadSelect.value = bancoEncontrado.id;
+        } else if (bancosList.length > 0) {
+          calcEntidadSelect.value = bancosList[0].id;
+        }
+      }
     } else {
       if (calcCapital) calcCapital.value = capitalActual;
-      if (calcTasaInteres) calcTasaInteres.value = 7.5;
       if (calcPlazoAnios) calcPlazoAnios.value = 5;
       if (calcFrecuencia) calcFrecuencia.value = 'anual';
       if (calcEsquemaSemestral) calcEsquemaSemestral.value = 'zafra_interes_primero';
+
+      // Asignar primer banco registrado por defecto y cargar su tasa preferencial
+      if (calcEntidadSelect && bancosList.length > 0) {
+        calcEntidadSelect.value = bancosList[0].id;
+        if (calcTasaInteres) calcTasaInteres.value = bancosList[0].tasa;
+      } else {
+        if (calcTasaInteres) calcTasaInteres.value = 7.40;
+      }
     }
 
     if (groupEsquemaSemestral) {
@@ -893,7 +1186,9 @@ document.addEventListener('DOMContentLoaded', () => {
     modalCalculadora.classList.remove('show');
     setTimeout(() => {
       modalCalculadora.style.display = 'none';
-      document.body.style.overflow = '';
+      if (!modalGestorTasas || !modalGestorTasas.classList.contains('show')) {
+        document.body.style.overflow = '';
+      }
     }, 250);
   }
 
@@ -984,7 +1279,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const cuotaTransferir = Math.round(ultimoResultadoAleman.cuotaMayorAnio1 || ultimoResultadoAleman.cuotaAnio1);
-    const entidadBancaria = calcEntidad ? calcEntidad.value.trim() : '';
+
+    let bancoId = '';
+    let entidadBancaria = '';
+    if (calcEntidadSelect) {
+      const b = bancosList.find(item => item.id === calcEntidadSelect.value);
+      if (b) {
+        bancoId = b.id;
+        entidadBancaria = b.nombre;
+      } else {
+        entidadBancaria = calcEntidadSelect.value;
+      }
+    }
 
     calculadoraAplicada = {
       capital: ultimoResultadoAleman.capital,
@@ -996,23 +1302,25 @@ document.addEventListener('DOMContentLoaded', () => {
       cuotaMayorAnio1: ultimoResultadoAleman.cuotaMayorAnio1,
       totalCuotasAnio1: ultimoResultadoAleman.totalCuotasAnio1,
       gastoAdmin: ultimoResultadoAleman.gastoAdmin,
+      bancoId: bancoId,
       entidad: entidadBancaria
     };
 
     const freqDesc = ultimoResultadoAleman.frecuencia === 'semestral' ? ' (Semestral)' : '';
+    const entidadDesc = entidadBancaria ? ` (${entidadBancaria})` : '';
 
     if (activeProfile === 'productor') {
       const inputCredito = document.getElementById('requestedCapital');
       if (inputCredito) inputCredito.value = cuotaTransferir;
       if (badgeCalcAnios) badgeCalcAnios.textContent = ultimoResultadoAleman.plazoAnios;
-      if (badgeCalcTasa) badgeCalcTasa.textContent = `${ultimoResultadoAleman.tasaAnual}${freqDesc}`;
+      if (badgeCalcTasa) badgeCalcTasa.textContent = `${ultimoResultadoAleman.tasaAnual}${freqDesc}${entidadDesc}`;
       if (calcAplicadaBadge) calcAplicadaBadge.style.display = 'flex';
       if (calcAplicadaBadgePrestador) calcAplicadaBadgePrestador.style.display = 'none';
     } else {
       const inputCredito = document.getElementById('serviceRequestedCapital');
       if (inputCredito) inputCredito.value = cuotaTransferir;
       if (badgeCalcAniosPrestador) badgeCalcAniosPrestador.textContent = ultimoResultadoAleman.plazoAnios;
-      if (badgeCalcTasaPrestador) badgeCalcTasaPrestador.textContent = `${ultimoResultadoAleman.tasaAnual}${freqDesc}`;
+      if (badgeCalcTasaPrestador) badgeCalcTasaPrestador.textContent = `${ultimoResultadoAleman.tasaAnual}${freqDesc}${entidadDesc}`;
       if (calcAplicadaBadgePrestador) calcAplicadaBadgePrestador.style.display = 'flex';
       if (calcAplicadaBadge) calcAplicadaBadge.style.display = 'none';
     }
@@ -1022,7 +1330,7 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast(`¡Cuota Año 1 (${formatUSD(cuotaTransferir)}) aplicada al análisis!`);
   }
 
-  // Listeners de la Calculadora
+  // Listeners de la Calculadora y Gestor de Tasas
   if (btnAbrirCalculadoraTop) {
     btnAbrirCalculadoraTop.addEventListener('click', (e) => {
       e.preventDefault();
@@ -1073,9 +1381,94 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Selección de Entidad Bancaria: actualiza automáticamente la tasa anual y recalcula
+  if (calcEntidadSelect) {
+    calcEntidadSelect.addEventListener('change', () => {
+      const selected = bancosList.find(b => b.id === calcEntidadSelect.value);
+      if (selected && calcTasaInteres) {
+        calcTasaInteres.value = selected.tasa;
+        recalcularModalCalculadora();
+      }
+    });
+  }
+
+  // Botón para abrir el Gestor de Tasas desde la calculadora
+  if (btnGestionarTasas) {
+    btnGestionarTasas.addEventListener('click', (e) => {
+      e.preventDefault();
+      abrirModalGestorTasas();
+    });
+  }
+
+  // Controles del Modal Gestor de Tasas
+  if (btnCerrarTasasX) {
+    btnCerrarTasasX.addEventListener('click', (e) => {
+      e.preventDefault();
+      cerrarModalGestorTasas();
+    });
+  }
+
+  if (btnCerrarTasas) {
+    btnCerrarTasas.addEventListener('click', (e) => {
+      e.preventDefault();
+      cerrarModalGestorTasas();
+    });
+  }
+
+  if (modalGestorTasas) {
+    modalGestorTasas.addEventListener('click', (e) => {
+      if (e.target === modalGestorTasas) {
+        cerrarModalGestorTasas();
+      }
+    });
+  }
+
+  if (btnGuardarEntidad) {
+    btnGuardarEntidad.addEventListener('click', (e) => {
+      e.preventDefault();
+      const nombre = inputNombreBanco ? inputNombreBanco.value : '';
+      const tasa = inputTasaBanco ? inputTasaBanco.value : '';
+      adicionarBanco(nombre, tasa);
+    });
+  }
+
+  if (inputNombreBanco) {
+    inputNombreBanco.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (inputTasaBanco) inputTasaBanco.focus();
+      }
+    });
+  }
+
+  if (inputTasaBanco) {
+    inputTasaBanco.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (btnGuardarEntidad) btnGuardarEntidad.click();
+      }
+    });
+  }
+
+  if (btnResetTasas) {
+    btnResetTasas.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (confirm('¿Desea restablecer todas las entidades y tasas a los valores estándar de Paraguay?')) {
+        resetarBancos();
+      }
+    });
+  }
+
+  // Teclado: Escape cierra modales en orden de superposición
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modalCalculadora && modalCalculadora.classList.contains('show')) {
-      cerrarModalCalculadora();
+    if (e.key === 'Escape') {
+      if (modalGestorTasas && modalGestorTasas.classList.contains('show')) {
+        cerrarModalGestorTasas();
+        return;
+      }
+      if (modalCalculadora && modalCalculadora.classList.contains('show')) {
+        cerrarModalCalculadora();
+      }
     }
   });
 
@@ -1114,6 +1507,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Inicialización
+  carregarBancos();
+  sincronizarSelectBancos();
   resetCommitments([
     { entidad: 'Banco Sudameris', mes: 'Mayo', monto: 15000 },
     { entidad: 'Banco Atlas', mes: 'Agosto', monto: 10000 }

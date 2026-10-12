@@ -1,6 +1,6 @@
 /**
  * Sistema de Análisis de Crédito Rural - Motor de Flujo de Caja y Riesgo Agropecuario
- * Versión: 0.7.1 - Calculadora Financiera Sistema Alemán con Cuotas Semestrales (Zafra)
+ * Versión: 0.8.0 - Gestor de Tasas Bancarias Persistente y Sistema Alemán de Amortización
  */
 
 (function (global) {
@@ -472,7 +472,7 @@ ${picoTxt}
 4. CARGA FINANCIERA TOTAL Y LIQUIDEZ (USD)
 ----------------------------------------------------------------------
 • Suma de Compromisos Prev. : ${fmtUSD(d.deudasFinancierasTotal)}
-• Crédito Solicitado (c/int): ${fmtUSD(d.capitalSolicitado)}${d.sistemaAlemanInfo ? ` [Cuota Año 1 - Sist. Alemán (${d.sistemaAlemanInfo.frecuencia === 'semestral' ? 'Semestral' : 'Anual'}) a ${d.sistemaAlemanInfo.plazoAnios} años al ${d.sistemaAlemanInfo.tasaAnual}% + IVA]` : ''}
+• Crédito Solicitado (c/int): ${fmtUSD(d.capitalSolicitado)}${d.sistemaAlemanInfo ? ` [Cuota Año 1 - Sist. Alemán (${d.sistemaAlemanInfo.frecuencia === 'semestral' ? 'Semestral' : 'Anual'}) a ${d.sistemaAlemanInfo.plazoAnios} años al ${d.sistemaAlemanInfo.tasaAnual}% + IVA${d.sistemaAlemanInfo.entidad ? ` en ${d.sistemaAlemanInfo.entidad}` : ''}]` : ''}
 • Modalidad del Crédito     : ${d.periodicidad}
 • Carga Financiera Total    : ${fmtUSD(d.cargaFinancieraTotal)} [Compromisos + Crédito Solicitado]
 • Flujo de Caja Libre Neto  : ${fmtUSD(d.flujoCajaNeto)}
@@ -549,7 +549,7 @@ ${picoTxt}
 4. CARGA FINANCIERA TOTAL Y LIQUIDEZ (USD)
 ----------------------------------------------------------------------
 • Suma de Compromisos Prev. : ${fmtUSD(d.deudasFinancierasTotal)}
-• Crédito Solicitado (c/int): ${fmtUSD(d.capitalSolicitado)}${d.sistemaAlemanInfo ? ` [Cuota Año 1 - Sist. Alemán (${d.sistemaAlemanInfo.frecuencia === 'semestral' ? 'Semestral' : 'Anual'}) a ${d.sistemaAlemanInfo.plazoAnios} años al ${d.sistemaAlemanInfo.tasaAnual}% + IVA]` : ''}
+• Crédito Solicitado (c/int): ${fmtUSD(d.capitalSolicitado)}${d.sistemaAlemanInfo ? ` [Cuota Año 1 - Sist. Alemán (${d.sistemaAlemanInfo.frecuencia === 'semestral' ? 'Semestral' : 'Anual'}) a ${d.sistemaAlemanInfo.plazoAnios} años al ${d.sistemaAlemanInfo.tasaAnual}% + IVA${d.sistemaAlemanInfo.entidad ? ` en ${d.sistemaAlemanInfo.entidad}` : ''}]` : ''}
 • Modalidad del Crédito     : ${d.periodicidad}
 • Carga Financiera Total    : ${fmtUSD(d.cargaFinancieraTotal)} [Compromisos + Crédito Solicitado]
 • Flujo de Caja Libre Neto  : ${fmtUSD(d.flujoCajaNeto)}

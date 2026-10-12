@@ -1201,6 +1201,88 @@
       transform: translateY(-1px);
     }
 
+    /* Estilos del Gestor de Tasas Bancarias */
+    #modal-gestor-tasas {
+      z-index: 1100;
+    }
+
+    .btn-secondary {
+      background-color: #f8fafc;
+      color: #334155;
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.85rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-secondary:hover {
+      background-color: #e2e8f0;
+      color: #0f172a;
+      border-color: #cbd5e1;
+    }
+
+    .tasas-form-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+    }
+
+    .tasas-form-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: flex-end;
+    }
+
+    .btn-table-action {
+      background-color: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 600;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .btn-table-action:hover {
+      background-color: #e2e8f0;
+      color: var(--primary);
+    }
+
+    .btn-table-action.edit {
+      color: #0369a1;
+      background-color: #f0f9ff;
+      border-color: #bae6fd;
+    }
+
+    .btn-table-action.edit:hover {
+      background-color: #e0f2fe;
+      color: #0c4a6e;
+    }
+
+    .btn-table-action.delete {
+      color: var(--danger);
+      background-color: #fef2f2;
+      border-color: #fecaca;
+    }
+
+    .btn-table-action.delete:hover {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+
     /* Ocultar reporte de impresión en pantalla normal */
     #reporte-impresion {
       display: none;
@@ -1502,7 +1584,7 @@
         print-color-adjust: exact !important;
       }
 
-      .no-print, header, nav, form, .lg\:col-span-6:first-child, footer, .container, #toast, .toast, .modal-backdrop, #modal-calculadora {
+      .no-print, header, nav, form, .lg\:col-span-6:first-child, footer, .container, #toast, .toast, .modal-backdrop, #modal-calculadora, #modal-gestor-tasas {
         display: none !important;
       }
 
@@ -1553,7 +1635,7 @@
           <span>🧮</span>
           <span>Calculadora Financiera</span>
         </button>
-        <span class="currency-pill">💵 Moneda Oficial: USD ($) • v0.7.1</span>
+        <span class="currency-pill">💵 Moneda Oficial: USD ($) • v0.8.0</span>
       </div>
     </div>
   </header>
@@ -1842,7 +1924,7 @@
         <div class="reporte-meta">
           <span><strong>Emisión:</strong> <span id="printFechaEmision">--/--/---- --:--</span></span> • 
           <span><strong>Protocolo:</strong> <span id="printProtocolo">SAC-PY-00000000-0000</span></span> • 
-          <span><strong>Versión:</strong> v0.7.1</span>
+          <span><strong>Versión:</strong> v0.8.0</span>
         </div>
       </div>
     </div>
@@ -2010,7 +2092,7 @@
       </p>
       <div class="reporte-meta-footer">
         <span>Cotripar S.A. • Sistema de Análisis de Crédito Rural</span>
-        <span>v0.7.1 • N. Billig</span>
+        <span>v0.8.0 • N. Billig</span>
       </div>
     </div>
   </div>
@@ -2087,9 +2169,24 @@
             </select>
           </div>
 
+          <div class="calc-input-group calc-input-full">
+            <label for="calcEntidadSelect">
+              5. Entidad Bancaria y Tasa Preferencial
+              <span class="label-hint">(Selección de banco con tasa referencial activa)</span>
+            </label>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <select id="calcEntidadSelect" style="flex: 1;">
+                <!-- Opciones dinámicas pobladas desde localStorage -->
+              </select>
+              <button type="button" id="btn-gestionar-tasas" class="btn-secondary" title="Configurar tasas de bancos">
+                ⚙️ Tasas
+              </button>
+            </div>
+          </div>
+
           <div class="calc-input-group">
             <label for="calcFrecuencia">
-              5. Periodicidad de Cuotas
+              6. Periodicidad de Cuotas
               <span class="label-hint">(Frecuencia de pagos)</span>
             </label>
             <select id="calcFrecuencia">
@@ -2100,21 +2197,13 @@
 
           <div class="calc-input-group" id="groupEsquemaSemestral" style="display: none;">
             <label for="calcEsquemaSemestral">
-              6. Esquema Semestral
+              7. Esquema Semestral
               <span class="label-hint">(Modalidad de zafra)</span>
             </label>
             <select id="calcEsquemaSemestral">
               <option value="zafra_interes_primero" selected>Zafra: 1° Semestre Solo Interés / 2° Semestre Capital + Interés</option>
               <option value="constante">Amortización Constante Semestral (Capital e Interés cada semestre)</option>
             </select>
-          </div>
-
-          <div class="calc-input-group calc-input-full">
-            <label for="calcEntidad">
-              7. Entidad Bancaria
-              <span class="label-hint">(Opcional: ej. Banco Sudameris, Banco Atlas, Continental, Itaú)</span>
-            </label>
-            <input type="text" id="calcEntidad" placeholder="Ej: Banco Sudameris, Atlas, Continental">
           </div>
         </div>
 
@@ -2181,6 +2270,87 @@
         <button type="button" class="btn btn-modal-close" id="btn-cerrar-calculadora">Cerrar</button>
         <button type="button" class="btn btn-modal-apply" id="btn-aplicar-calculadora">
           ✅ Aplicar al Formulario Activo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GESTOR DE TASAS BANCARIAS PERSISTENTE (LOCALSTORAGE) -->
+  <div id="modal-gestor-tasas" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modalTasasTitle">
+    <div class="modal-dialog" style="max-width: 680px;">
+      <!-- Header -->
+      <div class="modal-header">
+        <div class="modal-header-info">
+          <h3 class="modal-title" id="modalTasasTitle">
+            <span>🏦</span>
+            Gestor de Tasas de Interés por Entidad
+          </h3>
+          <p class="modal-subtitle">Configuración de tasas activas en USD (actualización periódica guardada localmente).</p>
+        </div>
+        <button type="button" class="modal-close" id="btn-cerrar-tasas-x" aria-label="Cerrar modal">&times;</button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <!-- Formulario Rápido -->
+        <div class="tasas-form-card">
+          <input type="hidden" id="tasaBancoEditId" value="">
+          <div class="tasas-form-grid">
+            <div class="calc-input-group" style="flex: 2; min-width: 190px;">
+              <label for="inputNombreBanco">
+                Nombre de la Entidad
+                <span class="label-hint">(ej: Interfisa Banco, Banco Sudameris)</span>
+              </label>
+              <input type="text" id="inputNombreBanco" placeholder="Ej: Banco Sudameris" autocomplete="off">
+            </div>
+            <div class="calc-input-group" style="flex: 1; min-width: 120px;">
+              <label for="inputTasaBanco">
+                Tasa Anual (%)
+                <span class="label-hint">(ej: 7.40)</span>
+              </label>
+              <div class="input-suffix-wrapper">
+                <input type="number" id="inputTasaBanco" min="0.1" max="100" step="0.05" placeholder="7.40">
+                <span class="input-suffix">%</span>
+              </div>
+            </div>
+            <div class="calc-input-group" style="align-self: flex-end;">
+              <button type="button" id="btn-guardar-entidad" class="btn btn-primary" style="height: 38px; white-space: nowrap; font-size: 0.85rem; font-weight: 600; padding: 0 1rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.35rem;">
+                + Guardar Entidad
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de Bancos Activos -->
+        <div class="calc-table-section">
+          <div class="calc-table-title-row">
+            <div class="calc-table-title">📋 Entidades Financieras Registradas</div>
+            <div class="calc-table-badge" id="badgeTotalBancos">6 entidades activas</div>
+          </div>
+          <div class="calc-table-wrapper" style="max-height: 250px !important;">
+            <table class="calc-table" id="tabla-tasas-bancos">
+              <thead>
+                <tr>
+                  <th>Entidad</th>
+                  <th class="text-right" style="width: 140px;">Tasa Anual (USD)</th>
+                  <th class="text-center" style="width: 160px;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tasasBancosBody">
+                <!-- Rellenado dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer con Botones de Acción -->
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+        <button type="button" class="btn btn-outline" id="btn-reset-tasas" style="font-size: 0.82rem; color: #b91c1c; border-color: #fca5a5; background-color: #fff1f2;">
+          🔄 Restablecer Tasas Predeterminadas
+        </button>
+        <button type="button" class="btn btn-modal-close" id="btn-cerrar-tasas">
+          Cerrar
         </button>
       </div>
     </div>

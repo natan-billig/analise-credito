@@ -2,7 +2,13 @@
 
 Plataforma técnica especializada para la evaluación de riesgo crediticio, análisis agronómico y emisión automatizada de dictámenes de crédito para **Productores Agropecuarios** y **Prestadores de Servicios Agrícolas** en **USD ($)**, con soporte para la **República del Paraguay (C.I. / RUC)**.
 
-## 🌾 Características Principales (v0.7.1)
+## 🌾 Características Principales (v0.8.0)
+
+- **Gestor de Tasas Bancarias Persistente (localStorage)**:
+  - Integración nativa con la Calculadora Financiera (`⚙️ Tasas`).
+  - Lista predeterminada de entidades activas en Paraguay en USD: Interfisa Banco (7.40%), Banco Sudameris (7.50%), Banco Atlas (7.50%), Banco Continental (7.65%), Banco Itaú (7.75%) y Banco Basa (7.60%).
+  - Asignación automática instantánea de la tasa de interés preferencial y recálculo del cronograma al seleccionar la entidad bancaria.
+  - Panel administrativo independiente (CRUD) para agregar, editar, eliminar o restablecer entidades financieras y sus tasas periódicas con persistencia en `localStorage`.
 
 - **Calculadora Financiera Independiente - Sistema Alemán de Amortización**:
   - Herramienta ejecutiva accesible desde el encabezado general de la plataforma (`🧮 Calculadora Financiera`).
