@@ -2,15 +2,19 @@
 
 Plataforma técnica especializada para la evaluación de riesgo crediticio, análisis agronómico y emisión automatizada de dictámenes de crédito para **Productores Agropecuarios** y **Prestadores de Servicios Agrícolas** en **USD ($)**, con soporte para la **República del Paraguay (C.I. / RUC)**.
 
-## 🌾 Características Principales (v0.6.0)
+## 🌾 Características Principales (v0.7.0)
 
-- **Calculadora Financiera - Sistema Alemán de Amortización**:
-  - Modal interactivo para simulación y proyección de cuotas anuales decrecientes bajo el Sistema Alemán.
+- **Calculadora Financiera Independiente - Sistema Alemán de Amortización**:
+  - Herramienta ejecutiva accesible desde el encabezado general de la plataforma (`🧮 Calculadora Financiera`).
+  - Proyección de cuotas decrecientes bajo el Sistema Alemán con **amortización anual o semestral**.
+  - **Soporte para Cuotas Semestrales (Esquema Zafra)**: pago exclusivo de intereses en el primer semestre (entresafra) y amortización de capital e intereses en el segundo semestre (cosecha).
+  - Modalidad de amortización constante semestral.
+  - Plazo parametrizable de 1 a 6 años (estándar normativo de Cotripar S.A.).
   - Cómputo automático del **1% de gasto administrativo** sobre el capital solicitado.
   - Cómputo oficial del **IVA del 10%** sobre intereses bancarios según régimen fiscal de Paraguay.
-  - Proyección parametrizable de 1 a 10 años con cronograma detallado (Año, Saldo Inicial, Amortización, Interés, IVA 10%, Cuota Anual, Saldo Final).
+  - Cronograma visual optimizado para visualización completa sin cortes en zoom 100% con cabecera fija (*sticky header*).
   - Resumen financiero consolidado: Total Intereses, Gasto Administrativo, Costo Financiero Total y Total Pagado.
-  - Transferencia directa de la **Cuota Año 1** (la más exigente del ciclo de pago) al análisis crediticio principal con recálculo automático del flujo de caja.
+  - Botón *Aplicar al Formulario Activo* para transferir la cuota más exigente del primer año al análisis crediticio principal con recálculo automático del flujo de caja.
 
 - **Módulo Dual de Evaluación**:
   - **🚜 Productor Agrícola**: Evaluación de superficie (`ha`), rendimiento esperado (`t/ha`), precio de mercado (`USD/t`), costo por hectárea (`USD/ha`) y financiamiento.

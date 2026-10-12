@@ -1,6 +1,6 @@
 /**
  * Sistema de Análisis de Crédito Rural - Controlador de la Interfaz
- * Versión: 0.6.0 - Calculadora Financiera de Sistema Alemán con IVA y Gasto Administrativo
+ * Versión: 0.7.0 - Calculadora Financiera Independiente, Cuotas Semestrales Zafra y Fix de Zoom
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Calculadora Financiera (Sistema Alemán)
   const modalCalculadora = document.getElementById('modal-calculadora');
+  const btnAbrirCalculadoraTop = document.getElementById('btn-abrir-calculadora-top');
   const btnAbrirCalculadora = document.getElementById('btn-abrir-calculadora');
   const btnAbrirCalculadoraPrestador = document.getElementById('btn-abrir-calculadora-prestador');
   const btnCerrarModalX = document.getElementById('btn-cerrar-modal-x');
@@ -32,9 +33,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const calcGastoAdmin = document.getElementById('calcGastoAdmin');
   const calcTasaInteres = document.getElementById('calcTasaInteres');
   const calcPlazoAnios = document.getElementById('calcPlazoAnios');
+  const calcFrecuencia = document.getElementById('calcFrecuencia');
+  const calcEsquemaSemestral = document.getElementById('calcEsquemaSemestral');
+  const groupEsquemaSemestral = document.getElementById('groupEsquemaSemestral');
   const calcEntidad = document.getElementById('calcEntidad');
 
   const calcCronogramaBody = document.getElementById('calcCronogramaBody');
+  const calcTableBadge = document.getElementById('calcTableBadge');
+  const thColPeriodo = document.getElementById('thColPeriodo');
+  const thColCuota = document.getElementById('thColCuota');
   const calcKpiIntereses = document.getElementById('calcKpiIntereses');
   const calcKpiGastoAdmin = document.getElementById('calcKpiGastoAdmin');
   const calcKpiCostoTotal = document.getElementById('calcKpiCostoTotal');
@@ -720,7 +727,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elNota && infoAleman) {
       elNota.style.display = 'block';
       if (elAnios) elAnios.textContent = infoAleman.plazoAnios;
-      if (elTasa) elTasa.textContent = infoAleman.tasaAnual;
+      if (elTasa) elTasa.textContent = `${infoAleman.tasaAnual}${infoAleman.frecuencia === 'semestral' ? ' (Semestral)' : ''}`;
     } else if (elNota) {
       elNota.style.display = 'none';
     }
@@ -856,12 +863,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (calculadoraAplicada) {
       if (calcCapital) calcCapital.value = calculadoraAplicada.capital;
       if (calcTasaInteres) calcTasaInteres.value = calculadoraAplicada.tasaAnual;
-      if (calcPlazoAnios) calcPlazoAnios.value = calculadoraAplicada.plazoAnios;
+      if (calcPlazoAnios) calcPlazoAnios.value = Math.min(6, calculadoraAplicada.plazoAnios);
+      if (calcFrecuencia) calcFrecuencia.value = calculadoraAplicada.frecuencia || 'anual';
+      if (calcEsquemaSemestral) calcEsquemaSemestral.value = calculadoraAplicada.esquemaSemestral || 'zafra_interes_primero';
       if (calcEntidad) calcEntidad.value = calculadoraAplicada.entidad || '';
     } else {
       if (calcCapital) calcCapital.value = capitalActual;
       if (calcTasaInteres) calcTasaInteres.value = 7.5;
       if (calcPlazoAnios) calcPlazoAnios.value = 5;
+      if (calcFrecuencia) calcFrecuencia.value = 'anual';
+      if (calcEsquemaSemestral) calcEsquemaSemestral.value = 'zafra_interes_primero';
+    }
+
+    if (groupEsquemaSemestral) {
+      groupEsquemaSemestral.style.display = (calcFrecuencia && calcFrecuencia.value === 'semestral') ? 'flex' : 'none';
     }
 
     recalcularModalCalculadora();
@@ -887,7 +902,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const capital = Math.max(0, parseFloat(calcCapital.value) || 0);
     const tasa = Math.max(0, parseFloat(calcTasaInteres.value) || 0);
-    const plazo = Math.max(1, Math.min(10, parseInt(calcPlazoAnios.value, 10) || 1));
+    const plazo = Math.max(1, Math.min(6, parseInt(calcPlazoAnios.value, 10) || 1));
+    const frecuencia = calcFrecuencia ? calcFrecuencia.value : 'anual';
+    const esquema = calcEsquemaSemestral ? calcEsquemaSemestral.value : 'zafra_interes_primero';
 
     // 1% Gasto Administrativo calculado automáticamente [Capital * 0.01]
     const gastoAdmin = capital * 0.01;
@@ -899,8 +916,26 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const res = CreditEngine.calcularSistemaAleman(capital, tasa, plazo);
+    const res = CreditEngine.calcularSistemaAleman(capital, tasa, plazo, frecuencia, esquema);
     ultimoResultadoAleman = res;
+
+    // Actualización de títulos de columna
+    if (thColPeriodo) {
+      thColPeriodo.textContent = (frecuencia === 'semestral') ? 'Período (Semestre)' : 'Año';
+    }
+    if (thColCuota) {
+      thColCuota.textContent = (frecuencia === 'semestral') ? 'Cuota Semestral' : 'Cuota Anual';
+    }
+
+    // Actualización del badge del cronograma
+    if (calcTableBadge) {
+      if (frecuencia === 'semestral') {
+        const semRef = esquema === 'zafra_interes_primero' ? '2 (Cap + Int)' : '1';
+        calcTableBadge.innerHTML = `Mayor Cuota Año 1: <strong>${formatUSD(res.cuotaMayorAnio1)}</strong> (Exigibilidad Semestre ${semRef})`;
+      } else {
+        calcTableBadge.innerHTML = `Amortización Constante • Cuota Año 1: <strong>${formatUSD(res.cuotaAnio1)}</strong>`;
+      }
+    }
 
     // Renderizado del cronograma
     if (calcCronogramaBody) {
@@ -913,9 +948,16 @@ document.addEventListener('DOMContentLoaded', () => {
         calcCronogramaBody.appendChild(tr);
       } else {
         res.cronograma.forEach(c => {
+          const isMayorCuotaAnio1 = (c.anio === 1 && c.cuota === res.cuotaMayorAnio1);
           const tr = document.createElement('tr');
+          if (isMayorCuotaAnio1) {
+            tr.className = 'row-destacada';
+          }
           tr.innerHTML = `
-            <td style="font-weight: 700;">Año ${c.anio}</td>
+            <td style="font-weight: 700;">
+              ${c.label}
+              ${isMayorCuotaAnio1 ? '<span class="badge-exigibilidad" title="Mayor cuota del primer año para referencia de exigibilidad">★ Mayor Cuota Año 1</span>' : ''}
+            </td>
             <td class="text-right">${formatUSD(c.saldoInicial)}</td>
             <td class="text-right">${formatUSD(c.amortizacion)}</td>
             <td class="text-right">${formatUSD(c.interes)}</td>
@@ -941,40 +983,53 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const cuotaAnio1 = Math.round(ultimoResultadoAleman.cuotaAnio1);
+    const cuotaTransferir = Math.round(ultimoResultadoAleman.cuotaMayorAnio1 || ultimoResultadoAleman.cuotaAnio1);
     const entidadBancaria = calcEntidad ? calcEntidad.value.trim() : '';
 
     calculadoraAplicada = {
       capital: ultimoResultadoAleman.capital,
       tasaAnual: ultimoResultadoAleman.tasaAnual,
       plazoAnios: ultimoResultadoAleman.plazoAnios,
-      cuotaAnio1: cuotaAnio1,
+      frecuencia: ultimoResultadoAleman.frecuencia,
+      esquemaSemestral: ultimoResultadoAleman.esquemaSemestral,
+      cuotaAnio1: cuotaTransferir,
+      cuotaMayorAnio1: ultimoResultadoAleman.cuotaMayorAnio1,
+      totalCuotasAnio1: ultimoResultadoAleman.totalCuotasAnio1,
       gastoAdmin: ultimoResultadoAleman.gastoAdmin,
       entidad: entidadBancaria
     };
 
+    const freqDesc = ultimoResultadoAleman.frecuencia === 'semestral' ? ' (Semestral)' : '';
+
     if (activeProfile === 'productor') {
       const inputCredito = document.getElementById('requestedCapital');
-      if (inputCredito) inputCredito.value = cuotaAnio1;
+      if (inputCredito) inputCredito.value = cuotaTransferir;
       if (badgeCalcAnios) badgeCalcAnios.textContent = ultimoResultadoAleman.plazoAnios;
-      if (badgeCalcTasa) badgeCalcTasa.textContent = ultimoResultadoAleman.tasaAnual;
+      if (badgeCalcTasa) badgeCalcTasa.textContent = `${ultimoResultadoAleman.tasaAnual}${freqDesc}`;
       if (calcAplicadaBadge) calcAplicadaBadge.style.display = 'flex';
       if (calcAplicadaBadgePrestador) calcAplicadaBadgePrestador.style.display = 'none';
     } else {
       const inputCredito = document.getElementById('serviceRequestedCapital');
-      if (inputCredito) inputCredito.value = cuotaAnio1;
+      if (inputCredito) inputCredito.value = cuotaTransferir;
       if (badgeCalcAniosPrestador) badgeCalcAniosPrestador.textContent = ultimoResultadoAleman.plazoAnios;
-      if (badgeCalcTasaPrestador) badgeCalcTasaPrestador.textContent = ultimoResultadoAleman.tasaAnual;
+      if (badgeCalcTasaPrestador) badgeCalcTasaPrestador.textContent = `${ultimoResultadoAleman.tasaAnual}${freqDesc}`;
       if (calcAplicadaBadgePrestador) calcAplicadaBadgePrestador.style.display = 'flex';
       if (calcAplicadaBadge) calcAplicadaBadge.style.display = 'none';
     }
 
     cerrarModalCalculadora();
     executeAnalysis();
-    showToast(`¡Cuota Año 1 (${formatUSD(cuotaAnio1)}) aplicada al análisis!`);
+    showToast(`¡Cuota Año 1 (${formatUSD(cuotaTransferir)}) aplicada al análisis!`);
   }
 
   // Listeners de la Calculadora
+  if (btnAbrirCalculadoraTop) {
+    btnAbrirCalculadoraTop.addEventListener('click', (e) => {
+      e.preventDefault();
+      abrirModalCalculadora();
+    });
+  }
+
   if (btnAbrirCalculadora) {
     btnAbrirCalculadora.addEventListener('click', (e) => {
       e.preventDefault();
@@ -1027,6 +1082,15 @@ document.addEventListener('DOMContentLoaded', () => {
   if (calcCapital) calcCapital.addEventListener('input', recalcularModalCalculadora);
   if (calcTasaInteres) calcTasaInteres.addEventListener('input', recalcularModalCalculadora);
   if (calcPlazoAnios) calcPlazoAnios.addEventListener('change', recalcularModalCalculadora);
+  if (calcFrecuencia) {
+    calcFrecuencia.addEventListener('change', () => {
+      if (groupEsquemaSemestral) {
+        groupEsquemaSemestral.style.display = calcFrecuencia.value === 'semestral' ? 'flex' : 'none';
+      }
+      recalcularModalCalculadora();
+    });
+  }
+  if (calcEsquemaSemestral) calcEsquemaSemestral.addEventListener('change', recalcularModalCalculadora);
 
   // Reset de la observación si el usuario modifica el campo principal manualmente
   const reqCapInput = document.getElementById('requestedCapital');

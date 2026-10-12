@@ -5,6 +5,14 @@ Todas las modificaciones notables de este proyecto se documentan en este archivo
 El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [0.7.0] - 2026-10-12
+
+### Añadido / Modificado
+- Movido el disparador de la calculadora al encabezado general como herramienta independiente.
+- Corregido corte visual de filas en la tabla del cronograma para zoom 100%.
+- Ajustado plazo de financiamiento a un máximo de 6 años según directrices de Cotripar.
+- Implementado cálculo de cuotas semestrales con opción de pago exclusivo de intereses en el primer semestre y amortización anual en el segundo.
+
 ## [0.6.1] - 2026-10-09
 
 ### Modificado

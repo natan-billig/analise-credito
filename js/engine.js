@@ -1,6 +1,6 @@
 /**
  * Sistema de Análisis de Crédito Rural - Motor de Flujo de Caja y Riesgo Agropecuario
- * Versión: 0.6.0 - Calculadora Financiera de Sistema Alemán con IVA y Gasto Administrativo
+ * Versión: 0.7.0 - Calculadora Financiera Independiente, Sistema Alemán con Cuotas Semestrales (Zafra)
  */
 
 (function (global) {
@@ -94,68 +94,140 @@
    * Calculadora de Amortización bajo el Sistema Alemán (Cuotas Decrecientes)
    * con cómputo oficial de IVA (10%) sobre intereses bancarios según régimen PY
    * y 1% de gasto administrativo sobre el capital solicitado.
+   * Soporta modalidad anual (1 cuota/año) y semestral (2 cuotas/año),
+   * incluyendo esquema zafra (1° sem solo interés, 2° sem capital + interés).
    *
    * @param {number} capital - Monto del capital solicitado en USD
    * @param {number} tasaAnual - Tasa de interés anual (%)
-   * @param {number} plazoAnios - Plazo en años (1 a 10)
+   * @param {number} plazoAnios - Plazo en años (1 a 6)
+   * @param {string} frecuencia - 'anual' | 'semestral'
+   * @param {string} esquemaSemestral - 'zafra_interes_primero' | 'constante'
    * @returns {Object} Cronograma detallado y totales consolidados
    */
-  function calcularSistemaAleman(capital, tasaAnual, plazoAnios) {
+  function calcularSistemaAleman(capital, tasaAnual, plazoAnios, frecuencia = 'anual', esquemaSemestral = 'zafra_interes_primero') {
     const cap = Math.max(0, Number(capital) || 0);
     const tasa = Math.max(0, Number(tasaAnual) || 0);
-    const plazo = Math.max(1, Math.min(10, Math.round(Number(plazoAnios) || 1)));
+    const plazo = Math.max(1, Math.min(6, Math.round(Number(plazoAnios) || 1)));
+    const freq = (frecuencia || 'anual').toLowerCase();
+    const esquema = (esquemaSemestral || 'zafra_interes_primero').toLowerCase();
 
     const gastoAdmin = cap * 0.01;
-    const amortizacionAnual = plazo > 0 ? (cap / plazo) : 0;
-    const tasaDecimal = tasa / 100;
-
     const cronograma = [];
     let saldoActual = cap;
     let totalIntereses = 0;
     let totalIva = 0;
     let totalCuotas = 0;
 
-    for (let i = 1; i <= plazo; i++) {
-      const saldoInicial = saldoActual;
-      const interes = saldoInicial * tasaDecimal;
-      const iva = interes * 0.10; // IVA bancario PY al 10%
-      const cuota = amortizacionAnual + interes + iva;
-      const saldoFinal = Math.max(0, saldoInicial - amortizacionAnual);
+    if (freq === 'semestral') {
+      const totalSemestres = plazo * 2;
+      const tasaSemestral = (tasa / 100) / 2;
+      const amortizacionAnual = plazo > 0 ? (cap / plazo) : 0;
+      const amortizacionSemestralConstante = totalSemestres > 0 ? (cap / totalSemestres) : 0;
 
-      totalIntereses += interes;
-      totalIva += iva;
-      totalCuotas += cuota;
+      for (let s = 1; s <= totalSemestres; s++) {
+        const saldoInicial = saldoActual;
+        const anio = Math.ceil(s / 2);
+        const interes = saldoInicial * tasaSemestral;
+        const iva = interes * 0.10; // IVA bancario PY al 10%
+        let amortizacion = 0;
+        let label = '';
 
-      cronograma.push({
-        anio: i,
-        saldoInicial,
-        amortizacion: amortizacionAnual,
-        interes,
-        iva,
-        cuota,
-        saldoFinal: i === plazo ? 0 : saldoFinal
-      });
+        if (esquema === 'zafra_interes_primero') {
+          if (s % 2 !== 0) {
+            // Semestre impar: solo interés
+            amortizacion = 0;
+            label = `Semestre ${s} (Interés)`;
+          } else {
+            // Semestre par: capital + interés
+            amortizacion = amortizacionAnual;
+            label = `Semestre ${s} (Cap + Int)`;
+          }
+        } else {
+          // Amortización constante semestral
+          amortizacion = amortizacionSemestralConstante;
+          label = `Semestre ${s}`;
+        }
 
-      saldoActual = saldoFinal;
+        const cuota = amortizacion + interes + iva;
+        const saldoFinal = Math.max(0, saldoInicial - amortizacion);
+
+        totalIntereses += interes;
+        totalIva += iva;
+        totalCuotas += cuota;
+
+        cronograma.push({
+          periodo: s,
+          label,
+          anio,
+          saldoInicial,
+          amortizacion,
+          interes,
+          iva,
+          cuota,
+          saldoFinal: s === totalSemestres ? 0 : saldoFinal
+        });
+
+        saldoActual = saldoFinal;
+      }
+    } else {
+      // Modalidad anual estándar
+      const tasaDecimal = tasa / 100;
+      const amortizacionAnual = plazo > 0 ? (cap / plazo) : 0;
+
+      for (let i = 1; i <= plazo; i++) {
+        const saldoInicial = saldoActual;
+        const interes = saldoInicial * tasaDecimal;
+        const iva = interes * 0.10; // IVA bancario PY al 10%
+        const cuota = amortizacionAnual + interes + iva;
+        const saldoFinal = Math.max(0, saldoInicial - amortizacionAnual);
+
+        totalIntereses += interes;
+        totalIva += iva;
+        totalCuotas += cuota;
+
+        cronograma.push({
+          periodo: i,
+          label: `Año ${i}`,
+          anio: i,
+          saldoInicial,
+          amortizacion: amortizacionAnual,
+          interes,
+          iva,
+          cuota,
+          saldoFinal: i === plazo ? 0 : saldoFinal
+        });
+
+        saldoActual = saldoFinal;
+      }
     }
 
     const costoFinancieroTotal = totalIntereses + totalIva + gastoAdmin;
     const totalPagado = cap + costoFinancieroTotal;
-    const cuotaAnio1 = cronograma.length > 0 ? cronograma[0].cuota : 0;
+
+    const cronogramaAnio1 = cronograma.filter(c => c.anio === 1);
+    const cuotaMayorAnio1 = cronogramaAnio1.length > 0 
+      ? Math.max(...cronogramaAnio1.map(c => c.cuota)) 
+      : 0;
+    const totalCuotasAnio1 = cronogramaAnio1.length > 0
+      ? cronogramaAnio1.reduce((sum, c) => sum + c.cuota, 0)
+      : 0;
 
     return {
       capital: cap,
       tasaAnual: tasa,
       plazoAnios: plazo,
+      frecuencia: freq,
+      esquemaSemestral: esquema,
       gastoAdmin,
-      amortizacionAnual,
       cronograma,
       totalIntereses,
       totalIva,
       totalCuotas,
       costoFinancieroTotal,
       totalPagado,
-      cuotaAnio1
+      cuotaAnio1: cuotaMayorAnio1,
+      cuotaMayorAnio1,
+      totalCuotasAnio1
     };
   }
 
@@ -400,7 +472,7 @@ ${picoTxt}
 4. CARGA FINANCIERA TOTAL Y LIQUIDEZ (USD)
 ----------------------------------------------------------------------
 • Suma de Compromisos Prev. : ${fmtUSD(d.deudasFinancierasTotal)}
-• Crédito Solicitado (c/int): ${fmtUSD(d.capitalSolicitado)}${d.sistemaAlemanInfo ? ` [Cuota Año 1 - Sist. Alemán a ${d.sistemaAlemanInfo.plazoAnios} años al ${d.sistemaAlemanInfo.tasaAnual}% + IVA]` : ''}
+• Crédito Solicitado (c/int): ${fmtUSD(d.capitalSolicitado)}${d.sistemaAlemanInfo ? ` [Cuota Año 1 - Sist. Alemán (${d.sistemaAlemanInfo.frecuencia === 'semestral' ? 'Semestral' : 'Anual'}) a ${d.sistemaAlemanInfo.plazoAnios} años al ${d.sistemaAlemanInfo.tasaAnual}% + IVA]` : ''}
 • Modalidad del Crédito     : ${d.periodicidad}
 • Carga Financiera Total    : ${fmtUSD(d.cargaFinancieraTotal)} [Compromisos + Crédito Solicitado]
 • Flujo de Caja Libre Neto  : ${fmtUSD(d.flujoCajaNeto)}
@@ -477,7 +549,7 @@ ${picoTxt}
 4. CARGA FINANCIERA TOTAL Y LIQUIDEZ (USD)
 ----------------------------------------------------------------------
 • Suma de Compromisos Prev. : ${fmtUSD(d.deudasFinancierasTotal)}
-• Crédito Solicitado (c/int): ${fmtUSD(d.capitalSolicitado)}${d.sistemaAlemanInfo ? ` [Cuota Año 1 - Sist. Alemán a ${d.sistemaAlemanInfo.plazoAnios} años al ${d.sistemaAlemanInfo.tasaAnual}% + IVA]` : ''}
+• Crédito Solicitado (c/int): ${fmtUSD(d.capitalSolicitado)}${d.sistemaAlemanInfo ? ` [Cuota Año 1 - Sist. Alemán (${d.sistemaAlemanInfo.frecuencia === 'semestral' ? 'Semestral' : 'Anual'}) a ${d.sistemaAlemanInfo.plazoAnios} años al ${d.sistemaAlemanInfo.tasaAnual}% + IVA]` : ''}
 • Modalidad del Crédito     : ${d.periodicidad}
 • Carga Financiera Total    : ${fmtUSD(d.cargaFinancieraTotal)} [Compromisos + Crédito Solicitado]
 • Flujo de Caja Libre Neto  : ${fmtUSD(d.flujoCajaNeto)}

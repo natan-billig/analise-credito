@@ -140,6 +140,29 @@
       gap: 0.35rem;
     }
 
+    .btn-top-calc {
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.35rem 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .btn-top-calc:hover {
+      background: rgba(255, 255, 255, 0.28);
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
     .container {
       max-width: 1250px;
       margin: 2rem auto;
@@ -806,8 +829,8 @@
 
     .modal-dialog {
       width: 100%;
-      max-width: 920px;
-      max-height: 90vh;
+      max-width: 960px;
+      max-height: 92vh;
       background: #ffffff;
       border-radius: 12px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
@@ -874,12 +897,12 @@
     }
 
     .modal-body {
-      padding: 1.25rem 1.5rem;
+      padding: 1rem 1.25rem;
       overflow-y: auto;
-      max-height: calc(90vh - 135px);
+      max-height: calc(92vh - 120px);
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
+      gap: 1rem;
       background-color: #f8fafc;
     }
 
@@ -887,9 +910,9 @@
     .calc-inputs-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 0.85rem;
+      gap: 0.6rem;
       background: #ffffff;
-      padding: 1.1rem;
+      padding: 0.75rem;
       border-radius: 8px;
       border: 1px solid var(--border);
     }
@@ -987,6 +1010,8 @@
     }
 
     .calc-table-wrapper {
+      max-height: 280px;
+      overflow-y: auto;
       overflow-x: auto;
     }
 
@@ -997,7 +1022,10 @@
       min-width: 620px;
     }
 
-    .calc-table th {
+    .calc-table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
       background-color: #f1f5f9;
       color: var(--text-muted);
       font-weight: 700;
@@ -1019,6 +1047,7 @@
       background-color: #f8fafc;
     }
 
+    .calc-table tr.row-destacada td,
     .calc-table tr:first-child td {
       background-color: #f0fdf4;
       font-weight: 600;
@@ -1038,10 +1067,24 @@
       color: #14532d;
     }
 
+    .calc-table tr.row-destacada .highlight-col,
     .calc-table tr:first-child .highlight-col {
       background-color: #bbf7d0;
       color: #14532d;
       font-weight: 800;
+    }
+
+    .badge-exigibilidad {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #15803d;
+      background-color: #dcfce7;
+      border: 1px solid #86efac;
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      margin-left: 0.35rem;
+      vertical-align: middle;
     }
 
     /* Resumen Financiero KPI Cards */
@@ -1501,8 +1544,12 @@
         </button>
       </nav>
 
-      <div>
-        <span class="currency-pill">💵 Moneda Oficial: USD ($) • v0.6.0</span>
+      <div style="display: flex; align-items: center; gap: 0.65rem; flex-wrap: wrap;">
+        <button type="button" id="btn-abrir-calculadora-top" class="btn-top-calc" title="Abrir Calculadora Financiera (Sistema Alemán)">
+          <span>🧮</span>
+          <span>Calculadora Financiera</span>
+        </button>
+        <span class="currency-pill">💵 Moneda Oficial: USD ($) • v0.7.0</span>
       </div>
     </div>
   </header>
@@ -1563,13 +1610,7 @@
               </div>
               <div class="form-group">
                 <label for="requestedCapital">Monto del Crédito Solicitado (USD) <span class="label-hint">(Intereses incluidos)</span></label>
-                <div class="input-action-group">
-                  <input type="number" id="requestedCapital" min="1" step="any" placeholder="0.00" required value="110000">
-                  <button type="button" id="btn-abrir-calculadora" class="btn-input-calc" title="Simular cuotas bajo el Sistema Alemán">
-                    <span>🧮</span>
-                    <span>Simular</span>
-                  </button>
-                </div>
+                <input type="number" id="requestedCapital" min="1" step="any" placeholder="0.00" required value="110000">
                 <div id="calc-aplicada-badge" class="calc-status-badge" style="display: none;">
                   <span>ℹ️ <strong>Cuota Año 1 aplicada:</strong> Sistema Alemán a <span id="badgeCalcAnios">5</span> años al <span id="badgeCalcTasa">7.5</span>% + IVA.</span>
                 </div>
@@ -1619,13 +1660,7 @@
               </div>
               <div class="form-group">
                 <label for="serviceRequestedCapital">Monto del Crédito Solicitado (USD) <span class="label-hint">(Intereses incluidos)</span></label>
-                <div class="input-action-group">
-                  <input type="number" id="serviceRequestedCapital" min="1" step="any" placeholder="0.00" value="20000">
-                  <button type="button" id="btn-abrir-calculadora-prestador" class="btn-input-calc" title="Simular cuotas bajo el Sistema Alemán">
-                    <span>🧮</span>
-                    <span>Simular</span>
-                  </button>
-                </div>
+                <input type="number" id="serviceRequestedCapital" min="1" step="any" placeholder="0.00" value="20000">
                 <div id="calc-aplicada-badge-prestador" class="calc-status-badge" style="display: none;">
                   <span>ℹ️ <strong>Cuota Año 1 aplicada:</strong> Sistema Alemán a <span id="badgeCalcAniosPrestador">5</span> años al <span id="badgeCalcTasaPrestador">7.5</span>% + IVA.</span>
                 </div>
@@ -1803,7 +1838,7 @@
         <div class="reporte-meta">
           <span><strong>Emisión:</strong> <span id="printFechaEmision">--/--/---- --:--</span></span> • 
           <span><strong>Protocolo:</strong> <span id="printProtocolo">SAC-PY-00000000-0000</span></span> • 
-          <span><strong>Versión:</strong> v0.6.0</span>
+          <span><strong>Versión:</strong> v0.7.0</span>
         </div>
       </div>
     </div>
@@ -1971,7 +2006,7 @@
       </p>
       <div class="reporte-meta-footer">
         <span>Cotripar S.A. • Sistema de Análisis de Crédito Rural</span>
-        <span>v0.6.0 • N. Billig</span>
+        <span>v0.7.0 • N. Billig</span>
       </div>
     </div>
   </div>
@@ -2036,7 +2071,7 @@
           <div class="calc-input-group">
             <label for="calcPlazoAnios">
               4. Plazo (Años)
-              <span class="label-hint">(1 a 10 años)</span>
+              <span class="label-hint">(1 a 6 años - Directrices Cotripar)</span>
             </label>
             <select id="calcPlazoAnios">
               <option value="1">1 Año (Zafra Única)</option>
@@ -2044,17 +2079,35 @@
               <option value="3">3 Años</option>
               <option value="4">4 Años</option>
               <option value="5" selected>5 Años (Estándar)</option>
-              <option value="6">6 Años</option>
-              <option value="7">7 Años</option>
-              <option value="8">8 Años</option>
-              <option value="9">9 Años</option>
-              <option value="10">10 Años</option>
+              <option value="6">6 Años (Plazo Máximo)</option>
+            </select>
+          </div>
+
+          <div class="calc-input-group">
+            <label for="calcFrecuencia">
+              5. Periodicidad de Cuotas
+              <span class="label-hint">(Frecuencia de pagos)</span>
+            </label>
+            <select id="calcFrecuencia">
+              <option value="anual" selected>Anual (1 cuota por año)</option>
+              <option value="semestral">Semestral (2 cuotas por año)</option>
+            </select>
+          </div>
+
+          <div class="calc-input-group" id="groupEsquemaSemestral" style="display: none;">
+            <label for="calcEsquemaSemestral">
+              6. Esquema Semestral
+              <span class="label-hint">(Modalidad de zafra)</span>
+            </label>
+            <select id="calcEsquemaSemestral">
+              <option value="zafra_interes_primero" selected>Zafra: 1° Semestre Solo Interés / 2° Semestre Capital + Interés</option>
+              <option value="constante">Amortización Constante Semestral (Capital e Interés cada semestre)</option>
             </select>
           </div>
 
           <div class="calc-input-group calc-input-full">
             <label for="calcEntidad">
-              5. Entidad Bancaria
+              7. Entidad Bancaria
               <span class="label-hint">(Opcional: ej. Banco Sudameris, Banco Atlas, Continental, Itaú)</span>
             </label>
             <input type="text" id="calcEntidad" placeholder="Ej: Banco Sudameris, Atlas, Continental">
@@ -2065,19 +2118,19 @@
         <div class="calc-table-section">
           <div class="calc-table-title-row">
             <div class="calc-table-title">📅 Cronograma de Pagos - Sistema Alemán</div>
-            <div class="calc-table-badge">Amortización Constante • Cuota Año 1 Más Exigente</div>
+            <div class="calc-table-badge" id="calcTableBadge">Amortización Constante • Cuota Año 1 Más Exigente</div>
           </div>
 
           <div class="calc-table-wrapper">
             <table class="calc-table" id="tabla-cronograma-aleman">
               <thead>
                 <tr>
-                  <th>Año</th>
+                  <th id="thColPeriodo">Año</th>
                   <th class="text-right">Saldo Inicial</th>
                   <th class="text-right">Amortización</th>
                   <th class="text-right">Interés</th>
                   <th class="text-right">IVA (10%)</th>
-                  <th class="text-right highlight-col">Cuota Anual</th>
+                  <th class="text-right highlight-col" id="thColCuota">Cuota Anual</th>
                   <th class="text-right">Saldo Final</th>
                 </tr>
               </thead>
@@ -2123,7 +2176,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-modal-close" id="btn-cerrar-calculadora">Cerrar</button>
         <button type="button" class="btn btn-modal-apply" id="btn-aplicar-calculadora">
-          ✅ Aplicar Cuota Año 1 al Análisis
+          ✅ Aplicar al Formulario Activo
         </button>
       </div>
     </div>
